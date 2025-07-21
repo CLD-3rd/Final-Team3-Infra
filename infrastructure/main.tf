@@ -16,9 +16,9 @@ provider "aws" {
 }
 
 
-# network 모듈 호출
+# network 설정 모듈 호출
 module "network" {
-  source               = "./network"                  # 모듈 경로
+  source               = "./modules/network"                  # 모듈 경로
   name_prefix          = var.name_prefix              # 접두어
   vpc_cidr             = var.vpc_cidr                 # VPC CIDR
   public_subnet_cidr   = var.public_subnet_cidr       # 퍼블릭 서브넷 CIDR

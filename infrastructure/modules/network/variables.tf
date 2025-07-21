@@ -1,3 +1,5 @@
+# MatchFit VPC 모듈 variables.tf
+
 # 리소스 이름에 접두어로 사용할 값 (예: team1 → team1-vpc)
 variable "name_prefix" {
   description = "리소스 이름에 공통적으로 사용할 접두어"
@@ -13,19 +15,19 @@ variable "vpc_cidr" {
 # 사용할 가용 영역 (AZ) (예: ap-northeast-2a)
 variable "az" {
   description = "서브넷을 생성할 AWS 가용 영역"
-  type        = string
+  type        = list(string)
 }
 
 # 퍼블릭 서브넷의 CIDR 블록 (예: 10.0.1.0/24)
 variable "public_subnet_cidr" {
   description = "퍼블릭 서브넷의 CIDR 블록"
-  type        = string
+  type        = list(string)
 }
 
 # 프라이빗 서브넷의 CIDR 블록 (예: 10.0.2.0/24)
 variable "private_subnet_cidr" {
   description = "프라이빗 서브넷의 CIDR 블록"
-  type        = string
+  type        = list(string)
 }
 
 # 다중 라우팅 테이블 정의 (동적 생성에 사용)

@@ -1,3 +1,5 @@
+# MatchFit VPC 모듈 outputs.tf
+
 # VPC ID 출력
 output "vpc_id" {
   description = "생성된 VPC의 ID"
@@ -7,13 +9,13 @@ output "vpc_id" {
 # 퍼블릭 서브넷 ID 출력
 output "public_subnet_id" {
   description = "생성된 퍼블릭 서브넷 ID"
-  value       = aws_subnet.public.id
+  value       = [for subnet in aws_subnet.public : subnet.id]
 }
 
 # 프라이빗 서브넷 ID 출력
 output "private_subnet_id" {
   description = "생성된 프라이빗 서브넷 ID"
-  value       = aws_subnet.private.id
+  value       = [for subnet in aws_subnet.private : subnet.id]
 }
 
 # 퍼블릭 라우팅 테이블 ID 출력
