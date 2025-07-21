@@ -27,3 +27,21 @@ output "custom_route_table_ids" {
   description = "모듈에서 생성한 사용자 정의 라우팅 테이블 ID 목록"
   value       = module.network.custom_route_table_ids
 }
+
+# 클러스터 이름 출력
+output "eks_cluster_name" {
+  description = "EKS 클러스터 이름"
+  value       = module.eks.cluster_name
+}
+
+# EKS API 서버 엔드포인트 출력
+output "eks_cluster_endpoint" {
+  description = "EKS 클러스터의 엔드포인트"
+  value       = module.eks.cluster_endpoint
+}
+
+# EKS 클러스터 인증서 정보 출력
+output "eks_cluster_ca" {
+  description = "EKS 클러스터의 인증서 정보"
+  value       = module.eks.cluster_certificate_authority
+}

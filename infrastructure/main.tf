@@ -30,3 +30,14 @@ module "network" {
   tags   = var.default_tags                           # 공통 태그
   route_tables = var.route_tables                     # 커스텀 라우팅 테이블 정보
 }
+
+# EKS 클러스터 생성용 모듈 호출
+module "eks" {
+  source              = "./modules/eks"                       # EKS 모듈 경로
+  cluster_name        = var.cluster_name                      # 클러스터 이름
+  kubernetes_version  = var.kubernetes_version                # 쿠버네티스 버전
+  cluster_role_arn    = var.cluster_role_arn                  # EKS 클러스터용 IAM 역할
+  subnet_ids          = var.eks_subnet_ids                    # EKS 클러스터가 사용할 서브넷들
+  service_ipv4_cidr   = var.service_ipv4_cidr                 # 서비스용 CIDR
+  tags                = var.default_tags                      # 공통 태그
+}
