@@ -41,8 +41,8 @@ override.tf.json
 *_override.tf.json
 
 # Sensitive variable files
-*.tfvars
-*.tfvars.json
+# *.tfvars
+# *.tfvars.json
 
 # .terraform.lock.hcl (선택 사항 - 팀 내부에서는 공유할 수도 있음)
 .terraform.lock.hcl
