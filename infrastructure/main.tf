@@ -12,14 +12,14 @@ provider "aws" {
   region = var.aws_region             # 사용할 AWS 리전
 }
 
-# 1. VPC 생성
+#VPC 생성
 module "vpc" {
   source     = "./modules/network/vpc"   # vpc 모듈 경로
   name       = "${var.name_prefix}-vpc"  # VPC 이름
   cidr_block = var.vpc_cidr              # VPC의 CIDR 블록
 }
 
-# 2. Subnet 생성 (퍼블릭 / 프라이빗)
+#Subnet 생성 (퍼블릭 / 프라이빗)
 module "subnet" {
   source              = "./modules/network/subnet"   # subnet 모듈 경로
   vpc_id              = module.vpc.vpc_id            # 연결할 VPC ID
@@ -29,7 +29,7 @@ module "subnet" {
   name_prefix         = var.name_prefix              # 이름 접두어
 }
 
-# 3. 인터넷 게이트웨이 생성
+#인터넷 게이트웨이 생성
 module "igw" {
   source = "./modules/network/internet-gateway"      # igw 모듈 경로
   vpc_id = module.vpc.vpc_id                         # 연결할 VPC ID
@@ -37,7 +37,7 @@ module "igw" {
   tags   = var.tags                                  # 공통 태그
 }
 
-# 4. NAT 게이트웨이 생성 (퍼블릭 서브넷에 설치)
+#NAT 게이트웨이 생성 (퍼블릭 서브넷에 설치)
 module "nat_gateway" {
   source    = "./modules/network/nat-gateway"        # NAT 게이트웨이 모듈 경로
   name      = "${var.name_prefix}-nat"               # NAT 게이트웨이 이름
@@ -45,7 +45,7 @@ module "nat_gateway" {
   tags      = var.tags                               # 공통 태그
 }
 
-# 5. 라우팅 테이블 구성 (퍼블릭/프라이빗 라우팅)
+#라우팅 테이블 구성 (퍼블릭/프라이빗 라우팅)
 module "route_table" {
   source = "./modules/network/route-table"           # route-table 모듈 경로
   vpc_id = module.vpc.vpc_id
