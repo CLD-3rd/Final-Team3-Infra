@@ -9,12 +9,10 @@ terraform {
     }
   }
 }
-
 # AWS Provider 정의
 provider "aws" {
   region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
 }
-
 
 # network 설정 모듈 호출
 module "network" {
@@ -30,3 +28,20 @@ module "network" {
   tags   = var.default_tags                           # 공통 태그
   route_tables = var.route_tables                     # 커스텀 라우팅 테이블 정보
 }
+
+# EKS 관련 IAM 모듈 호출
+
+
+# EKS 설정 모듈 호출
+module "eks" {
+  source                = "./modules/eks"
+  cluster_name          = var.cluster_name
+  kubernetes_version    = var.kubernetes_version
+  vpc_id                = module.network.vpc_id
+  subnet_ids            = module.network.private_subnet_id
+  service_ipv4_cidr     = var.service_ipv4_cidr
+  ssh_key_name          = var.ssh_key_name
+  tags                  = var.default_tags
+  worker_access_cidr    = var.worker_access_cidr
+}
+
