@@ -15,7 +15,7 @@ variable "default_tags" {
   default = {
     Environment = "dev"
     Owner       = "cloud-team"
-}
+  }
 }
 
 

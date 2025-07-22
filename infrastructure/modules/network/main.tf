@@ -91,7 +91,7 @@ resource "aws_route_table" "this" {
 resource "aws_route_table_association" "this" {
   # count = sum([for rt in var.route_tables : length(rt.subnet_ids)])  # 모든 route_table의 subnet 개수를 합쳐서 반복 횟수 결정
   count = length(var.route_tables) > 0 ? sum([for rt in var.route_tables : length(rt.subnet_ids)]) : 0
-  
+
   subnet_id      = local.subnet_route_associations[count.index].subnet_id      # 연결할 서브넷
   route_table_id = local.subnet_route_associations[count.index].route_table_id # 연결할 라우팅 테이블
 }
