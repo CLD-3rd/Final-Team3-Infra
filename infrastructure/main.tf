@@ -1,3 +1,4 @@
+# Terraform 설정
 terraform {
   required_version = ">= 1.3.0"
 
@@ -9,10 +10,12 @@ terraform {
   }
 }
 
+# AWS 프로바이더 설정
 provider "aws" {
   region = var.aws_region
 }
 
+# 네트워크 모듈 호출 (VPC, Subnet, IGW 등)
 module "network" {
   source               = "./modules/network"
   name_prefix          = var.name_prefix
@@ -26,6 +29,7 @@ module "network" {
   route_tables         = var.route_tables
 }
 
+# EKS 클러스터 모듈 호출
 module "eks" {
   source                = "./modules/eks"
   cluster_name          = var.cluster_name
@@ -38,3 +42,18 @@ module "eks" {
   worker_access_cidr    = var.worker_access_cidr
 }
 
+# S3 모듈 호출
+module "s3_bucket" {
+  source                  = "./modules/s3"
+  bucket_name             = var.bucket_name
+  enable_versioning       = var.enable_versioning
+  enable_website          = var.enable_website
+  index_document          = var.index_document
+  error_document          = var.error_document
+  block_public_acls       = var.block_public_acls
+  block_public_policy     = var.block_public_policy
+  ignore_public_acls      = var.ignore_public_acls
+  restrict_public_buckets = var.restrict_public_buckets
+  bucket_policy           = var.bucket_policy
+  tags                    = var.default_tags
+}

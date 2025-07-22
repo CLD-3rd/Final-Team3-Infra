@@ -1,69 +1,102 @@
+# VPC 및 서브넷 출력
 output "vpc_id" {
-  description = "모듈에서 생성한 VPC ID"
+  description = "ID of the VPC"
   value       = module.network.vpc_id
 }
 
 output "public_subnet_id" {
-  description = "퍼블릭 서브넷 ID"
+  description = "ID of the public subnet"
   value       = module.network.public_subnet_id
 }
 
 output "private_subnet_id" {
-  description = "프라이빗 서브넷 ID"
+  description = "ID of the private subnet"
   value       = module.network.private_subnet_id
 }
 
 output "igw_id" {
-  description = "인터넷 게이트웨이 ID"
+  description = "ID of the internet gateway"
   value       = module.network.igw_id
 }
 
 output "custom_route_table_ids" {
-  description = "사용자 정의 라우팅 테이블 ID 목록"
+  description = "List of route table IDs"
   value       = module.network.custom_route_table_ids
 }
 
+# EKS 출력
 output "eks_cluster_name" {
-  description = "EKS 클러스터 이름"
   value       = module.eks.cluster_name
+  description = "EKS Cluster name"
 }
 
 output "eks_cluster_endpoint" {
-  description = "EKS API 서버 엔드포인트"
   value       = module.eks.cluster_endpoint
+  description = "EKS Cluster API endpoint"
 }
 
 output "eks_cluster_ca" {
-  description = "EKS 클러스터 인증서 정보"
   value       = module.eks.cluster_certificate_authority
+  description = "EKS Cluster certificate authority"
 }
 
 output "eks_cluster_id" {
-  description = "EKS 클러스터의 리소스 ID"
   value       = module.eks.cluster_id
+  description = "EKS cluster ID"
 }
 
 output "eks_cluster_role_arn" {
-  description = "EKS 클러스터 IAM 역할 ARN"
   value       = module.eks.eks_cluster_role_arn
+  description = "IAM Role ARN for EKS Cluster"
 }
 
 output "eks_node_role_arn" {
-  description = "EKS 노드 IAM 역할 ARN"
   value       = module.eks.eks_node_role_arn
+  description = "IAM Role ARN for EKS NodeGroup"
 }
 
 output "eks_node_instance_profile" {
-  description = "EKS 노드 EC2 인스턴스 프로파일 이름"
   value       = module.eks.eks_node_instance_profile
+  description = "EC2 Instance Profile for EKS Nodes"
 }
 
 output "cluster_sg_id" {
-  description = "EKS 클러스터 보안 그룹 ID"
   value       = module.eks.cluster_sg_id
+  description = "EKS Cluster security group ID"
 }
 
 output "node_group_name" {
-  description = "EKS 노드 그룹 이름"
   value       = module.eks.node_group_name
+  description = "EKS NodeGroup name"
+}
+
+# S3 출력
+output "s3_bucket_id" {
+  value       = module.s3_bucket.bucket_id
+  description = "S3 Bucket ID"
+}
+
+output "s3_bucket_arn" {
+  value       = module.s3_bucket.bucket_arn
+  description = "S3 Bucket ARN"
+}
+
+output "s3_bucket_domain" {
+  value       = module.s3_bucket.bucket_domain_name
+  description = "S3 Bucket domain name"
+}
+
+output "s3_bucket_regional_domain" {
+  value       = module.s3_bucket.bucket_regional_domain_name
+  description = "S3 Bucket regional domain name"
+}
+
+output "s3_website_endpoint" {
+  value       = module.s3_bucket.website_endpoint
+  description = "S3 website endpoint (if enabled)"
+}
+
+output "s3_website_domain" {
+  value       = module.s3_bucket.website_domain
+  description = "S3 website domain (if enabled)"
 }

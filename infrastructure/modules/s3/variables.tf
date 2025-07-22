@@ -1,0 +1,102 @@
+variable "bucket_name" {
+  description = "Name of the S3 bucket"
+  type        = string
+}
+
+variable "enable_versioning" {
+  description = "Enable versioning for the S3 bucket"
+  type        = bool
+  default     = false
+}
+
+variable "enable_website" {
+  description = "Enable static website hosting"
+  type        = bool
+  default     = false
+}
+
+variable "index_document" {
+  description = "Index document for website hosting"
+  type        = string
+  default     = "index.html"
+}
+
+variable "error_document" {
+  description = "Error document for website hosting"
+  type        = string
+  default     = "error.html"
+}
+
+# S3 버킷 이름 (필수, 전역 고유)
+variable "bucket_name" {
+  description = "Name of the S3 bucket (must be globally unique)"
+  type        = string
+}
+
+# 버전 관리 활성화 여부
+variable "enable_versioning" {
+  description = "Enable versioning for the S3 bucket"
+  type        = bool
+  default     = false
+}
+
+# 정적 웹사이트 호스팅 활성화 여부
+variable "enable_website" {
+  description = "Enable static website hosting"
+  type        = bool
+  default     = false
+}
+
+# 인덱스 문서 파일 이름
+variable "index_document" {
+  description = "Index document for static website"
+  type        = string
+  default     = "index.html"
+}
+
+# 에러 문서 파일 이름
+variable "error_document" {
+  description = "Error document for static website"
+  type        = string
+  default     = "error.html"
+}
+
+# 퍼블릭 접근 차단 설정 (보안)
+variable "block_public_acls" {
+  description = "Block public ACLs"
+  type        = bool
+  default     = true
+}
+
+variable "block_public_policy" {
+  description = "Block public bucket policies"
+  type        = bool
+  default     = true
+}
+
+variable "ignore_public_acls" {
+  description = "Ignore any public ACLs"
+  type        = bool
+  default     = true
+}
+
+variable "restrict_public_buckets" {
+  description = "Restrict public access to the bucket"
+  type        = bool
+  default     = true
+}
+
+# 버킷 정책 (JSON 객체 형태)
+variable "bucket_policy" {
+  description = "Optional JSON object representing the bucket policy"
+  type        = any
+  default     = null
+}
+
+# 공통 태그
+variable "tags" {
+  description = "Tags to apply to the S3 bucket"
+  type        = map(string)
+  default     = {}
+}
+
