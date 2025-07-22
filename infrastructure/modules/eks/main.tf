@@ -20,7 +20,6 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
   role       = aws_iam_role.eks_cluster_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
-
 resource "aws_iam_role_policy_attachment" "eks_vpc_controller_policy" {
   role       = aws_iam_role.eks_cluster_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
@@ -47,28 +46,31 @@ resource "aws_iam_role" "eks_node_role" {
 # 노드 그룹에 필요한 IAM 정책 연결
 resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"  # EKS API 통신
 }
-
 resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"       # VPC 네트워크 연동
 }
-
 resource "aws_iam_role_policy_attachment" "eks_registry_policy" {
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"   # ECR 이미지 Pull
 }
+resource "aws_iam_role_policy_attachment" "ssm_core_policy" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" #SSM 세션 매니저 연결을 위한 권한
+}
+
 
 # EC2 인스턴스 프로파일 생성 (노드 그룹에서 사용)
 resource "aws_iam_instance_profile" "eks_node_instance_profile" {
-  name = "${var.cluster_name}-eks-node-instance-profile"
+  name = "${var.cluster_name}-node-instance-profile"
   role = aws_iam_role.eks_node_role.name
 }
 
 # EKS 클러스터 보안 그룹 생성
 resource "aws_security_group" "eks_cluster_sg" {
-  name        = "${var.cluster_name}-eks-sg"
+  name        = "${var.cluster_name}-sg"
   description = "EKS Cluster SG"
   vpc_id      = var.vpc_id
 
@@ -89,7 +91,7 @@ resource "aws_security_group" "eks_cluster_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge({ Name = "${var.cluster_name}-eks-sg" }, var.tags)
+  tags = merge({ Name = "${var.cluster_name}-sg" }, var.tags)
 }
 
 # EKS 클러스터 생성
@@ -126,12 +128,8 @@ resource "aws_eks_node_group" "default" {
     min_size     = 1     # 최소 유지 수
   }
 
-  instance_types = ["t3.medium"]         # 노드 인스턴스 타입
+  instance_types = ["t2.micro"]         # 노드 인스턴스 타입
   ami_type       = "AL2_x86_64"          # Amazon Linux 2 AMI
-
-  remote_access {
-    ec2_ssh_key = var.ssh_key_name       # SSH 접근용 키
-  }
 
   tags = var.tags
 }

@@ -40,7 +40,6 @@ module "eks" {
   vpc_id                = module.network.vpc_id
   subnet_ids            = module.network.private_subnet_id
   service_ipv4_cidr     = var.service_ipv4_cidr
-  ssh_key_name          = var.ssh_key_name
   tags                  = var.default_tags
   worker_access_cidr    = var.worker_access_cidr
 }
