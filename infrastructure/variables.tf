@@ -19,13 +19,13 @@ variable "vpc_cidr" {
 # 퍼블릭 서브넷 CIDR
 variable "public_subnet_cidr" {
   description = "퍼블릭 서브넷 CIDR"
-  default     = "10.0.1.0/24"
+  default     = "10.0.10.0/24"
 }
 
 # 프라이빗 서브넷 CIDR
 variable "private_subnet_cidr" {
   description = "프라이빗 서브넷 CIDR"
-  default     = "10.0.2.0/24"
+  default     = "10.0.1.0/24"
 }
 
 # 가용 영역 (AZ)
