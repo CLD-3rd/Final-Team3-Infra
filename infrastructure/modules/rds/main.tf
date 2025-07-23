@@ -2,17 +2,45 @@
 resource "aws_db_subnet_group" "this" {
   count = var.create_subnet_group ? 1 : 0
 
-  name       = "${var.name_prefix}-${var.environment}-subnet-group"
+  name       = "${var.name_prefix}-subnet-group"
   subnet_ids = var.private_subnet_ids
 
   tags =  {
-    Name = "${var.name_prefix}-${var.environment}-subnet-group"
+    Name = "${var.name_prefix}-subnet-group"
   }
 }
 
+# RDS 보안그룹 생성
+resource "aws_security_group" "rds" {
+  count  = var.create_security_group ? 1 : 0
+  name   = "${var.name_prefix}-rds-sg"
+  vpc_id = var.vpc_id
+
+  description = "Security group for RDS instance"
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # 실제 운영에서는 제한 필요!
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.name_prefix}-rds-sg"
+  }
+}
+
+
 # RDS 인스턴스 생성
 resource "aws_db_instance" "this" {
-  identifier             = "${var.name_prefix}-${var.environment}-rds"
+  identifier             = "${var.name_prefix}-rds"
   engine                 = var.engine
   engine_version         = var.engine_version
   instance_class         = var.instance_class
@@ -39,6 +67,6 @@ resource "aws_db_instance" "this" {
   deletion_protection    = var.deletion_protection
 
   tags = {
-    Name = "${var.name_prefix}-${var.environment}-rds"
+    Name = "${var.name_prefix}-rds"
   }
 }

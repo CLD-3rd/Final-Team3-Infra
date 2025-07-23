@@ -3,10 +3,10 @@ variable "name_prefix" {
   description = "리소스 이름 접두사 (예: myapp)"
 }
 
-variable "environment" {
-  type        = string
-  description = "환경 구분 (예: dev, prod)"
-}
+# variable "environment" {
+#   type        = string
+#   description = "환경 구분 (예: dev, prod)"
+# }
 
 variable "engine" {
   type        = string
@@ -109,15 +109,32 @@ variable "maintenance_window" {
 
 variable "skip_final_snapshot" {
   type        = bool
-  default     = false
+  default     = true
   description = "RDS 삭제 시 스냅샷 생략 여부"
 }
 
 variable "deletion_protection" {
   type        = bool
-  default     = true
+  default     = false
   description = "RDS 삭제 보호 여부"
 }
+
+# RDS 보안 그룹 생성 관련 변수
+variable "create_security_group" {
+  description = "RDS 용 보안 그룹을 생성할지 여부"
+  type        = bool
+  default     = true
+}
+variable "vpc_id" {
+  description = "보안 그룹을 생성할 VPC ID"
+  type        = string
+}
+variable "rds_security_group_ids" {
+  description = "외부에서 전달받을 보안 그룹 ID 목록"
+  type        = list(string)
+  default     = []
+}
+
 
 variable "tags" {
   type        = map(string)

@@ -99,10 +99,7 @@ variable "db_password" {
 variable "rds_security_group_ids" {
   description = "RDS에 적용할 보안 그룹 ID 목록"
   type        = list(string)
-}
-variable "rds_private_subnet_ids" {
-  description = "RDS 인스턴스가 위치할 프라이빗 서브넷 ID 리스트"
-  type        = list(string)
+  default     = []
 }
 variable "create_subnet_group" {
   description = "서브넷 그룹 생성 여부"
@@ -137,7 +134,7 @@ variable "maintenance_window" {
 variable "skip_final_snapshot" {
   description = "RDS 삭제 시 최종 스냅샷 생성 여부 (true 시 생략)"
   type        = bool
-  default     = false
+  default     = true
 }
 variable "deletion_protection" {
   description = "RDS 삭제 보호 기능 활성화 여부"

@@ -24,3 +24,8 @@ output "rds_arn" {
   description = "RDS 인스턴스 ARN"
   value       = aws_db_instance.this.arn
 }
+
+output "rds_security_group_id" {
+  description = "RDS 보안 그룹 ID"
+  value       = var.create_security_group ? aws_security_group.rds[0].id : null
+}
