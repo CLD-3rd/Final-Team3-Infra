@@ -141,3 +141,61 @@ variable "deletion_protection" {
   type        = bool
   default     = true
 }
+
+# S3 관련 설정
+variable "bucket_name" {
+  type        = string
+  description = "S3 Bucket name (globally unique)"
+}
+
+variable "enable_versioning" {
+  type        = bool
+  default     = false
+}
+
+variable "enable_website" {
+  type        = bool
+  default     = false
+}
+
+variable "index_document" {
+  type        = string
+  default     = "index.html"
+}
+
+variable "error_document" {
+  type        = string
+  default     = "error.html"
+}
+
+variable "block_public_acls" {
+  type        = bool
+  default     = true
+}
+
+variable "block_public_policy" {
+  type        = bool
+  default     = true
+}
+
+variable "ignore_public_acls" {
+  type        = bool
+  default     = true
+}
+
+variable "restrict_public_buckets" {
+  type        = bool
+  default     = true
+}
+
+variable "bucket_policy" {
+  description = "Optional S3 Bucket policy as JSON object"
+  type        = any
+  default     = null
+}
+
+variable "force_destroy" {
+  description = "If true, allows S3 bucket deletion even if it contains objects"
+  type        = bool
+  default     = false
+}
