@@ -1,6 +1,6 @@
 # EKS 클러스터용 IAM 역할 생성
 resource "aws_iam_role" "eks_cluster_role" {
-  name = "${var.cluster_name}-eks-cluster-role"  # IAM 역할 이름
+  name = "${var.cluster_name}-cluster-role"  # IAM 역할 이름
 
   # EKS 서비스가 이 역할을 사용할 수 있도록 신뢰 정책 구성
   assume_role_policy = jsonencode({
@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "eks_vpc_controller_policy" {
 
 # EKS 노드 그룹용 IAM 역할 생성
 resource "aws_iam_role" "eks_node_role" {
-  name = "${var.cluster_name}-eks-node-role"
+  name = "${var.cluster_name}-node-role"
 
   # EC2 인스턴스가 이 역할을 사용할 수 있도록 신뢰 정책 구성
   assume_role_policy = jsonencode({
