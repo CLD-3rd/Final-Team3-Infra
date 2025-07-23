@@ -18,3 +18,31 @@ ssh_key_name        = "matchfit-eks-key"
 #worker_access_cidr  = ["10.0.2.0/24"]
 
 route_tables = []
+
+# 공통 태그
+default_tags = {
+  Project = "team3"
+  Environment = "dev"
+}
+
+# RDS DB 기본 설정
+db_name     = "matchfit"
+db_username = "admin"
+db_password = "yourSecurePassword123!"  # 실제 운영 시엔 tfvars 파일을 git에 커밋하지 말고, Secret Manager 사용 권장
+
+
+# Subnet Group 생성 여부
+create_subnet_group = true
+db_subnet_group_name = null  # 외부에서 주입 시: "my-custom-subnet-group"
+
+# 고가용성 구성
+multi_az = true  # or false
+
+# 백업 및 유지보수 설정
+backup_retention_period = 7
+backup_window           = "03:00-04:00"
+maintenance_window      = "sun:04:00-sun:05:00"
+
+# 삭제 보호 및 최종 스냅샷 옵션
+skip_final_snapshot = true
+deletion_protection = false

@@ -1,6 +1,6 @@
 # VPC ID 출력
 output "vpc_id" {
-  description = "모듈에서 생성한 VPC ID"
+  description = "ID of the VPC"
   value       = module.network.vpc_id
 }
 # 퍼블릭 서브넷 ID 출력
@@ -26,38 +26,59 @@ output "custom_route_table_ids" {
 
 # EKS 관련 루트 outputs
 output "eks_cluster_name" {
-  description = "EKS 클러스터 이름"
   value       = module.eks.cluster_name
+  description = "EKS Cluster name"
 }
 output "eks_cluster_endpoint" {
-  description = "EKS API 서버 엔드포인트"
   value       = module.eks.cluster_endpoint
+  description = "EKS Cluster API endpoint"
 }
 output "eks_cluster_ca" {
-  description = "EKS 클러스터 인증서 정보"
   value       = module.eks.cluster_certificate_authority
+  description = "EKS Cluster certificate authority"
 }
 output "eks_cluster_id" {
-  description = "EKS 클러스터의 리소스 ID"
   value       = module.eks.cluster_id
+  description = "EKS cluster ID"
 }
 output "eks_cluster_role_arn" {
-  description = "EKS 클러스터 IAM 역할 ARN"
   value       = module.eks.eks_cluster_role_arn
+  description = "IAM Role ARN for EKS Cluster"
 }
 output "eks_node_role_arn" {
-  description = "EKS 노드 IAM 역할 ARN"
   value       = module.eks.eks_node_role_arn
+  description = "IAM Role ARN for EKS NodeGroup"
 }
 output "eks_node_instance_profile" {
-  description = "EKS 노드 EC2 인스턴스 프로파일 이름"
   value       = module.eks.eks_node_instance_profile
+  description = "EC2 Instance Profile for EKS Nodes"
 }
 output "cluster_sg_id" {
-  description = "EKS 클러스터 보안 그룹 ID"
   value       = module.eks.cluster_sg_id
+  description = "EKS Cluster security group ID"
 }
 output "node_group_name" {
-  description = "EKS 노드 그룹 이름"
   value       = module.eks.node_group_name
+  description = "EKS NodeGroup name"
+}
+
+
+# RDS 출력
+output "rds_endpoint" {
+  description = "RDS 접속 엔드포인트"
+  value       = module.rds.rds_endpoint
+  sensitive   = true
+}
+output "rds_identifier" {
+  description = "RDS 인스턴스 식별자"
+  value       = module.rds.rds_identifier
+}
+output "rds_port" {
+  description = "RDS 포트 번호"
+  value       = module.rds.rds_port
+}
+output "rds_address" {
+  description = "RDS 호스트 이름"
+  value       = module.rds.rds_address
+  sensitive   = true
 }

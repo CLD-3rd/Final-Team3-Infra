@@ -46,7 +46,7 @@ module "network" {
   ]
 }
 
-# EKS 설정 모듈 호출
+# EKS 클러스터 모듈 호출
 module "eks" {
   source                = "./modules/eks"
   cluster_name          = var.cluster_name
@@ -59,6 +59,41 @@ module "eks" {
 
   ssh_key_name = var.ssh_key_name       # SSH 접근용 키
 
+  depends_on = [
+    module.network
+  ]
+
 }
 
+module "rds" {
+  source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
 
+  name_prefix            = var.name_prefix
+  db_name                = var.db_name
+  username               = var.db_username
+  password               = var.db_password
+
+  # vpc_security_group_ids = var.rds_security_group_ids
+  vpc_security_group_ids = []
+  private_subnet_ids = module.network.private_subnet_id
+
+  create_security_group  = true
+  vpc_id                 = module.network.vpc_id
+
+  create_subnet_group    = var.create_subnet_group
+  db_subnet_group_name   = var.db_subnet_group_name
+
+  multi_az               = var.multi_az
+  backup_retention_period = var.backup_retention_period
+  backup_window          = var.backup_window
+  maintenance_window     = var.maintenance_window
+
+  skip_final_snapshot    = var.skip_final_snapshot
+  deletion_protection    = var.deletion_protection
+
+  tags = var.default_tags
+
+    depends_on = [
+    module.eks
+  ]
+}
