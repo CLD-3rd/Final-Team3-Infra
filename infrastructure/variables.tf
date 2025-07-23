@@ -39,7 +39,6 @@ variable "az" {
   description = "가용 영역"
   default     = "ap-northeast-2a"
 }
-
 # 라우팅 테이블 정의 리스트
 variable "route_tables" {
   description = "라우팅 테이블 설정 (이름, 라우트, 서브넷 연결 등)"
@@ -57,23 +56,17 @@ variable "route_tables" {
   default = []  # 테스트용으로는 비워 둘 수도 있음
 }
 
+
+# EKS 관련 루트 variables
 variable "kubernetes_version" {
   default = "1.27"
 }
-
 variable "cluster_name" {
-  default = "team3-eks"
+  default = "matchfit-eks"
 }
-
 variable "service_ipv4_cidr" {
   default = "172.20.0.0/16"
 }
-
-variable "ssh_key_name" {
-  description = "EC2 인스턴스에 사용할 SSH 키 이름"
-  type        = string
-}
-
 variable "worker_access_cidr" {
   description = "EKS API 접근 허용 CIDR"
   type        = list(string)
