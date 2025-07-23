@@ -72,3 +72,8 @@ variable "worker_access_cidr" {
   type        = list(string)
   default     = ["10.0.2.0/24"]
 }
+
+variable "ssh_key_name" {
+  description = "EC2 인스턴스에 사용할 SSH 키 이름"
+  type        = string
+}

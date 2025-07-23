@@ -19,7 +19,8 @@ variable "service_ipv4_cidr" {
 }
 
 variable "ssh_key_name" {
-  type = string
+  type        = string
+  description = "EC2 SSH key pair name for remote access"
 }
 
 variable "tags" {
@@ -30,4 +31,5 @@ variable "worker_access_cidr" {
   description = "Node → API 서버 허용 CIDR"
   type = list(string)
 }
+
 

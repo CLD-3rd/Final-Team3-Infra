@@ -114,7 +114,6 @@ resource "aws_eks_cluster" "this" {
   tags = merge({ Name = var.cluster_name }, var.tags)
 }
 
-
 # EKS 노드 그룹 생성
 resource "aws_eks_node_group" "default" {
   cluster_name    = aws_eks_cluster.this.name                # 연결할 EKS 클러스터 이름
