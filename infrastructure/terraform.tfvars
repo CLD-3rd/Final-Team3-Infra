@@ -12,7 +12,7 @@ private_subnet_cidr = ["100.0.1.0/24", "100.0.2.0/24", "100.0.3.0/24"]
 az                  = ["ap-northeast-2a", "ap-northeast-2b", "ap-northeast-2c"]
 
 cluster_name        = "matchfit-eks"
-kubernetes_version  = "1.27"
+kubernetes_version  = "1.32"
 service_ipv4_cidr   = "172.20.0.0/16"
 ssh_key_name        = "matchfit-eks-key"
 #worker_access_cidr  = ["10.0.2.0/24"]

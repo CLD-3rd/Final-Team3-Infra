@@ -93,6 +93,40 @@ resource "aws_security_group" "eks_cluster_sg" {
 
   tags = merge({ Name = "${var.cluster_name}-sg" }, var.tags)
 }
+# EKS Node 보안 그룹 생성
+resource "aws_security_group" "eks_node_sg" {
+  name        = "${var.cluster_name}-node-sg"
+  description = "Security group for EKS worker nodes"
+  vpc_id      = var.vpc_id
+
+  # 클러스터 SG에서 오는 트래픽 허용 (예: 443 포트 포함)
+  ingress {
+    description = "Allow cluster to communicate with nodes"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    security_groups = [aws_security_group.eks_cluster_sg.id]
+  }
+
+  # 노드 간 통신 허용 (same SG)
+  ingress {
+    description     = "Allow node to node communication"
+    from_port       = 0
+    to_port         = 65535
+    protocol        = "tcp"
+    self            = true
+  }
+
+  # 노드 → 외부로 나가는 트래픽 허용
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge({ Name = "${var.cluster_name}-node-sg" }, var.tags)
+}
 
 # EKS 클러스터 생성
 resource "aws_eks_cluster" "this" {
@@ -116,11 +150,11 @@ resource "aws_eks_cluster" "this" {
 
 # EKS 노드 그룹 생성
 resource "aws_eks_node_group" "default" {
-  cluster_name    = aws_eks_cluster.this.name                # 연결할 EKS 클러스터 이름
-  node_group_name = "${var.cluster_name}-node-group"         # 노드 그룹 이름
-  node_role_arn   = aws_iam_role.eks_node_role.arn           # 노드 그룹에 할당할 IAM 역할
-  subnet_ids      = var.subnet_ids                           # 노드를 배치할 서브넷 ID들
-
+  cluster_name    = aws_eks_cluster.this.name                    # 연결할 EKS 클러스터 이름
+  node_group_name = "${var.cluster_name}-node-group"             # 노드 그룹 이름
+  node_role_arn   = aws_iam_role.eks_node_role.arn               # 노드 그룹에 할당할 IAM 역할
+  subnet_ids      = var.subnet_ids                               # 노드를 배치할 서브넷 ID들
+  
   scaling_config {
     desired_size = 2     # 기본 노드 수
     max_size     = 3     # 최대 확장 수
@@ -131,4 +165,10 @@ resource "aws_eks_node_group" "default" {
   ami_type       = "AL2_x86_64"          # Amazon Linux 2 AMI
 
   tags = var.tags
+
+  remote_access {
+    ec2_ssh_key = var.ssh_key_name
+    source_security_group_ids = [aws_security_group.eks_node_sg.id]   # 노드 보안그룹 ID
+  }
+
 }
