@@ -70,53 +70,21 @@ output "node_group_name" {
   description = "EKS NodeGroup name"
 }
 
-# S3 출력
-output "s3_bucket_id" {
-  value       = module.s3_bucket.bucket_id
-  description = "S3 Bucket ID"
-}
 
-output "s3_bucket_arn" {
-  value       = module.s3_bucket.bucket_arn
-  description = "S3 Bucket ARN"
-}
-
-output "s3_bucket_domain" {
-  value       = module.s3_bucket.bucket_domain_name
-  description = "S3 Bucket domain name"
-}
-
-output "s3_bucket_regional_domain" {
-  value       = module.s3_bucket.bucket_regional_domain_name
-  description = "S3 Bucket regional domain name"
-}
-
-output "s3_website_endpoint" {
-  value       = module.s3_bucket.website_endpoint
-  description = "S3 website endpoint (if enabled)"
-}
-
-output "s3_website_domain" {
-  value       = module.s3_bucket.website_domain
-  description = "S3 website domain (if enabled)"
-}
-
+# RDS 출력
 output "rds_endpoint" {
   description = "RDS 접속 엔드포인트"
   value       = module.rds.rds_endpoint
   sensitive   = true
 }
-
 output "rds_identifier" {
   description = "RDS 인스턴스 식별자"
   value       = module.rds.rds_identifier
 }
-
 output "rds_port" {
   description = "RDS 포트 번호"
   value       = module.rds.rds_port
 }
-
 output "rds_address" {
   description = "RDS 호스트 이름"
   value       = module.rds.rds_address
