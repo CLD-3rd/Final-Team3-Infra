@@ -30,6 +30,11 @@ output "igw_id" {
   value       = aws_internet_gateway.this.id
 }
 
+# Nat Gateway 출력
+output "nat_gateway_id" {
+  value = aws_nat_gateway.this.id
+}
+
 # 다중 라우팅 테이블 ID 목록 출력
 output "custom_route_table_ids" {
   description = "사용자 정의 라우팅 테이블 ID 목록 (count 기반)"

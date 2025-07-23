@@ -59,7 +59,7 @@ variable "route_tables" {
 
 # EKS 관련 루트 variables
 variable "kubernetes_version" {
-  default = "1.27"
+  default = "1.32"
 }
 variable "cluster_name" {
   default = "matchfit-eks"

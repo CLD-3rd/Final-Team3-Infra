@@ -42,6 +42,22 @@ resource "aws_internet_gateway" "this" {
   tags   = var.tags
 }
 
+# Elastic IP for NAT Gateway
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
+
+# NAT Gateway in a public subnet
+resource "aws_nat_gateway" "this" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public[0].id  # 퍼블릭 서브넷 중 하나 선택
+  tags = {
+    Name = "${var.name_prefix}-nat-gw"
+  }
+  depends_on = [aws_internet_gateway.this] # 순서 보장
+}
+
+
 # 퍼블릭 서브넷용 라우팅 테이블 생성
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id                                     # 연결할 VPC 지정

@@ -15,6 +15,9 @@ provider "aws" {
 }
 
 # network 설정 모듈 호출
+locals {
+  private_subnet_ids = module.network.private_subnet_id
+}
 module "network" {
   source               = "./modules/network"                  # 모듈 경로
   name_prefix          = var.name_prefix              # 접두어
@@ -26,7 +29,21 @@ module "network" {
   vpc_id = module.network.vpc_id                      # 중첩된 모듈에서 vpc_id 재사용
   name   = "${var.name_prefix}-igw"                   # IGW 이름
   tags   = var.default_tags                           # 공통 태그
-  route_tables = var.route_tables                     # 커스텀 라우팅 테이블 정보
+  route_tables = [      # 커스텀 라우팅 테이블 정보
+    {
+      name       = "private-rt"
+      subnet_ids = local.private_subnet_ids
+      tags       = {
+        Name = "private-rt"
+      }
+      routes = [
+        {
+          cidr_block     = "0.0.0.0/0"
+          nat_gateway_id = module.network.nat_gateway_id
+        }
+      ]
+    }
+  ]
 }
 
 # EKS 설정 모듈 호출
