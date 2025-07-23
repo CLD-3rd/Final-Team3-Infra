@@ -20,3 +20,39 @@ ssh_key_name        = "final3-key"
 
 route_tables = []
 
+# 공통 태그
+default_tags = {
+  Project = "team3"
+  Environment = "dev"
+}
+
+# RDS DB 기본 설정
+db_name     = "myappdb"
+db_username = "admin"
+db_password = "yourSecurePassword123!"  # 실제 운영 시엔 tfvars 파일을 git에 커밋하지 말고, Secret Manager 사용 권장
+
+# 보안 그룹 및 서브넷 ID (미리 생성된 리소스의 ID를 입력)
+rds_security_group_ids = [
+  "sg-0123456789abcdef0"
+]
+
+rds_private_subnet_ids = [
+  "subnet-aaaa1111",
+  "subnet-bbbb2222"
+]
+
+# Subnet Group 생성 여부
+create_subnet_group = true
+db_subnet_group_name = null  # 외부에서 주입 시: "my-custom-subnet-group"
+
+# 고가용성 구성
+multi_az = true  # or false
+
+# 백업 및 유지보수 설정
+backup_retention_period = 7
+backup_window           = "03:00-04:00"
+maintenance_window      = "sun:04:00-sun:05:00"
+
+# 삭제 보호 및 최종 스냅샷 옵션
+skip_final_snapshot = false
+deletion_protection = true

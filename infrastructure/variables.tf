@@ -1,37 +1,44 @@
 # 기본 설정
 variable "aws_region" {
-  description = "AWS Region"
+  description = "AWS 리전"
+  type        = string
   default     = "ap-northeast-2"
 }
 
 variable "name_prefix" {
-  description = "Prefix for resource names"
-  default     = "team1"
+  description = "리소스 이름 접두사"
+  type        = string
+}
+
+variable "environment" {
+  description = "환경 구분 (예: dev, prod)"
+  type        = string
 }
 
 # 네트워크
 variable "vpc_cidr" {
+  description = "VPC의 CIDR 블록"
+  type        = string
   default     = "10.0.0.0/16"
-  description = "CIDR block for VPC"
 }
 
 variable "public_subnet_cidr" {
-  description = "CIDRs for public subnets"
+  description = "퍼블릭 서브넷들의 CIDR 리스트"
   type        = list(string)
 }
 
 variable "private_subnet_cidr" {
-  description = "CIDRs for private subnets"
+  description = "프라이빗 서브넷들의 CIDR 리스트"
   type        = list(string)
 }
 
 variable "az" {
-  description = "Availability zones"
+  description = "사용할 가용 영역(Availability Zones) 리스트"
   type        = list(string)
 }
 
 variable "default_tags" {
-  description = "Default tags for all resources"
+  description = "모든 리소스에 적용할 기본 태그 맵"
   type        = map(string)
   default     = {
     Environment = "dev"
@@ -39,9 +46,9 @@ variable "default_tags" {
   }
 }
 
-# 라우팅 테이블 구성
+# 라우팅 테이블
 variable "route_tables" {
-  description = "Custom route table definition"
+  description = "커스텀 라우팅 테이블 정의 목록"
   type = list(object({
     name       = string
     tags       = map(string)
@@ -57,76 +64,165 @@ variable "route_tables" {
 
 # EKS 관련
 variable "kubernetes_version" {
-  default = "1.27"
+  description = "사용할 Kubernetes 버전"
+  type        = string
+  default     = "1.27"
 }
 
 variable "cluster_name" {
-  default = "team3-eks"
+  description = "EKS 클러스터 이름"
+  type        = string
+  default     = "team3-eks"
 }
 
 variable "service_ipv4_cidr" {
-  default = "172.20.0.0/16"
+  description = "Kubernetes 서비스 네트워크 CIDR"
+  type        = string
+  default     = "172.20.0.0/16"
 }
 
 variable "ssh_key_name" {
-  description = "SSH key pair name for EKS worker nodes"
+  description = "EKS 워커 노드의 SSH 키 페어 이름"
   type        = string
 }
 
 variable "worker_access_cidr" {
-  description = "CIDRs allowed to access EKS API"
+  description = "EKS API에 접근을 허용할 CIDR 리스트"
   type        = list(string)
   default     = ["10.0.2.0/24"]
 }
 
-# S3 관련 변수들
+# S3 관련
 variable "bucket_name" {
-  description = "Name of the S3 bucket (globally unique)"
+  description = "S3 버킷 이름 (전역에서 유일해야 함)"
   type        = string
 }
 
 variable "enable_versioning" {
-  type    = bool
-  default = false
+  description = "S3 버킷 버전 관리 활성화 여부"
+  type        = bool
+  default     = false
 }
 
 variable "enable_website" {
-  type    = bool
-  default = false
+  description = "S3 정적 웹사이트 호스팅 활성화 여부"
+  type        = bool
+  default     = false
 }
 
 variable "index_document" {
-  type    = string
-  default = "index.html"
+  description = "정적 웹사이트의 인덱스 문서 파일명"
+  type        = string
+  default     = "index.html"
 }
 
 variable "error_document" {
-  type    = string
-  default = "error.html"
+  description = "정적 웹사이트의 에러 문서 파일명"
+  type        = string
+  default     = "error.html"
 }
 
 variable "block_public_acls" {
-  type    = bool
-  default = true
+  description = "퍼블릭 ACL 차단 설정 여부"
+  type        = bool
+  default     = true
 }
 
 variable "block_public_policy" {
-  type    = bool
-  default = true
+  description = "퍼블릭 버킷 정책 차단 설정 여부"
+  type        = bool
+  default     = true
 }
 
 variable "ignore_public_acls" {
-  type    = bool
-  default = true
+  description = "퍼블릭 ACL 무시 설정 여부"
+  type        = bool
+  default     = true
 }
 
 variable "restrict_public_buckets" {
-  type    = bool
-  default = true
+  description = "퍼블릭 버킷 접근 제한 설정 여부"
+  type        = bool
+  default     = true
 }
 
 variable "bucket_policy" {
-  description = "Optional S3 Bucket Policy (JSON object)"
+  description = "선택적 S3 버킷 정책 (JSON 객체)"
   type        = any
   default     = null
+}
+
+# RDS 관련
+variable "db_name" {
+  description = "RDS에 생성할 초기 데이터베이스 이름"
+  type        = string
+}
+
+variable "db_username" {
+  description = "데이터베이스 관리자 사용자 이름"
+  type        = string
+}
+
+variable "db_password" {
+  description = "데이터베이스 비밀번호 (보안상 민감 정보)"
+  type        = string
+  sensitive   = true
+}
+
+variable "rds_security_group_ids" {
+  description = "RDS에 적용할 보안 그룹 ID 목록"
+  type        = list(string)
+}
+
+variable "rds_private_subnet_ids" {
+  description = "RDS 인스턴스가 위치할 프라이빗 서브넷 ID 리스트"
+  type        = list(string)
+}
+
+variable "create_subnet_group" {
+  description = "서브넷 그룹 생성 여부"
+  type        = bool
+  default     = true
+}
+
+variable "db_subnet_group_name" {
+  description = "기존에 생성된 서브넷 그룹 이름 (사용 시 지정)"
+  type        = string
+  default     = null
+}
+
+variable "multi_az" {
+  description = "멀티 AZ 배포 여부"
+  type        = bool
+  default     = true
+}
+
+variable "backup_retention_period" {
+  description = "자동 백업 보존 기간(일 단위)"
+  type        = number
+  default     = 7
+}
+
+variable "backup_window" {
+  description = "자동 백업 수행 시간 (예: 03:00-04:00)"
+  type        = string
+  default     = "03:00-04:00"
+}
+
+variable "maintenance_window" {
+  description = "유지보수 작업 허용 시간대 (예: sun:04:00-sun:05:00)"
+  type        = string
+  default     = "sun:04:00-sun:05:00"
+}
+
+variable "skip_final_snapshot" {
+  description = "RDS 삭제 시 최종 스냅샷 생성 여부 (true 시 생략)"
+  type        = bool
+  default     = false
+}
+
+variable "deletion_protection" {
+  description = "RDS 삭제 보호 기능 활성화 여부"
+  type        = bool
+  default     = true
 }
