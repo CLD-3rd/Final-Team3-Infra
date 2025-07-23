@@ -45,4 +45,3 @@ resource "aws_s3_bucket_policy" "this" {
 
   depends_on = [aws_s3_bucket_public_access_block.this] # 보안 정책 적용 후 실행
 }
-

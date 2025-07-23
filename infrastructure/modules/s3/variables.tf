@@ -39,12 +39,17 @@ variable "block_public_acls" {
   default     = true
 }
 
+# 퍼블릭 버킷 정책 차단 여부
+# true로 설정하면 퍼블릭 접근을 허용하는 S3 버킷 정책을 적용하지 못하게 차단합니다.
 variable "block_public_policy" {
   description = "Block public bucket policies"
   type        = bool
   default     = true
 }
 
+# 퍼블릭 ACL 무시 여부
+# true로 설정하면 퍼블릭으로 설정된 ACL(Access Control List)을 무시합니다.
+# 즉, 누가 퍼블릭 읽기/쓰기 권한을 부여해도 무시됩니다.
 variable "ignore_public_acls" {
   description = "Ignore any public ACLs"
   type        = bool
