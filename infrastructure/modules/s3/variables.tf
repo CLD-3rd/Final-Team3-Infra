@@ -1,32 +1,3 @@
-variable "bucket_name" {
-  description = "Name of the S3 bucket"
-  type        = string
-}
-
-variable "enable_versioning" {
-  description = "Enable versioning for the S3 bucket"
-  type        = bool
-  default     = false
-}
-
-variable "enable_website" {
-  description = "Enable static website hosting"
-  type        = bool
-  default     = false
-}
-
-variable "index_document" {
-  description = "Index document for website hosting"
-  type        = string
-  default     = "index.html"
-}
-
-variable "error_document" {
-  description = "Error document for website hosting"
-  type        = string
-  default     = "error.html"
-}
-
 # S3 버킷 이름 (필수, 전역 고유)
 variable "bucket_name" {
   description = "Name of the S3 bucket (must be globally unique)"
@@ -80,6 +51,9 @@ variable "ignore_public_acls" {
   default     = true
 }
 
+# 퍼블릭 접근 자체 제한 여부
+# true로 설정하면 버킷과 객체 모두 퍼블릭 접근이 완전히 제한됩니다.
+# (퍼블릭 정책 또는 퍼블릭 ACL이 있어도 접근 불가)
 variable "restrict_public_buckets" {
   description = "Restrict public access to the bucket"
   type        = bool
@@ -99,4 +73,3 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-
