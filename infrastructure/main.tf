@@ -29,9 +29,6 @@ module "network" {
   route_tables = var.route_tables                     # 커스텀 라우팅 테이블 정보
 }
 
-# EKS 관련 IAM 모듈 호출
-
-
 # EKS 설정 모듈 호출
 module "eks" {
   source                = "./modules/eks"
@@ -43,5 +40,9 @@ module "eks" {
   ssh_key_name          = var.ssh_key_name
   tags                  = var.default_tags
   worker_access_cidr    = var.worker_access_cidr
+
+  ssh_key_name = var.ssh_key_name       # SSH 접근용 키
+
 }
+
 

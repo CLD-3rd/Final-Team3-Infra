@@ -29,42 +29,34 @@ output "eks_cluster_name" {
   description = "EKS 클러스터 이름"
   value       = module.eks.cluster_name
 }
-
 output "eks_cluster_endpoint" {
   description = "EKS API 서버 엔드포인트"
   value       = module.eks.cluster_endpoint
 }
-
 output "eks_cluster_ca" {
   description = "EKS 클러스터 인증서 정보"
   value       = module.eks.cluster_certificate_authority
 }
-
 output "eks_cluster_id" {
   description = "EKS 클러스터의 리소스 ID"
   value       = module.eks.cluster_id
 }
-
 output "eks_cluster_role_arn" {
   description = "EKS 클러스터 IAM 역할 ARN"
   value       = module.eks.eks_cluster_role_arn
 }
-
 output "eks_node_role_arn" {
   description = "EKS 노드 IAM 역할 ARN"
   value       = module.eks.eks_node_role_arn
 }
-
 output "eks_node_instance_profile" {
   description = "EKS 노드 EC2 인스턴스 프로파일 이름"
   value       = module.eks.eks_node_instance_profile
 }
-
 output "cluster_sg_id" {
   description = "EKS 클러스터 보안 그룹 ID"
   value       = module.eks.cluster_sg_id
 }
-
 output "node_group_name" {
   description = "EKS 노드 그룹 이름"
   value       = module.eks.node_group_name
