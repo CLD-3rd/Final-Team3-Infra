@@ -1,54 +1,47 @@
-# 기본 설정
+# AWS 리전 (예: 서울 리전)
 variable "aws_region" {
-  description = "AWS 리전"
-  type        = string
+  description = "배포할 AWS 리전"
   default     = "ap-northeast-2"
 }
-
+# 네이밍 접두어 (예: team1 → team1-vpc 등)
 variable "name_prefix" {
-  description = "리소스 이름 접두사"
-  type        = string
+  description = "리소스 이름 접두어"
+  default     = "team1"
 }
-
-variable "environment" {
-  description = "환경 구분 (예: dev, prod)"
-  type        = string
-}
-
-# 네트워크
-variable "vpc_cidr" {
-  description = "VPC의 CIDR 블록"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "public_subnet_cidr" {
-  description = "퍼블릭 서브넷들의 CIDR 리스트"
-  type        = list(string)
-}
-
-variable "private_subnet_cidr" {
-  description = "프라이빗 서브넷들의 CIDR 리스트"
-  type        = list(string)
-}
-
-variable "az" {
-  description = "사용할 가용 영역(Availability Zones) 리스트"
-  type        = list(string)
-}
-
+# 공통 태그 (선택 사항)
 variable "default_tags" {
-  description = "모든 리소스에 적용할 기본 태그 맵"
+  description = "모든 리소스에 공통으로 적용할 태그"
   type        = map(string)
-  default     = {
+  default = {
     Environment = "dev"
     Owner       = "cloud-team"
   }
 }
 
-# 라우팅 테이블
+
+# VPC의 CIDR 블록
+variable "vpc_cidr" {
+  description = "VPC CIDR"
+  default     = "10.0.0.0/16"
+}
+# 퍼블릭 서브넷 CIDR
+variable "public_subnet_cidr" {
+  description = "퍼블릭 서브넷 CIDR"
+  default     = "10.0.10.0/24"
+}
+# 프라이빗 서브넷 CIDR
+variable "private_subnet_cidr" {
+  description = "프라이빗 서브넷 CIDR"
+  default     = "10.0.1.0/24"
+}
+# 가용 영역 (AZ)
+variable "az" {
+  description = "가용 영역"
+  default     = "ap-northeast-2a"
+}
+# 라우팅 테이블 정의 리스트
 variable "route_tables" {
-  description = "커스텀 라우팅 테이블 정의 목록"
+  description = "라우팅 테이블 설정 (이름, 라우트, 서브넷 연결 등)"
   type = list(object({
     name       = string
     tags       = map(string)
@@ -59,22 +52,18 @@ variable "route_tables" {
     }))
     subnet_ids = list(string)
   }))
-  default = []
+
+  default = []  # 테스트용으로는 비워 둘 수도 있음
 }
 
-# EKS 관련
+
+# EKS 관련 루트 variables
 variable "kubernetes_version" {
-  description = "사용할 Kubernetes 버전"
-  type        = string
-  default     = "1.27"
+  default = "1.32"
 }
-
 variable "cluster_name" {
-  description = "EKS 클러스터 이름"
-  type        = string
-  default     = "team3-eks"
+  default = "matchfit-eks"
 }
-
 variable "service_ipv4_cidr" {
   description = "Kubernetes 서비스 네트워크 CIDR"
   type        = string
