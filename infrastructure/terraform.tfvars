@@ -46,3 +46,6 @@ maintenance_window      = "sun:04:00-sun:05:00"
 # 삭제 보호 및 최종 스냅샷 옵션
 skip_final_snapshot = true
 deletion_protection = false
+
+# Redis 접속 비밀번호(16자리 이상)
+auth_token = "redisredis12341234"

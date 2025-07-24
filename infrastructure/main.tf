@@ -97,3 +97,21 @@ module "rds" {
     module.eks
   ]
 }
+
+# elasticache 설정 모듈 호출
+module "elasticache" {
+  source             = "./modules/elasticache"
+  name               = "team3"                              # 리소스 네이밍 접두어(필수값)
+  vpc_id             = module.network.vpc_id
+  private_subnet_ids = module.network.private_subnet_id
+  eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
+
+  auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
+
+  # 설정 안할 시 AWS가 임의 시간대로 설정
+  maintenance_window          = "mon:03:00-mon:04:00"       # 정기 점검 시간
+  snapshot_window             = "00:00-04:00"               # 스냅샷 수행 시간대
+  snapshot_retention_limit    = 1                           # 스냅샷 보관 일수
+
+  tags = var.default_tags
+}

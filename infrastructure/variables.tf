@@ -141,3 +141,9 @@ variable "deletion_protection" {
   type        = bool
   default     = true
 }
+
+variable "auth_token" {
+  description = "ElastiCache Redis 인증 토큰"
+  type        = string
+  sensitive   = true   # Terraform 출력에서 숨겨짐
+}
