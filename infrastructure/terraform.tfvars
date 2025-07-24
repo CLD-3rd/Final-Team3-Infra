@@ -46,3 +46,4 @@ maintenance_window      = "sun:04:00-sun:05:00"
 # 삭제 보호 및 최종 스냅샷 옵션
 skip_final_snapshot = true
 deletion_protection = false
+
