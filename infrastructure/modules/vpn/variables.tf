@@ -16,6 +16,7 @@ variable "client_ca_certificate_arn" {
 variable "client_cidr_block" {
   description = "Client CIDR block (e.g. 172.31.0.0/22)"
   type        = string
+  default = "192.168.200.0/22"
 }
 
 variable "subnet_ids" {

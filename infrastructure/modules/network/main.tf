@@ -39,7 +39,9 @@ resource "aws_subnet" "private" {
 # Internet Gateway 생성
 resource "aws_internet_gateway" "this" {
   vpc_id = var.vpc_id
-  tags   = var.tags
+    tags = {
+    Name = "${var.name_prefix}-igw"
+  }
 }
 
 # Elastic IP for NAT Gateway

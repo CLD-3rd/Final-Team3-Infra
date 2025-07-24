@@ -139,3 +139,6 @@ resource "aws_s3_bucket" "this" {
   force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
   tags          = var.default_tags
 }
+
+
+# VPN 모듈 호출
