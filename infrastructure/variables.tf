@@ -69,22 +69,25 @@ variable "service_ipv4_cidr" {
   type        = string
   default     = "172.20.0.0/16"
 }
-
-variable "ssh_key_name" {
-  description = "EKS 워커 노드의 SSH 키 페어 이름"
-  type        = string
-}
-
 variable "worker_access_cidr" {
-  description = "EKS API에 접근을 허용할 CIDR 리스트"
+  description = "EKS API 접근 허용 CIDR"
   type        = list(string)
   default     = ["10.0.2.0/24"]
 }
 
+variable "ssh_key_name" {
+  description = "EC2 인스턴스에 사용할 SSH 키 이름"
+  type        = string
+}
 
-# RDS 관련
 variable "db_name" {
-  description = "RDS에 생성할 초기 데이터베이스 이름"
+  description = "RDS 데이터베이스 이름"
+  type        = string
+}
+
+# S3 관련 변수들
+variable "bucket_name" {
+  description = "Name of the S3 bucket (globally unique)"
   type        = string
 }
 variable "db_username" {
@@ -140,4 +143,58 @@ variable "deletion_protection" {
   description = "RDS 삭제 보호 기능 활성화 여부"
   type        = bool
   default     = true
+}
+
+# S3 관련 설정
+
+variable "enable_versioning" {
+  type        = bool
+  default     = false
+}
+
+variable "enable_website" {
+  type        = bool
+  default     = false
+}
+
+variable "index_document" {
+  type        = string
+  default     = "index.html"
+}
+
+variable "error_document" {
+  type        = string
+  default     = "error.html"
+}
+
+variable "block_public_acls" {
+  type        = bool
+  default     = true
+}
+
+variable "block_public_policy" {
+  type        = bool
+  default     = true
+}
+
+variable "ignore_public_acls" {
+  type        = bool
+  default     = true
+}
+
+variable "restrict_public_buckets" {
+  type        = bool
+  default     = true
+}
+
+variable "bucket_policy" {
+  description = "Optional S3 Bucket policy as JSON object"
+  type        = any
+  default     = null
+}
+
+variable "force_destroy" {
+  description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
+  type        = bool
+  default     = false
 }

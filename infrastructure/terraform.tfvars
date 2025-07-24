@@ -26,7 +26,7 @@ default_tags = {
 }
 
 # RDS DB 기본 설정
-db_name     = "matchfit"
+db_name     = "matchfit_db"
 db_username = "admin"
 db_password = "yourSecurePassword123!"  # 실제 운영 시엔 tfvars 파일을 git에 커밋하지 말고, Secret Manager 사용 권장
 
