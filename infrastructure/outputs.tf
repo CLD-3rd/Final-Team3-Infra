@@ -62,23 +62,3 @@ output "node_group_name" {
   description = "EKS NodeGroup name"
 }
 
-
-# RDS 출력
-output "rds_endpoint" {
-  description = "RDS 접속 엔드포인트"
-  value       = module.rds.rds_endpoint
-  sensitive   = true
-}
-output "rds_identifier" {
-  description = "RDS 인스턴스 식별자"
-  value       = module.rds.rds_identifier
-}
-output "rds_port" {
-  description = "RDS 포트 번호"
-  value       = module.rds.rds_port
-}
-output "rds_address" {
-  description = "RDS 호스트 이름"
-  value       = module.rds.rds_address
-  sensitive   = true
-}
