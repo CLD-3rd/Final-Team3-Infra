@@ -153,12 +153,6 @@ variable "auth_token" {
   sensitive   = true   # Terraform 출력에서 숨겨짐
 }
 
-variable "maintenance_window" {
-  description = "ElastiCache 정기 점검 시간대"
-  type        = string
-  default     = "mon:03:00-mon:04:00"
-}
-
 variable "snapshot_window" {
   description = "ElastiCache 스냅샷 수행 시간대"
   type        = string
