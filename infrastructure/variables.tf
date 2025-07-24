@@ -69,15 +69,129 @@ variable "service_ipv4_cidr" {
   type        = string
   default     = "172.20.0.0/16"
 }
-
-variable "ssh_key_name" {
-  description = "EKS 워커 노드의 SSH 키 페어 이름"
-  type        = string
-}
-
 variable "worker_access_cidr" {
-  description = "EKS API에 접근을 허용할 CIDR 리스트"
+  description = "EKS API 접근 허용 CIDR"
   type        = list(string)
   default     = ["10.0.2.0/24"]
 }
 
+variable "ssh_key_name" {
+  description = "EC2 인스턴스에 사용할 SSH 키 이름"
+  type        = string
+}
+
+
+# RD3 관련 변수들
+variable "db_name" {
+  description = "RDS 데이터베이스 이름"
+  type        = string
+}
+variable "db_username" {
+  description = "데이터베이스 관리자 사용자 이름"
+  type        = string
+}
+variable "db_password" {
+  description = "데이터베이스 비밀번호 (보안상 민감 정보)"
+  type        = string
+  sensitive   = true
+}
+variable "rds_security_group_ids" {
+  description = "RDS에 적용할 보안 그룹 ID 목록"
+  type        = list(string)
+  default     = []
+}
+variable "create_subnet_group" {
+  description = "서브넷 그룹 생성 여부"
+  type        = bool
+  default     = true
+}
+variable "db_subnet_group_name" {
+  description = "기존에 생성된 서브넷 그룹 이름 (사용 시 지정)"
+  type        = string
+  default     = null
+}
+variable "multi_az" {
+  description = "멀티 AZ 배포 여부"
+  type        = bool
+  default     = true
+}
+variable "backup_retention_period" {
+  description = "자동 백업 보존 기간(일 단위)"
+  type        = number
+  default     = 7
+}
+variable "backup_window" {
+  description = "자동 백업 수행 시간 (예: 03:00-04:00)"
+  type        = string
+  default     = "03:00-04:00"
+}
+variable "maintenance_window" {
+  description = "유지보수 작업 허용 시간대 (예: sun:04:00-sun:05:00)"
+  type        = string
+  default     = "sun:04:00-sun:05:00"
+}
+variable "skip_final_snapshot" {
+  description = "RDS 삭제 시 최종 스냅샷 생성 여부 (true 시 생략)"
+  type        = bool
+  default     = true
+}
+variable "deletion_protection" {
+  description = "RDS 삭제 보호 기능 활성화 여부"
+  type        = bool
+  default     = true
+}
+
+# ElastiCache 관련 변수
+variable "auth_token" {
+  description = "ElastiCache Redis 인증 토큰"
+  type        = string
+  sensitive   = true   # Terraform 출력에서 숨겨짐
+}
+
+# S3 관련 설정
+variable "bucket_name" {
+  description = "Name of the S3 bucket (globally unique)"
+  type        = string
+}
+variable "enable_versioning" {
+  type        = bool
+  default     = false
+}
+variable "enable_website" {
+  type        = bool
+  default     = false
+}
+variable "index_document" {
+  type        = string
+  default     = "index.html"
+}
+variable "error_document" {
+  type        = string
+  default     = "error.html"
+}
+variable "block_public_acls" {
+  type        = bool
+  default     = true
+}
+variable "block_public_policy" {
+  type        = bool
+  default     = true
+}
+variable "ignore_public_acls" {
+  type        = bool
+  default     = true
+}
+variable "restrict_public_buckets" {
+  type        = bool
+  default     = true
+}
+variable "bucket_policy" {
+  description = "Optional S3 Bucket policy as JSON object"
+  type        = any
+  default     = null
+}
+variable "force_destroy" {
+  description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
+  type        = bool
+  default     = false
+}

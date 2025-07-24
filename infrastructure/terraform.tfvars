@@ -26,7 +26,7 @@ default_tags = {
 }
 
 # RDS DB 기본 설정
-db_name     = "matchfit"
+db_name     = "matchfit_db"
 db_username = "admin"
 db_password = "yourSecurePassword123!"  # 실제 운영 시엔 tfvars 파일을 git에 커밋하지 말고, Secret Manager 사용 권장
 
@@ -45,4 +45,8 @@ maintenance_window      = "sun:04:00-sun:05:00"
 
 # 삭제 보호 및 최종 스냅샷 옵션
 skip_final_snapshot = true
+
 deletion_protection = false
+
+# Redis 접속 비밀번호(16자리 이상)
+auth_token = "redisredis12341234"
