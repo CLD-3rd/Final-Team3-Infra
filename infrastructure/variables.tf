@@ -145,10 +145,30 @@ variable "deletion_protection" {
   default     = true
 }
 
+# ElastiCache redis 관련 설정
+
 variable "auth_token" {
   description = "ElastiCache Redis 인증 토큰"
   type        = string
   sensitive   = true   # Terraform 출력에서 숨겨짐
+}
+
+variable "maintenance_window" {
+  description = "ElastiCache 정기 점검 시간대"
+  type        = string
+  default     = "mon:03:00-mon:04:00"
+}
+
+variable "snapshot_window" {
+  description = "ElastiCache 스냅샷 수행 시간대"
+  type        = string
+  default     = "00:00-04:00"
+}
+
+variable "snapshot_retention_limit" {
+  description = "ElastiCache 스냅샷 보관 일수"
+  type        = number
+  default     = 1
 }
 
 # S3 관련 설정
