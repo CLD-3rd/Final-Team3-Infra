@@ -146,10 +146,6 @@ variable "deletion_protection" {
 }
 
 # S3 관련 설정
-variable "bucket_name" {
-  type        = string
-  description = "S3 Bucket name (globally unique)"
-}
 
 variable "enable_versioning" {
   type        = bool
