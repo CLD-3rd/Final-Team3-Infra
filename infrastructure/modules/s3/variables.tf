@@ -68,3 +68,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "force_destroy" {
+  description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
+  type        = bool
+  default     = false
+}

@@ -80,6 +80,11 @@ variable "ssh_key_name" {
   type        = string
 }
 
+variable "db_name" {
+  description = "RDS 데이터베이스 이름"
+  type        = string
+}
+
 # S3 관련 변수들
 variable "bucket_name" {
   description = "Name of the S3 bucket (globally unique)"
@@ -190,4 +195,10 @@ variable "bucket_policy" {
   description = "Optional S3 Bucket policy as JSON object"
   type        = any
   default     = null
+}
+
+variable "force_destroy" {
+  description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
+  type        = bool
+  default     = false
 }
