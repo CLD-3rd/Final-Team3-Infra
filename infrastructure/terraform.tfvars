@@ -47,3 +47,7 @@ bucket_name = "matchfit-bucket"
 
 # Redis 접속 비밀번호(16자리 이상)
 auth_token = "redisredis12341234"
+
+# VPN 인증서
+server_certificate_arn      = "arn:aws:acm:ap-northeast-2:123456789012:certificate/abcd1234-5678-90ef-ghij-klmnopqrstuv"
+client_ca_certificate_arn  = "arn:aws:acm:ap-northeast-2:123456789012:certificate/wxyz9876-5432-10ab-cdef-ghijklmnopqr"

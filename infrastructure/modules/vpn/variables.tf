@@ -4,12 +4,12 @@ variable "name_prefix" {
 }
 
 variable "server_certificate_arn" {
-  description = "Server certificate ARN from ACM"
+  description = "ACM 서버 인증서 ARN"
   type        = string
 }
 
 variable "client_ca_certificate_arn" {
-  description = "Client root certificate ARN from ACM"
+  description = "클라이언트 CA 인증서 ARN"
   type        = string
 }
 

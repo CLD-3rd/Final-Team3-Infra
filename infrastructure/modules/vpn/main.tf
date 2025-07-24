@@ -1,6 +1,6 @@
 resource "aws_security_group" "vpn_sg" {
   count  = var.create_security_group ? 1 : 0
-  name   = "${var.name_prefix}}-vpn-sg"
+  name   = "${var.name_prefix}-vpn-sg"
   vpc_id = var.vpc_id
 
   ingress {
@@ -31,7 +31,7 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
   server_certificate_arn    = var.server_certificate_arn
   authentication_options {
     type                       = "certificate"
-    mutual_authentication {
+    mutual_authentication {   # 이부분 지워도 에러 안 지워도 에러 떨어지는 중
       client_root_certificate_chain_arn = var.client_ca_certificate_arn
     }
   }
@@ -51,7 +51,7 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
   }
 }
 
-resource "aws_ec2_client_vpn_target_network_association" "associations" {
+resource "aws_ec2_client_vpn_network_association" "associations" {
   for_each = toset(var.subnet_ids)
 
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn.id

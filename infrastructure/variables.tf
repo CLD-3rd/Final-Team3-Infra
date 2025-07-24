@@ -81,7 +81,7 @@ variable "ssh_key_name" {
 }
 
 
-# RD3 관련 변수들
+# RDS 관련 변수들
 variable "db_name" {
   description = "RDS 데이터베이스 이름"
   type        = string
@@ -194,4 +194,14 @@ variable "force_destroy" {
   description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
   type        = bool
   default     = false
+}
+
+# VPN 관련 설정
+variable "server_certificate_arn" {
+  description = "ACM 서버 인증서 ARN"
+  type        = string
+}
+variable "client_ca_certificate_arn" {
+  description = "클라이언트 CA 인증서 ARN"
+  type        = string
 }

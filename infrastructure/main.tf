@@ -142,3 +142,23 @@ resource "aws_s3_bucket" "this" {
 
 
 # VPN 모듈 호출
+module "vpn" {
+  source = "./modules/vpn"
+
+  name_prefix              = var.name_prefix
+  vpc_id                   = module.network.vpc_id
+  create_security_group    = true
+  client_cidr_block        = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+  server_certificate_arn    = var.server_certificate_arn
+  client_ca_certificate_arn = var.client_ca_certificate_arn
+
+  # cloudwatch는 확인 필요
+  cloudwatch_log_group     = "your-log-group"
+  cloudwatch_log_stream    = "your-log-stream"
+
+  subnet_ids               = module.network.private_subnet_id
+
+    depends_on = [
+    module.rds
+  ]
+}
