@@ -115,3 +115,26 @@ module "elasticache" {
 
   tags = var.default_tags
 }
+
+# S3 모듈 호출
+module "s3_bucket" {
+  source                  = "./modules/s3"
+  bucket_name             = var.bucket_name
+  force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
+  enable_versioning       = var.enable_versioning
+  enable_website          = var.enable_website
+  index_document          = var.index_document
+  error_document          = var.error_document
+  block_public_acls       = var.block_public_acls
+  block_public_policy     = var.block_public_policy
+  ignore_public_acls      = var.ignore_public_acls
+  restrict_public_buckets = var.restrict_public_buckets
+  bucket_policy           = var.bucket_policy
+  tags                    = var.default_tags
+}
+
+resource "aws_s3_bucket" "this" {
+  bucket        = var.bucket_name
+  force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
+  tags          = var.default_tags
+}
