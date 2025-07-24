@@ -204,3 +204,35 @@ variable "force_destroy" {
   type        = bool
   default     = false
 }
+
+# ECR 관련 설정
+
+variable "ecr_name" {
+  description = "The name of the ECR repository"
+  type        = string
+  default     = "team3-backend"
+}
+
+variable "ecr_image_tag_mutability" {
+  description = "Whether ECR image tags are mutable or immutable"
+  type        = string
+  default     = "MUTABLE"
+}
+
+variable "ecr_force_delete" {
+  description = "Whether to force delete ECR with images inside"
+  type        = bool
+  default     = true
+}
+
+variable "ecr_scan_on_push" {
+  description = "Whether to scan images on push"
+  type        = bool
+  default     = true
+}
+
+variable "ecr_encryption_type" {
+  description = "Encryption type for ECR (AES256 or KMS)"
+  type        = string
+  default     = "AES256"
+}

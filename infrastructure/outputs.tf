@@ -112,3 +112,11 @@ output "s3_website_domain" {
   description = "S3 static website domain (if enabled)"
   value       = module.s3_bucket.website_domain
 }
+
+output "ecr_repository_url" {
+  value = module.ecr.repository_url
+}
+
+output "ecr_repository_arn" {
+  value = module.ecr.repository_arn
+}

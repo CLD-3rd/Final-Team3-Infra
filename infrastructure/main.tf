@@ -138,3 +138,16 @@ resource "aws_s3_bucket" "this" {
   force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
   tags          = var.default_tags
 }
+
+# ECR 모듈 호출
+module "ecr" {
+  source = "./modules/ecr"
+
+  name                 = "team3-backend"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+  scan_on_push         = true
+  encryption_type = "AES256"
+
+  tags = var.default_tags
+}
