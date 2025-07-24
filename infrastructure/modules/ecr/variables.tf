@@ -1,29 +1,29 @@
 variable "name" {
-  description = "The name of the ECR repository"
+  description = "ECR 리포지토리 이름"
   type        = string
 }
 
 variable "force_delete" {
-  description = "If true, will delete the repository even if it contains images"
+  description = "리포지토리에 이미지가 있어도 삭제 가능 여부"
   type        = bool
 }
 
 variable "scan_on_push" {
-  description = "Indicates whether images are scanned after being pushed to the repository"
+  description = "이미지 푸시 시 자동 취약점 스캔 여부"
   type        = bool
 }
 
 variable "tags" {
-  description = "A map of tags to assign to the repository"
+  description = "ECR 리포지토리에 설정할 태그 목록"
   type        = map(string)
 }
 
 variable "image_tag_mutability" {
-  description = "Whether image tags are mutable or immutable"
+  description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
   type        = string
 }
 
 variable "encryption_type" {
-  description = "Encryption type for ECR"
+  description = "암호화 방식 (AES256 또는 KMS)"
   type        = string
 }

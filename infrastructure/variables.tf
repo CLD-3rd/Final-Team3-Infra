@@ -208,31 +208,31 @@ variable "force_destroy" {
 # ECR 관련 설정
 
 variable "ecr_name" {
-  description = "The name of the ECR repository"
+  description = "ECR 리포지토리 이름"
   type        = string
   default     = "team3-backend"
 }
 
 variable "ecr_image_tag_mutability" {
-  description = "Whether ECR image tags are mutable or immutable"
+  description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
   type        = string
   default     = "MUTABLE"
 }
 
 variable "ecr_force_delete" {
-  description = "Whether to force delete ECR with images inside"
+  description = "리포지토리에 이미지가 있어도 삭제할 수 있는지 여부"
   type        = bool
   default     = true
 }
 
 variable "ecr_scan_on_push" {
-  description = "Whether to scan images on push"
+  description = "이미지 푸시 시 자동으로 취약점 검사를 수행할지 여부"
   type        = bool
   default     = true
 }
 
 variable "ecr_encryption_type" {
-  description = "Encryption type for ECR (AES256 or KMS)"
+  description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
   type        = string
   default     = "AES256"
 }
