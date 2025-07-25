@@ -129,46 +129,46 @@ resource "aws_security_group" "eks_node_sg" {
 }
 
 # EKS 클러스터 생성
-# resource "aws_eks_cluster" "this" {
-#   name     = var.cluster_name                       # 클러스터 이름
-#   version  = var.kubernetes_version                 # 쿠버네티스 버전
-#   role_arn = aws_iam_role.eks_cluster_role.arn     # 클러스터용 IAM 역할
+resource "aws_eks_cluster" "this" {
+  name     = var.cluster_name                       # 클러스터 이름
+  version  = var.kubernetes_version                 # 쿠버네티스 버전
+  role_arn = aws_iam_role.eks_cluster_role.arn     # 클러스터용 IAM 역할
 
-#   vpc_config {
-#     subnet_ids              = var.subnet_ids                         # 클러스터에 연결할 서브넷들
-#     security_group_ids      = [aws_security_group.eks_cluster_sg.id] # 보안 그룹 ID
-#     endpoint_private_access = true                                   # 프라이빗 접근만 허용
-#     endpoint_public_access  = false                                  # 퍼블릭 접근 비활성화
-#   }
+  vpc_config {
+    subnet_ids              = var.subnet_ids                         # 클러스터에 연결할 서브넷들
+    security_group_ids      = [aws_security_group.eks_cluster_sg.id] # 보안 그룹 ID
+    endpoint_private_access = true                                   # 프라이빗 접근만 허용
+    endpoint_public_access  = false                                  # 퍼블릭 접근 비활성화
+  }
 
-#   kubernetes_network_config {
-#     service_ipv4_cidr = var.service_ipv4_cidr        # 클러스터 내부 서비스용 CIDR
-#   }
+  kubernetes_network_config {
+    service_ipv4_cidr = var.service_ipv4_cidr        # 클러스터 내부 서비스용 CIDR
+  }
 
-#   tags = merge({ Name = var.cluster_name }, var.tags)
-# }
+  tags = merge({ Name = var.cluster_name }, var.tags)
+}
 
-# # EKS 노드 그룹 생성
-# resource "aws_eks_node_group" "default" {
-#   cluster_name    = aws_eks_cluster.this.name                    # 연결할 EKS 클러스터 이름
-#   node_group_name = "${var.cluster_name}-node-group"             # 노드 그룹 이름
-#   node_role_arn   = aws_iam_role.eks_node_role.arn               # 노드 그룹에 할당할 IAM 역할
-#   subnet_ids      = var.subnet_ids                               # 노드를 배치할 서브넷 ID들
+# EKS 노드 그룹 생성
+resource "aws_eks_node_group" "default" {
+  cluster_name    = aws_eks_cluster.this.name                    # 연결할 EKS 클러스터 이름
+  node_group_name = "${var.cluster_name}-node-group"             # 노드 그룹 이름
+  node_role_arn   = aws_iam_role.eks_node_role.arn               # 노드 그룹에 할당할 IAM 역할
+  subnet_ids      = var.subnet_ids                               # 노드를 배치할 서브넷 ID들
   
-#   scaling_config {
-#     desired_size = 2     # 기본 노드 수
-#     max_size     = 3     # 최대 확장 수
-#     min_size     = 1     # 최소 유지 수
-#   }
+  scaling_config {
+    desired_size = 2     # 기본 노드 수
+    max_size     = 3     # 최대 확장 수
+    min_size     = 1     # 최소 유지 수
+  }
 
-#   instance_types = ["t2.micro"]         # 노드 인스턴스 타입
-#   ami_type       = "AL2_x86_64"          # Amazon Linux 2 AMI
+  instance_types = ["t2.micro"]         # 노드 인스턴스 타입
+  ami_type       = "AL2_x86_64"          # Amazon Linux 2 AMI
 
-#   tags = var.tags
+  tags = var.tags
 
-#   remote_access {
-#     ec2_ssh_key = var.ssh_key_name
-#     source_security_group_ids = [aws_security_group.eks_node_sg.id]   # 노드 보안그룹 ID
-#   }
+  remote_access {
+    ec2_ssh_key = var.ssh_key_name
+    source_security_group_ids = [aws_security_group.eks_node_sg.id]   # 노드 보안그룹 ID
+  }
 
-# }
+}
