@@ -25,86 +25,86 @@ output "custom_route_table_ids" {
 }
 
 # EKS 관련 루트 outputs
-output "eks_cluster_name" {
-  value       = module.eks.cluster_name
-  description = "EKS Cluster name"
-}
-output "eks_cluster_endpoint" {
-  value       = module.eks.cluster_endpoint
-  description = "EKS Cluster API endpoint"
-}
-output "eks_cluster_ca" {
-  value       = module.eks.cluster_certificate_authority
-  description = "EKS Cluster certificate authority"
-}
-output "eks_cluster_id" {
-  value       = module.eks.cluster_id
-  description = "EKS cluster ID"
-}
-output "eks_cluster_role_arn" {
-  value       = module.eks.eks_cluster_role_arn
-  description = "IAM Role ARN for EKS Cluster"
-}
-output "eks_node_role_arn" {
-  value       = module.eks.eks_node_role_arn
-  description = "IAM Role ARN for EKS NodeGroup"
-}
-output "eks_node_instance_profile" {
-  value       = module.eks.eks_node_instance_profile
-  description = "EC2 Instance Profile for EKS Nodes"
-}
-output "cluster_sg_id" {
-  value       = module.eks.cluster_sg_id
-  description = "EKS Cluster security group ID"
-}
-output "node_group_name" {
-  value       = module.eks.node_group_name
-  description = "EKS NodeGroup name"
-}
+# output "eks_cluster_name" {
+#   value       = module.eks.cluster_name
+#   description = "EKS Cluster name"
+# }
+# output "eks_cluster_endpoint" {
+#   value       = module.eks.cluster_endpoint
+#   description = "EKS Cluster API endpoint"
+# }
+# output "eks_cluster_ca" {
+#   value       = module.eks.cluster_certificate_authority
+#   description = "EKS Cluster certificate authority"
+# }
+# output "eks_cluster_id" {
+#   value       = module.eks.cluster_id
+#   description = "EKS cluster ID"
+# }
+# output "eks_cluster_role_arn" {
+#   value       = module.eks.eks_cluster_role_arn
+#   description = "IAM Role ARN for EKS Cluster"
+# }
+# output "eks_node_role_arn" {
+#   value       = module.eks.eks_node_role_arn
+#   description = "IAM Role ARN for EKS NodeGroup"
+# }
+# output "eks_node_instance_profile" {
+#   value       = module.eks.eks_node_instance_profile
+#   description = "EC2 Instance Profile for EKS Nodes"
+# }
+# output "cluster_sg_id" {
+#   value       = module.eks.cluster_sg_id
+#   description = "EKS Cluster security group ID"
+# }
+# output "node_group_name" {
+#   value       = module.eks.node_group_name
+#   description = "EKS NodeGroup name"
+# }
 
 
-# RDS 출력
-output "rds_endpoint" {
-  description = "RDS 접속 엔드포인트"
-  value       = module.rds.rds_endpoint
-  sensitive   = true
-}
-output "rds_identifier" {
-  description = "RDS 인스턴스 식별자"
-  value       = module.rds.rds_identifier
-}
-output "rds_port" {
-  description = "RDS 포트 번호"
-  value       = module.rds.rds_port
-}
-output "rds_address" {
-  description = "RDS 호스트 이름"
-  value       = module.rds.rds_address
-  sensitive   = true
-}
+# # RDS 출력
+# output "rds_endpoint" {
+#   description = "RDS 접속 엔드포인트"
+#   value       = module.rds.rds_endpoint
+#   sensitive   = true
+# }
+# output "rds_identifier" {
+#   description = "RDS 인스턴스 식별자"
+#   value       = module.rds.rds_identifier
+# }
+# output "rds_port" {
+#   description = "RDS 포트 번호"
+#   value       = module.rds.rds_port
+# }
+# output "rds_address" {
+#   description = "RDS 호스트 이름"
+#   value       = module.rds.rds_address
+#   sensitive   = true
+# }
 
 # S3 관련 
-# output "s3_bucket_id" {
-#   description = "The ID of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_id
-# }
-# output "s3_bucket_arn" {
-#   description = "The ARN of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_arn
-# }
-# output "s3_bucket_domain" {
-#   description = "The domain name of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_domain_name
-# }
-# output "s3_bucket_regional_domain" {
-#   description = "The regional domain name of the bucket"
-#   value       = module.s3_bucket.bucket_regional_domain_name
-# }
-# output "s3_website_endpoint" {
-#   description = "S3 static website endpoint (if enabled)"
-#   value       = module.s3_bucket.website_endpoint
-# }
-# output "s3_website_domain" {
-#   description = "S3 static website domain (if enabled)"
-#   value       = module.s3_bucket.website_domain
-# }
+output "s3_bucket_id" {
+  description = "The ID of the created S3 bucket"
+  value       = module.s3_bucket.bucket_id
+}
+output "s3_bucket_arn" {
+  description = "The ARN of the created S3 bucket"
+  value       = module.s3_bucket.bucket_arn
+}
+output "s3_bucket_domain" {
+  description = "The domain name of the created S3 bucket"
+  value       = module.s3_bucket.bucket_domain_name
+}
+output "s3_bucket_regional_domain" {
+  description = "The regional domain name of the bucket"
+  value       = module.s3_bucket.bucket_regional_domain_name
+}
+output "s3_website_endpoint" {
+  description = "S3 static website endpoint (if enabled)"
+  value       = module.s3_bucket.website_endpoint
+}
+output "s3_website_domain" {
+  description = "S3 static website domain (if enabled)"
+  value       = module.s3_bucket.website_domain
+}
