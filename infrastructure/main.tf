@@ -9,7 +9,6 @@ terraform {
     }
   }
 }
-
 terraform {
   backend "remote" {
     organization = "team3-matchfit"
