@@ -9,6 +9,17 @@ terraform {
     }
   }
 }
+
+terraform {
+  backend "remote" {
+    organization = "team3-matchfit"
+
+    workspaces {
+      name = "CLD-3rd/Final-Team3-Infra"
+    }
+  }
+}
+
 # AWS Provider 정의
 provider "aws" {
   region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
