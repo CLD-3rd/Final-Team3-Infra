@@ -26,10 +26,6 @@ default_tags = {
 }
 
 # RDS DB 기본 설정
-db_name     = "matchfit_db"
-db_username = "admin"
-db_password = "yourSecurePassword123!"  # 실제 운영 시엔 tfvars 파일을 git에 커밋하지 말고, Secret Manager 사용 권장
-
 
 # Subnet Group 생성 여부
 create_subnet_group = true
@@ -49,4 +45,3 @@ skip_final_snapshot = true
 deletion_protection = false
 
 # Redis 접속 비밀번호(16자리 이상)
-auth_token = "redisredis12341234"
