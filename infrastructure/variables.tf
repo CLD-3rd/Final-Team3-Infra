@@ -151,6 +151,7 @@ variable "route_tables" {
 variable "bucket_name" {
   description = "Name of the S3 bucket (globally unique)"
   type        = string
+  default     = "matchfit-bucket"
 }
 variable "enable_versioning" {
   type        = bool
