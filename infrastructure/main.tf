@@ -99,42 +99,42 @@ module "rds" {
 }
 
 # elasticache 설정 모듈 호출
-module "elasticache" {
-  source             = "./modules/elasticache"
-  name               = "team3"                              # 리소스 네이밍 접두어(필수값)
-  vpc_id             = module.network.vpc_id
-  private_subnet_ids = module.network.private_subnet_id
-  eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
+# module "elasticache" {
+#   source             = "./modules/elasticache"
+#   name               = "team3"                              # 리소스 네이밍 접두어(필수값)
+#   vpc_id             = module.network.vpc_id
+#   private_subnet_ids = module.network.private_subnet_id
+#   eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
 
-  auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
+#   auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
 
-  # 설정 안할 시 AWS가 임의 시간대로 설정
-  maintenance_window          = "mon:03:00-mon:04:00"       # 정기 점검 시간
-  snapshot_window             = "00:00-04:00"               # 스냅샷 수행 시간대
-  snapshot_retention_limit    = 1                           # 스냅샷 보관 일수
+#   # 설정 안할 시 AWS가 임의 시간대로 설정
+#   maintenance_window          = "mon:03:00-mon:04:00"       # 정기 점검 시간
+#   snapshot_window             = "00:00-04:00"               # 스냅샷 수행 시간대
+#   snapshot_retention_limit    = 1                           # 스냅샷 보관 일수
 
-  tags = var.default_tags
-}
+#   tags = var.default_tags
+# }
 
 # S3 모듈 호출
-module "s3_bucket" {
-  source                  = "./modules/s3"
-  bucket_name             = var.bucket_name
-  force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
-  enable_versioning       = var.enable_versioning
-  enable_website          = var.enable_website
-  index_document          = var.index_document
-  error_document          = var.error_document
-  block_public_acls       = var.block_public_acls
-  block_public_policy     = var.block_public_policy
-  ignore_public_acls      = var.ignore_public_acls
-  restrict_public_buckets = var.restrict_public_buckets
-  bucket_policy           = var.bucket_policy
-  tags                    = var.default_tags
-}
+# module "s3_bucket" {
+#   source                  = "./modules/s3"
+#   bucket_name             = var.bucket_name
+#   force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
+#   enable_versioning       = var.enable_versioning
+#   enable_website          = var.enable_website
+#   index_document          = var.index_document
+#   error_document          = var.error_document
+#   block_public_acls       = var.block_public_acls
+#   block_public_policy     = var.block_public_policy
+#   ignore_public_acls      = var.ignore_public_acls
+#   restrict_public_buckets = var.restrict_public_buckets
+#   bucket_policy           = var.bucket_policy
+#   tags                    = var.default_tags
+# }
 
-resource "aws_s3_bucket" "this" {
-  bucket        = var.bucket_name
-  force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
-  tags          = var.default_tags
-}
+# resource "aws_s3_bucket" "this" {
+#   bucket        = var.bucket_name
+#   force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
+#   tags          = var.default_tags
+# }
