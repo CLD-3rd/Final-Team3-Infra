@@ -15,7 +15,7 @@ terraform {
     organization = "team3-matchfit"
 
     workspaces {
-      name = "CLD-3rd/Final-Team3-Infra"
+      name = "Final-Team3-Infra"
     }
   }
 }
