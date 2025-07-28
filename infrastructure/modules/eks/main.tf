@@ -127,6 +127,29 @@ resource "aws_security_group" "eks_node_sg" {
 
   tags = merge({ Name = "${var.cluster_name}-node-sg" }, var.tags)
 }
+# EKS Node ssh Access 그룹 생성
+resource "aws_security_group" "eks_ssh_sg" {
+  name        = "${var.cluster_name}-node-ssh-sg"
+  description = "SSH access for EKS nodes"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description      = "Allow SSH from VPN Endpoint"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["192.168.200.0/22"]   # VPN의 CIDR
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge({ Name = "${var.cluster_name}-node-ssh-sg" }, var.tags)
+}
 
 # EKS 클러스터 생성
 resource "aws_eks_cluster" "this" {
@@ -168,7 +191,7 @@ resource "aws_eks_node_group" "default" {
 
   remote_access {
     ec2_ssh_key = var.ssh_key_name
-    source_security_group_ids = [aws_security_group.eks_node_sg.id]   # 노드 보안그룹 ID
+    source_security_group_ids = [aws_security_group.eks_ssh_sg.id]   # 노드 보안그룹 ID
   }
 
 }

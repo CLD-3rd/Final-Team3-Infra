@@ -24,7 +24,13 @@ resource "aws_security_group" "rds" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]  # 실제 운영에서는 제한 필요!
   }
-
+  # VPN 엔드포인트 접속 허용
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups = ["192.168.200.0/22"]
+  }
   egress {
     from_port   = 0
     to_port     = 0

@@ -80,14 +80,10 @@ variable "ssh_key_name" {
   type        = string
 }
 
+
+# RDS 관련 변수들
 variable "db_name" {
   description = "RDS 데이터베이스 이름"
-  type        = string
-}
-
-# S3 관련 변수들
-variable "bucket_name" {
-  description = "Name of the S3 bucket (globally unique)"
   type        = string
 }
 variable "db_username" {
@@ -146,7 +142,6 @@ variable "deletion_protection" {
 }
 
 # ElastiCache redis 관련 설정
-
 variable "auth_token" {
   description = "ElastiCache Redis 인증 토큰"
   type        = string
@@ -166,53 +161,47 @@ variable "snapshot_retention_limit" {
 }
 
 # S3 관련 설정
-
+variable "bucket_name" {
+  description = "Name of the S3 bucket (globally unique)"
+  type        = string
+}
 variable "enable_versioning" {
   type        = bool
   default     = false
 }
-
 variable "enable_website" {
   type        = bool
   default     = false
 }
-
 variable "index_document" {
   type        = string
   default     = "index.html"
 }
-
 variable "error_document" {
   type        = string
   default     = "error.html"
 }
-
 variable "block_public_acls" {
   type        = bool
   default     = true
 }
-
 variable "block_public_policy" {
   type        = bool
   default     = true
 }
-
 variable "ignore_public_acls" {
   type        = bool
   default     = true
 }
-
 variable "restrict_public_buckets" {
   type        = bool
   default     = true
 }
-
 variable "bucket_policy" {
   description = "Optional S3 Bucket policy as JSON object"
   type        = any
   default     = null
 }
-
 variable "force_destroy" {
   description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
   type        = bool
@@ -220,7 +209,6 @@ variable "force_destroy" {
 }
 
 # ECR 관련 설정
-
 variable "ecr_name" {
   description = "ECR 리포지토리 이름"
   type        = string
@@ -249,4 +237,13 @@ variable "ecr_encryption_type" {
   description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
   type        = string
   default     = "AES256"
+=======
+# VPN 관련 설정
+variable "server_certificate_arn" {
+  description = "ACM 서버 인증서 ARN"
+  type        = string
+}
+variable "client_ca_certificate_arn" {
+  description = "클라이언트 CA 인증서 ARN"
+  type        = string
 }

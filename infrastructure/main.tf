@@ -65,6 +65,7 @@ module "eks" {
 
 }
 
+# RDS 모듈 호출
 module "rds" {
   source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
 
@@ -150,4 +151,26 @@ module "ecr" {
   encryption_type      = var.ecr_encryption_type       # 암호화 방식
 
   tags = var.default_tags
+=======
+
+# VPN 모듈 호출
+module "vpn" {
+  source = "./modules/vpn"
+
+  name_prefix              = var.name_prefix
+  vpc_id                   = module.network.vpc_id
+  create_security_group    = true
+  client_cidr_block        = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+  server_certificate_arn    = var.server_certificate_arn
+  client_ca_certificate_arn = var.client_ca_certificate_arn
+
+  # cloudwatch는 확인 필요
+  cloudwatch_log_group     = "your-log-group"
+  cloudwatch_log_stream    = "your-log-stream"
+
+  subnet_ids               = module.network.private_subnet_id
+
+    depends_on = [
+    module.rds
+  ]
 }
