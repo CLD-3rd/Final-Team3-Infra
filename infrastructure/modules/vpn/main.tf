@@ -31,9 +31,7 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
   server_certificate_arn    = var.server_certificate_arn
   authentication_options {
     type                       = "certificate"
-    mutual_authentication {   # 이부분 지워도 에러 안 지워도 에러 떨어지는 중
-      client_root_certificate_chain_arn = var.client_ca_certificate_arn
-    }
+    root_certificate_chain_arn = var.client_ca_certificate_arn
   }
 
   connection_log_options {
@@ -45,7 +43,9 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
   dns_servers       = ["8.8.8.8"]
   transport_protocol = "udp"
   split_tunnel       = true
-  security_group_ids = [var.create_security_group ? aws_security_group.vpn_sg[0].id : var.security_group_id]
+  security_group_ids = [
+    var.create_security_group ? aws_security_group.vpn_sg[0].id : var.security_group_id
+  ]
   tags = {
     Name = "${var.name_prefix}-vpn"
   }
