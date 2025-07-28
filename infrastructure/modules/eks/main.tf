@@ -75,7 +75,7 @@ resource "aws_security_group" "eks_cluster_sg" {
   vpc_id      = var.vpc_id
 
   # 워커 노드 → EKS API 서버 (443포트) 통신 허용
- ingress {
+  ingress {
     description = "Allow worker nodes to access cluster"
     from_port   = 443
     to_port     = 443

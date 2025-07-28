@@ -63,7 +63,7 @@ output "node_group_name" {
 }
 
 
-# # RDS 출력
+# RDS 출력
 output "rds_endpoint" {
   description = "RDS 접속 엔드포인트"
   value       = module.rds.rds_endpoint

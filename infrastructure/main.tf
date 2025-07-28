@@ -149,3 +149,12 @@ resource "aws_s3_bucket" "this" {
   force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
   tags          = var.default_tags
 }
+
+# module "alb" {
+#   source            = "./modules/alb"
+#   name_prefix            = var.name_prefix
+#   vpc_id            = module.vpc.vpc_id
+#   subnet_ids        = module.vpc.public_subnet_ids
+#   target_port       = 80
+#   tags              = var.default_tags
+# }
