@@ -37,3 +37,8 @@ variable "create_instance_profile" {
   type        = bool
   default     = true
 }
+
+variable "oidc_thumbprint" {
+  description = "OIDC 공급자의 thumbprint (IRSA용)"
+  default = "9e99a48a9960b14926bb7f3b02e22da0afd40bd7"
+}

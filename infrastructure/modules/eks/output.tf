@@ -28,3 +28,11 @@ output "node_group_name" {
 output "eks_node_sg_id" {
   value = aws_security_group.eks_node_sg.id
 }
+
+output "oidc_provider_arn" {
+  value = aws_iam_openid_connect_provider.this.arn
+}
+
+output "cluster_oidc_issuer_url" {
+  value = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}

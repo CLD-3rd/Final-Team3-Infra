@@ -193,4 +193,16 @@ resource "aws_eks_node_group" "default" {
     ec2_ssh_key = var.ssh_key_name
     source_security_group_ids = [aws_security_group.eks_ssh_sg.id]   # 노드 보안그룹 ID
   }
+
+}
+
+# OIDC 관련 설정 (IRSA를 위한 구성)
+data "tls_certificate" "eks_cluster" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+resource "aws_iam_openid_connect_provider" "this" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [var.oidc_thumbprint]
+  url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }

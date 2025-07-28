@@ -170,3 +170,32 @@ module "vpn" {
   cloudwatch_log_group      = "matchfit-vpn-logs"
   subnet_ids                = module.network.private_subnet_id
 }
+
+# IRSA용 IAM 역할 및 정책 구성
+module "irsa-alb" {
+  source = "./modules/irsa-alb"
+  cluster_name = var.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = module.eks.cluster_oidc_issuer_url
+  tags = var.default_tags
+}
+
+# ALB Controller Helm 설치
+module "alb_controller" {
+  source = "./modules/alb-controller"
+
+  cluster_name                 = module.eks.cluster_name
+  alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
+
+  depends_on = [module.irsa-alb]
+
+}
+
+# ArgoCD Helm 설치
+module "argocd" {
+  source = "./modules/argocd"
+}
+
+module "route53" {
+  source = "./modules/route53"
+}
