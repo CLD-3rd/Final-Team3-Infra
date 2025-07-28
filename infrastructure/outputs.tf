@@ -108,3 +108,13 @@ output "s3_website_domain" {
   description = "S3 static website domain (if enabled)"
   value       = module.s3_bucket.website_domain
 }
+
+# ECR 출력
+output "ecr_repository_url" {
+  description = "생성된 ECR 리포지토리의 URL 출력 (이미지 push/pull 시 사용)"
+  value = module.ecr.repository_url
+}
+output "ecr_repository_arn" {
+  description = "생성된 ECR 리포지토리의 ARN 출력 (IAM 정책에 활용)"
+  value = module.ecr.repository_arn
+}
