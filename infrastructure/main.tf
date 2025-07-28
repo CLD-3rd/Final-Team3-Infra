@@ -110,9 +110,9 @@ module "elasticache" {
   auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
 
   # 설정 안할 시 AWS가 임의 시간대로 설정
-  maintenance_window          = "mon:03:00-mon:04:00"       # 정기 점검 시간
-  snapshot_window             = "00:00-04:00"               # 스냅샷 수행 시간대
-  snapshot_retention_limit    = 1                           # 스냅샷 보관 일수
+  maintenance_window        = var.maintenance_window        # 정기 점검 시간
+  snapshot_window           = var.snapshot_window           # 스냅샷 수행 시간대
+  snapshot_retention_limit  = var.snapshot_retention_limit  # 스냅샷 보관 일수
 
   tags = var.default_tags
 }
@@ -140,6 +140,18 @@ resource "aws_s3_bucket" "this" {
   tags          = var.default_tags
 }
 
+# ECR 모듈 호출
+module "ecr" {
+  source = "./modules/ecr"
+
+  name                 = var.ecr_name                  # 리포지토리 이름
+  image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
+  force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
+  scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
+  encryption_type      = var.ecr_encryption_type       # 암호화 방식
+
+  tags = var.default_tags
+=======
 
 # VPN 모듈 호출
 module "vpn" {

@@ -141,11 +141,23 @@ variable "deletion_protection" {
   default     = true
 }
 
-# ElastiCache 관련 변수
+# ElastiCache redis 관련 설정
 variable "auth_token" {
   description = "ElastiCache Redis 인증 토큰"
   type        = string
   sensitive   = true   # Terraform 출력에서 숨겨짐
+}
+
+variable "snapshot_window" {
+  description = "ElastiCache 스냅샷 수행 시간대"
+  type        = string
+  default     = "00:00-04:00"
+}
+
+variable "snapshot_retention_limit" {
+  description = "ElastiCache 스냅샷 보관 일수"
+  type        = number
+  default     = 1
 }
 
 # S3 관련 설정
@@ -196,6 +208,36 @@ variable "force_destroy" {
   default     = false
 }
 
+# ECR 관련 설정
+variable "ecr_name" {
+  description = "ECR 리포지토리 이름"
+  type        = string
+  default     = "team3-backend"
+}
+
+variable "ecr_image_tag_mutability" {
+  description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
+  type        = string
+  default     = "MUTABLE"
+}
+
+variable "ecr_force_delete" {
+  description = "리포지토리에 이미지가 있어도 삭제할 수 있는지 여부"
+  type        = bool
+  default     = true
+}
+
+variable "ecr_scan_on_push" {
+  description = "이미지 푸시 시 자동으로 취약점 검사를 수행할지 여부"
+  type        = bool
+  default     = true
+}
+
+variable "ecr_encryption_type" {
+  description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
+  type        = string
+  default     = "AES256"
+=======
 # VPN 관련 설정
 variable "server_certificate_arn" {
   description = "ACM 서버 인증서 ARN"
