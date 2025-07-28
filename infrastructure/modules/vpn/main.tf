@@ -10,7 +10,7 @@ resource "aws_security_group" "vpn_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-    ingress {
+  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -25,27 +25,66 @@ resource "aws_security_group" "vpn_sg" {
   }
 }
 
+resource "aws_iam_role" "vpn_logging_role" {
+  name = "${var.name_prefix}-vpn-logging-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "clientvpn.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_policy" "vpn_logging_policy" {
+  name = "${var.name_prefix}-vpn-logging-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      Resource = "*"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "vpn_logging_attach" {
+  role       = aws_iam_role.vpn_logging_role.name
+  policy_arn = aws_iam_policy.vpn_logging_policy.arn
+}
+
 resource "aws_ec2_client_vpn_endpoint" "vpn" {
-  description               = "${var.name_prefix} VPN"
-  client_cidr_block         = var.client_cidr_block
-  server_certificate_arn    = var.server_certificate_arn
+  description            = "${var.name_prefix}-vpn"
+  vpc_id                 = var.vpc_id
+  client_cidr_block      = var.client_cidr_block
+  server_certificate_arn = var.server_certificate_arn
+
   authentication_options {
     type                       = "certificate-authentication"
     root_certificate_chain_arn = var.client_ca_certificate_arn
   }
 
   connection_log_options {
-    enabled               = true
-    cloudwatch_log_group  = var.cloudwatch_log_group
-    cloudwatch_log_stream = var.cloudwatch_log_stream
+    enabled              = true
+    cloudwatch_log_group = var.cloudwatch_log_group
   }
 
-  dns_servers       = ["8.8.8.8"]
+  dns_servers        = ["8.8.8.8"]
   transport_protocol = "udp"
   split_tunnel       = true
   security_group_ids = [
     var.create_security_group ? aws_security_group.vpn_sg[0].id : var.security_group_id
   ]
+
   tags = {
     Name = "${var.name_prefix}-vpn"
   }
@@ -62,12 +101,19 @@ resource "aws_ec2_client_vpn_route" "route_to_vpc" {
   for_each = toset(var.subnet_ids)
 
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn.id
-  destination_cidr_block = "100.0.0.0/16"
+  destination_cidr_block = var.vpc_cidr
   target_vpc_subnet_id   = each.value
+  
+  lifecycle {
+    ignore_changes = [destination_cidr_block]
+  }
+  depends_on = [
+    aws_ec2_client_vpn_network_association.associations
+  ]
 }
 
 resource "aws_ec2_client_vpn_authorization_rule" "allow_all" {
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn.id
-  target_network_cidr    = "100.0.0.0/16"
+  target_network_cidr    = var.vpc_cidr
   authorize_all_groups   = true
 }
