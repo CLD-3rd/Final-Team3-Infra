@@ -147,17 +147,11 @@ variable "deletion_protection" {
 #   sensitive   = true   # Terraform 출력에서 숨겨짐
 # }
 
-# S3 관련 변수들
+# S3 관련 루트 변수
 variable "bucket_name" {
   description = "Name of the S3 bucket (globally unique)"
   type        = string
   default     = "matchfit-bucket"
-}
-
-# S3 관련 설정
-variable "bucket_name" {
-  description = "Name of the S3 bucket (globally unique)"
-  type        = string
 }
 variable "enable_versioning" {
   type        = bool
