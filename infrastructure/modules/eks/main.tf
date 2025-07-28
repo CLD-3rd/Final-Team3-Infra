@@ -61,9 +61,9 @@ resource "aws_iam_role_policy_attachment" "ssm_core_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" #SSM 세션 매니저 연결을 위한 권한
 }
 
-
 # EC2 인스턴스 프로파일 생성 (노드 그룹에서 사용)
 resource "aws_iam_instance_profile" "eks_node_instance_profile" {
+  count  = var.create_instance_profile ? 1 : 0
   name = "${var.cluster_name}-node-instance-profile"
   role = aws_iam_role.eks_node_role.name
 }
