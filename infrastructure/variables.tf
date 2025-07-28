@@ -153,6 +153,12 @@ variable "bucket_name" {
   type        = string
   default     = "matchfit-bucket"
 }
+
+# S3 관련 설정
+variable "bucket_name" {
+  description = "Name of the S3 bucket (globally unique)"
+  type        = string
+}
 variable "enable_versioning" {
   type        = bool
   default     = false
@@ -194,4 +200,14 @@ variable "force_destroy" {
   description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
   type        = bool
   default     = false
+}
+
+# VPN 관련 설정
+variable "server_certificate_arn" {
+  description = "ACM 서버 인증서 ARN"
+  type        = string
+}
+variable "client_ca_certificate_arn" {
+  description = "클라이언트 CA 인증서 ARN"
+  type        = string
 }
