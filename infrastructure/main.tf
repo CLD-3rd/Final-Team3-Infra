@@ -173,7 +173,7 @@ module "vpn" {
 
 # IRSA용 IAM 역할 및 정책 구성
 module "irsa-alb" {
-  source = "./modules/irsa-alb"
+  source = "./modules/alb-irsa"
   cluster_name = var.cluster_name
   oidc_provider_arn = module.eks.oidc_provider_arn
   oidc_provider_url = module.eks.cluster_oidc_issuer_url
