@@ -65,6 +65,7 @@ module "eks" {
 
 }
 
+# RDS 모듈 호출
 module "rds" {
   source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
 
@@ -117,24 +118,47 @@ module "rds" {
 # }
 
 # S3 모듈 호출
-# module "s3_bucket" {
-#   source                  = "./modules/s3"
-#   bucket_name             = var.bucket_name
-#   force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
-#   enable_versioning       = var.enable_versioning
-#   enable_website          = var.enable_website
-#   index_document          = var.index_document
-#   error_document          = var.error_document
-#   block_public_acls       = var.block_public_acls
-#   block_public_policy     = var.block_public_policy
-#   ignore_public_acls      = var.ignore_public_acls
-#   restrict_public_buckets = var.restrict_public_buckets
-#   bucket_policy           = var.bucket_policy
-#   tags                    = var.default_tags
-# }
+module "s3_bucket" {
+  source                  = "./modules/s3"
+  bucket_name             = var.bucket_name
+  force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
+  enable_versioning       = var.enable_versioning
+  enable_website          = var.enable_website
+  index_document          = var.index_document
+  error_document          = var.error_document
+  block_public_acls       = var.block_public_acls
+  block_public_policy     = var.block_public_policy
+  ignore_public_acls      = var.ignore_public_acls
+  restrict_public_buckets = var.restrict_public_buckets
+  bucket_policy           = var.bucket_policy
+  tags                    = var.default_tags
+}
 
-# resource "aws_s3_bucket" "this" {
-#   bucket        = var.bucket_name
-#   force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
-#   tags          = var.default_tags
-# }
+resource "aws_s3_bucket" "this" {
+  bucket        = var.bucket_name
+  force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
+  tags          = var.default_tags
+}
+
+
+# VPN 모듈 호출
+module "vpn" {
+  source = "./modules/vpn"
+
+  name_prefix              = var.name_prefix
+  vpc_id                   = module.network.vpc_id
+  create_security_group    = true
+  client_cidr_block        = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+  server_certificate_arn    = var.server_certificate_arn
+  client_ca_certificate_arn = var.client_ca_certificate_arn
+
+  # cloudwatch는 확인 필요
+  cloudwatch_log_group     = "your-log-group"
+  cloudwatch_log_stream    = "your-log-stream"
+
+  subnet_ids               = module.network.private_subnet_id
+
+    depends_on = [
+    module.rds
+  ]
+}
