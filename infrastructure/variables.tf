@@ -237,7 +237,8 @@ variable "ecr_encryption_type" {
   description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
   type        = string
   default     = "AES256"
-=======
+}
+
 # VPN 관련 설정
 variable "server_certificate_arn" {
   description = "ACM 서버 인증서 ARN"
