@@ -30,7 +30,7 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
   client_cidr_block         = var.client_cidr_block
   server_certificate_arn    = var.server_certificate_arn
   authentication_options {
-    type                       = "certificate"
+    type                       = "certificate-authentication"
     root_certificate_chain_arn = var.client_ca_certificate_arn
   }
 
