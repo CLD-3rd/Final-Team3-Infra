@@ -1,6 +1,6 @@
-variable "name" {
-  description = "ECR 리포지토리 이름"
+variable "name_prefix" {
   type        = string
+  description = "리소스 이름 접두사"
 }
 
 variable "force_delete" {

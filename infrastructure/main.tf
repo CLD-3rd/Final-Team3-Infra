@@ -146,7 +146,7 @@ module "s3_bucket" {
 module "ecr" {
   source = "./modules/ecr"
 
-  name                 = var.ecr_name                  # 리포지토리 이름
+  name_prefix        = var.name_prefix                  # 리포지토리 이름
   image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
   force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
   scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부

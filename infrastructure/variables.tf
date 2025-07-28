@@ -214,11 +214,6 @@ variable "force_destroy" {
 # }
 #####################
 # ECR 관련 설정
-variable "ecr_name" {
-  description = "ECR 리포지토리 이름"
-  type        = string
-  default     = "team3-backend"
-}
 variable "ecr_image_tag_mutability" {
   description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
   type        = string
@@ -238,14 +233,4 @@ variable "ecr_encryption_type" {
   description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
   type        = string
   default     = "AES256"
-}
-
-# VPN 관련 설정
-variable "server_certificate_arn" {
-  description = "ACM 서버 인증서 ARN"
-  type        = string
-}
-variable "client_ca_certificate_arn" {
-  description = "클라이언트 CA 인증서 ARN"
-  type        = string
 }

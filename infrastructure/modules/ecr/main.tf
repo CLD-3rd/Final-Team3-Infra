@@ -1,6 +1,6 @@
 # ECR 프라이빗 리포지토리 생성
 resource "aws_ecr_repository" "this" {
-  name                 = var.name
+  name                 = "${var.name_prefix}-ecr"
   image_tag_mutability = var.image_tag_mutability
   force_delete         = var.force_delete
 
