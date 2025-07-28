@@ -17,8 +17,7 @@ variable "default_tags" {
     Owner       = "matchfit"
   }
 }
-
-
+#####################
 # VPC의 CIDR 블록
 variable "vpc_cidr" {
   description = "VPC CIDR"
@@ -55,8 +54,7 @@ variable "route_tables" {
 
   default = []  # 테스트용으로는 비워 둘 수도 있음
 }
-
-
+#####################
 # EKS 관련 루트 variables
 variable "kubernetes_version" {
   default = "1.32"
@@ -74,95 +72,93 @@ variable "worker_access_cidr" {
   type        = list(string)
   default     = ["10.0.2.0/24"]
 }
-
 variable "ssh_key_name" {
   description = "EC2 인스턴스에 사용할 SSH 키 이름"
   type        = string
 }
-
+variable "create_instance_profile" {
+  type        = bool
+  default     = true
+  description = "EC2 IAM 역할 연결 관련 Profile을 생성할지 여부"
+}
+#####################
 # RDS 관련 루트 변수
-variable "db_name" {
-  description = "RDS 데이터베이스 이름"
-  type        = string
-}
-variable "db_username" {
-  description = "데이터베이스 관리자 사용자 이름"
-  type        = string
-}
-variable "db_password" {
-  description = "데이터베이스 비밀번호 (보안상 민감 정보)"
-  type        = string
-  sensitive   = true
-}
-variable "rds_security_group_ids" {
-  description = "RDS에 적용할 보안 그룹 ID 목록"
-  type        = list(string)
-  default     = []
-}
-variable "create_subnet_group" {
-  description = "서브넷 그룹 생성 여부"
-  type        = bool
-  default     = true
-}
-variable "db_subnet_group_name" {
-  description = "기존에 생성된 서브넷 그룹 이름 (사용 시 지정)"
-  type        = string
-  default     = null
-}
-variable "multi_az" {
-  description = "멀티 AZ 배포 여부"
-  type        = bool
-  default     = true
-}
-variable "backup_retention_period" {
-  description = "자동 백업 보존 기간(일 단위)"
-  type        = number
-  default     = 7
-}
-variable "backup_window" {
-  description = "자동 백업 수행 시간 (예: 03:00-04:00)"
-  type        = string
-  default     = "03:00-04:00"
-}
-variable "maintenance_window" {
-  description = "유지보수 작업 허용 시간대 (예: sun:04:00-sun:05:00)"
-  type        = string
-  default     = "sun:04:00-sun:05:00"
-}
-variable "skip_final_snapshot" {
-  description = "RDS 삭제 시 최종 스냅샷 생성 여부 (true 시 생략)"
-  type        = bool
-  default     = true
-}
-variable "deletion_protection" {
-  description = "RDS 삭제 보호 기능 활성화 여부"
-  type        = bool
-  default     = false
-}
-
-# ElastiCache redis 관련 설정
+# variable "db_name" {
+#   description = "RDS 데이터베이스 이름"
+#   type        = string
+# }
+# variable "db_username" {
+#   description = "데이터베이스 관리자 사용자 이름"
+#   type        = string
+# }
+# variable "db_password" {
+#   description = "데이터베이스 비밀번호 (보안상 민감 정보)"
+#   type        = string
+#   sensitive   = true
+# }
+# variable "rds_security_group_ids" {
+#   description = "RDS에 적용할 보안 그룹 ID 목록"
+#   type        = list(string)
+#   default     = []
+# }
+# variable "create_subnet_group" {
+#   description = "서브넷 그룹 생성 여부"
+#   type        = bool
+#   default     = true
+# }
+# variable "db_subnet_group_name" {
+#   description = "기존에 생성된 서브넷 그룹 이름 (사용 시 지정)"
+#   type        = string
+#   default     = null
+# }
+# variable "multi_az" {
+#   description = "멀티 AZ 배포 여부"
+#   type        = bool
+#   default     = true
+# }
+# variable "backup_retention_period" {
+#   description = "자동 백업 보존 기간(일 단위)"
+#   type        = number
+#   default     = 7
+# }
+# variable "backup_window" {
+#   description = "자동 백업 수행 시간 (예: 03:00-04:00)"
+#   type        = string
+#   default     = "03:00-04:00"
+# }
+# variable "skip_final_snapshot" {
+#   description = "RDS 삭제 시 최종 스냅샷 생성 여부 (true 시 생략)"
+#   type        = bool
+#   default     = true
+# }
+# variable "deletion_protection" {
+#   description = "RDS 삭제 보호 기능 활성화 여부"
+#   type        = bool
+#   default     = false
+# }
+#####################
+# ElastiCache Redis 관련 변수들
 variable "auth_token" {
   description = "ElastiCache Redis 인증 토큰"
   type        = string
   sensitive   = true   # Terraform 출력에서 숨겨짐
 }
-
-variable "snapshot_window" {
-  description = "ElastiCache 스냅샷 수행 시간대"
+variable "maintenance_window" {
+  description = "유지보수 작업 허용 시간대 (예: sun:04:00-sun:05:00)"
   type        = string
-  default     = "00:00-04:00"
+  default     = "sun:00:00-sun:02:00"
 }
-
-variable "snapshot_retention_limit" {
-  description = "ElastiCache 스냅샷 보관 일수"
-  type        = number
-  default     = 1
+variable "snapshot_window" {
+  description = "스냅샷이 수행되는 시간대"
+  type        = string
+  default     = "11:30-13:00"
 }
-
-# S3 관련 설정
+#####################
+# S3 관련 루트 변수
 variable "bucket_name" {
   description = "Name of the S3 bucket (globally unique)"
   type        = string
+  default     = "matchfit-bucket"
 }
 variable "enable_versioning" {
   type        = bool
@@ -206,13 +202,18 @@ variable "force_destroy" {
   type        = bool
   default     = false
 }
-
+#####################
+# VPN 관련 설정
+# variable "server_certificate_arn" {
+#   description = "ACM 서버 인증서 ARN"
+#   type        = string
+# }
+# variable "client_ca_certificate_arn" {
+#   description = "클라이언트 CA 인증서 ARN"
+#   type        = string
+# }
+#####################
 # ECR 관련 설정
-variable "ecr_name" {
-  description = "ECR 리포지토리 이름"
-  type        = string
-  default     = "team3-backend"
-}
 variable "ecr_image_tag_mutability" {
   description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
   type        = string
@@ -232,14 +233,4 @@ variable "ecr_encryption_type" {
   description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
   type        = string
   default     = "AES256"
-}
-
-# VPN 관련 설정
-variable "server_certificate_arn" {
-  description = "ACM 서버 인증서 ARN"
-  type        = string
-}
-variable "client_ca_certificate_arn" {
-  description = "클라이언트 CA 인증서 ARN"
-  type        = string
 }

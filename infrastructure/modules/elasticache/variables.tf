@@ -1,18 +1,15 @@
-variable "name" {
+variable "name_prefix" {
   description = "리소스 이름 접두어"
   type        = string
 }
-
 variable "vpc_id" {
   description = "ElastiCache가 배치될 VPC ID"
   type        = string
 }
-
 variable "private_subnet_ids" {
   description = "Redis를 배포할 프라이빗 서브넷 ID 목록"
   type        = list(string)
 }
-
 variable "eks_node_sg_id" {
   description = "EKS 노드의 Security Group ID (Redis 접근 허용 목적)"
   type        = string

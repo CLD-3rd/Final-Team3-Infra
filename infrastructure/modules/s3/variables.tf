@@ -1,3 +1,4 @@
+# S3 모듈 variables.tf
 variable "bucket_name" {
   description = "Globally unique name of the S3 bucket"
   type        = string
@@ -69,3 +70,8 @@ variable "tags" {
   default     = {}
 }
 
+variable "create_bucket" {
+  type    = bool
+  default = true
+  description = "S3 버킷 또는 관련 리소스를 생성할지 여부"
+}

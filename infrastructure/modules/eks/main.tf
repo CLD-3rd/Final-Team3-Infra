@@ -61,9 +61,9 @@ resource "aws_iam_role_policy_attachment" "ssm_core_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" #SSM 세션 매니저 연결을 위한 권한
 }
 
-
 # EC2 인스턴스 프로파일 생성 (노드 그룹에서 사용)
 resource "aws_iam_instance_profile" "eks_node_instance_profile" {
+  count  = var.create_instance_profile ? 1 : 0
   name = "${var.cluster_name}-node-instance-profile"
   role = aws_iam_role.eks_node_role.name
 }
@@ -75,7 +75,7 @@ resource "aws_security_group" "eks_cluster_sg" {
   vpc_id      = var.vpc_id
 
   # 워커 노드 → EKS API 서버 (443포트) 통신 허용
- ingress {
+  ingress {
     description = "Allow worker nodes to access cluster"
     from_port   = 443
     to_port     = 443
@@ -184,7 +184,7 @@ resource "aws_eks_node_group" "default" {
     min_size     = 1     # 최소 유지 수
   }
 
-  instance_types = ["t2.micro"]         # 노드 인스턴스 타입
+  instance_types = ["t3.medium"]         # 노드 인스턴스 타입
   ami_type       = "AL2_x86_64"          # Amazon Linux 2 AMI
 
   tags = var.tags
@@ -193,5 +193,4 @@ resource "aws_eks_node_group" "default" {
     ec2_ssh_key = var.ssh_key_name
     source_security_group_ids = [aws_security_group.eks_ssh_sg.id]   # 노드 보안그룹 ID
   }
-
 }

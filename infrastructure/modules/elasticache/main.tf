@@ -1,12 +1,12 @@
 # Redis 클러스터가 배치될 서브넷 그룹 정의
 resource "aws_elasticache_subnet_group" "this" {
-  name       = "${var.name}-subnet-group"
+  name       = "${var.name_prefix}-subnet-group"
   subnet_ids = var.private_subnet_ids
 }
 
 # Redis에 접근하기 위한 보안 그룹 설정
 resource "aws_security_group" "this" {
-  name        = "${var.name}-sg"
+  name        = "${var.name_prefix}-sg"
   description = "Security group for Redis ElastiCache"
   vpc_id      = var.vpc_id
 
@@ -29,8 +29,8 @@ resource "aws_security_group" "this" {
 
 # Redis 클러스터 리소스 생성
 resource "aws_elasticache_replication_group" "this" {
-  replication_group_id          = "${var.name}-redis-rg"          # 고유 ID
-  description = "Redis replication group for ${var.name}"
+  replication_group_id          = "${var.name_prefix}-redis-rg"          # 고유 ID
+  description = "Redis replication group for ${var.name_prefix}"
 
   engine                       = "redis"                          # Redis 사용
   engine_version               = var.engine_version               # Redis 버전
@@ -49,6 +49,7 @@ resource "aws_elasticache_replication_group" "this" {
   snapshot_retention_limit = var.snapshot_retention_limit        # 자동 백업 스냅샷 보관 기간 (일 단위)
   snapshot_window          = var.snapshot_window                 # 스냅샷이 생성될 수 있는 시간대
 
+  transit_encryption_enabled  = true
   auth_token                  = var.auth_token                   # 인증 비밀번호 설정
 
   tags = var.tags

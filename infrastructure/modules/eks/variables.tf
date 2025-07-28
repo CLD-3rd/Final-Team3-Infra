@@ -32,4 +32,8 @@ variable "worker_access_cidr" {
   type = list(string)
 }
 
-
+variable "create_instance_profile" {
+  description = "EC2 IAM 역할 연결 관련 Profile을 생성할지 여부"
+  type        = bool
+  default     = true
+}

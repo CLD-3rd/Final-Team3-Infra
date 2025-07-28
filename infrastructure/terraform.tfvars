@@ -36,8 +36,8 @@ db_subnet_group_name = null  # 외부에서 주입 시: "my-custom-subnet-group"
 multi_az = true  # or false
 # 백업 및 유지보수 설정
 backup_retention_period = 7
-backup_window           = "03:00-04:00"
-maintenance_window      = "sun:04:00-sun:05:00"
+snapshot_window           = "11:30-13:00"
+maintenance_window      = "sun:00:00-sun:02:00"
 # 삭제 보호 및 최종 스냅샷 옵션
 skip_final_snapshot = true
 deletion_protection = false
@@ -46,8 +46,7 @@ deletion_protection = false
 bucket_name = "matchfit-bucket"
 
 # Redis 접속 비밀번호(16자리 이상)
-auth_token = "redisredis12341234"
+auth_token = "matchfit250822redis"
 
-# VPN 인증서
-server_certificate_arn      = "arn:aws:acm:ap-northeast-2:123456789012:certificate/abcd1234-5678-90ef-ghij-klmnopqrstuv"
-client_ca_certificate_arn  = "arn:aws:acm:ap-northeast-2:123456789012:certificate/wxyz9876-5432-10ab-cdef-ghijklmnopqr"
+# server_certificate_arn="arn:aws:acm:ap-northeast-2:061039804626:certificate/8b1167e0-2d9c-458e-a109-101781388822"
+# client_ca_certificate_arn="arn:aws:acm:ap-northeast-2:061039804626:certificate/29ad88cc-1c1b-446d-bdb5-ee356de27ab8"

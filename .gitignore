@@ -26,7 +26,7 @@ replay_pid*
 
 # Terraform state
 *.tfstate
-*.tfstate.backup
+*.tfstate.*
 
 # Crash log
 crash.log
