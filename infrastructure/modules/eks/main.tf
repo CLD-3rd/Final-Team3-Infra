@@ -184,7 +184,7 @@ resource "aws_eks_node_group" "default" {
     min_size     = 1     # 최소 유지 수
   }
 
-  instance_types = ["t2.micro"]         # 노드 인스턴스 타입
+  instance_types = ["t3.medium"]         # 노드 인스턴스 타입
   ami_type       = "AL2_x86_64"          # Amazon Linux 2 AMI
 
   tags = var.tags
