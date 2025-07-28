@@ -156,19 +156,16 @@ module "ecr" {
 }
 
 # VPN 모듈 호출
-# module "vpn" {
-#   source = "./modules/vpn"
+module "vpn" {
+  source = "./modules/vpn"
 
-#   name_prefix              = var.name_prefix
-#   vpc_id                   = module.network.vpc_id
-#   vpc_cidr                 = var.vpc_cidr
-#   create_security_group    = true
-#   client_cidr_block        = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
-#   server_certificate_arn    = var.server_certificate_arn
-#   client_ca_certificate_arn = var.client_ca_certificate_arn
-
-#   # cloudwatch는 확인 필요
-#   cloudwatch_log_group     = "matchfit-vpn-logs"
-
-#   subnet_ids               = module.network.private_subnet_id
-# }
+  name_prefix               = var.name_prefix
+  vpc_id                    = module.network.vpc_id
+  vpc_cidr                  = var.vpc_cidr
+  create_security_group     = true
+  client_cidr_block         = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+  server_certificate_arn    = var.server_certificate_arn
+  client_ca_certificate_arn = var.client_ca_certificate_arn
+  cloudwatch_log_group      = "matchfit-vpn-logs"
+  subnet_ids                = module.network.private_subnet_id
+}

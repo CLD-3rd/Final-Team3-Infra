@@ -89,31 +89,3 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
     Name = "${var.name_prefix}-vpn"
   }
 }
-
-resource "aws_ec2_client_vpn_network_association" "associations" {
-  for_each = toset(var.subnet_ids)
-
-  client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn.id
-  subnet_id              = each.value
-}
-
-resource "aws_ec2_client_vpn_route" "route_to_vpc" {
-  for_each = toset(var.subnet_ids)
-
-  client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn.id
-  destination_cidr_block = var.vpc_cidr
-  target_vpc_subnet_id   = each.value
-  
-  lifecycle {
-    ignore_changes = [destination_cidr_block]
-  }
-  depends_on = [
-    aws_ec2_client_vpn_network_association.associations
-  ]
-}
-
-resource "aws_ec2_client_vpn_authorization_rule" "allow_all" {
-  client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn.id
-  target_network_cidr    = var.vpc_cidr
-  authorize_all_groups   = true
-}

@@ -204,14 +204,14 @@ variable "force_destroy" {
 }
 #####################
 # VPN 관련 설정
-# variable "server_certificate_arn" {
-#   description = "ACM 서버 인증서 ARN"
-#   type        = string
-# }
-# variable "client_ca_certificate_arn" {
-#   description = "클라이언트 CA 인증서 ARN"
-#   type        = string
-# }
+variable "server_certificate_arn" {
+  description = "ACM 서버 인증서 ARN"
+  type        = string
+}
+variable "client_ca_certificate_arn" {
+  description = "클라이언트 CA 인증서 ARN"
+  type        = string
+}
 #####################
 # ECR 관련 설정
 variable "ecr_image_tag_mutability" {
