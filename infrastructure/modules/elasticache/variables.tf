@@ -1,4 +1,4 @@
-variable "name" {
+variable "name_prefix" {
   description = "리소스 이름 접두어"
   type        = string
 }

@@ -23,7 +23,7 @@ output "custom_route_table_ids" {
   description = "모듈에서 생성한 사용자 정의 라우팅 테이블 ID 목록"
   value       = module.network.custom_route_table_ids
 }
-
+#####################
 # EKS 관련 루트 outputs
 output "eks_cluster_name" {
   value       = module.eks.cluster_name
@@ -61,29 +61,27 @@ output "node_group_name" {
   value       = module.eks.node_group_name
   description = "EKS NodeGroup name"
 }
-
-
+#####################
 # RDS 출력
-output "rds_endpoint" {
-  description = "RDS 접속 엔드포인트"
-  value       = module.rds.rds_endpoint
-  sensitive   = true
-}
-output "rds_identifier" {
-  description = "RDS 인스턴스 식별자"
-  value       = module.rds.rds_identifier
-}
-output "rds_port" {
-  description = "RDS 포트 번호"
-  value       = module.rds.rds_port
-}
-output "rds_address" {
-  description = "RDS 호스트 이름"
-  value       = module.rds.rds_address
-  sensitive   = true
-}
-
-
+# output "rds_endpoint" {
+#   description = "RDS 접속 엔드포인트"
+#   value       = module.rds.rds_endpoint
+#   sensitive   = true
+# }
+# output "rds_identifier" {
+#   description = "RDS 인스턴스 식별자"
+#   value       = module.rds.rds_identifier
+# }
+# output "rds_port" {
+#   description = "RDS 포트 번호"
+#   value       = module.rds.rds_port
+# }
+# output "rds_address" {
+#   description = "RDS 호스트 이름"
+#   value       = module.rds.rds_address
+#   sensitive   = true
+# }
+#####################
 # S3 루트 출력
 output "s3_bucket_id" {
   description = "The ID of the created S3 bucket"

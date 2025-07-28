@@ -9,15 +9,15 @@ terraform {
     }
   }
 }
-terraform {
-  backend "remote" {
-    organization = "team3-matchfit"
-
-    workspaces {
-      name = "Final-Team3-Infra"
-    }
-  }
-}
+# # TFC 사용 시 필요
+# terraform {
+#   backend "remote" {
+#     organization = "team3-matchfit"
+#     workspaces {
+#       name = "Final-Team3-Infra"
+#     }
+#   }
+# }
 
 # AWS Provider 정의
 provider "aws" {
@@ -59,6 +59,7 @@ module "network" {
 # EKS 클러스터 모듈 호출
 module "eks" {
   source                = "./modules/eks"
+  create_instance_profile    = var.create_instance_profile
   cluster_name          = var.cluster_name
   kubernetes_version    = var.kubernetes_version
   vpc_id                = module.network.vpc_id
@@ -74,62 +75,59 @@ module "eks" {
   ]
 
 }
-
+#####################
 # RDS 모듈 호출
-module "rds" {
-  source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
+# module "rds" {
+#   source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
 
-  name_prefix            = var.name_prefix
-  db_name                = var.db_name
-  username               = var.db_username
-  password               = var.db_password
+#   name_prefix            = var.name_prefix
+#   db_name                = var.db_name
+#   username               = var.db_username
+#   password               = var.db_password
 
-  # vpc_security_group_ids = var.rds_security_group_ids
-  vpc_security_group_ids = []
-  private_subnet_ids = module.network.private_subnet_id
-
-  create_security_group  = true
-  vpc_id                 = module.network.vpc_id
-
-  create_subnet_group    = var.create_subnet_group
-  db_subnet_group_name   = var.db_subnet_group_name
-
-  multi_az               = var.multi_az
-  backup_retention_period = var.backup_retention_period
-  backup_window          = var.backup_window
-  maintenance_window     = var.maintenance_window
-
-  skip_final_snapshot    = var.skip_final_snapshot
-  deletion_protection    = var.deletion_protection
-
-  tags = var.default_tags
-
-    depends_on = [
-    module.eks
-  ]
-}
-
-# elasticache 설정 모듈 호출
-# module "elasticache" {
-#   source             = "./modules/elasticache"
-#   name               = "team3"                              # 리소스 네이밍 접두어(필수값)
-#   vpc_id             = module.network.vpc_id
+#   # vpc_security_group_ids = var.rds_security_group_ids
+#   vpc_security_group_ids = []
 #   private_subnet_ids = module.network.private_subnet_id
-#   eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
 
-#   auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
+#   create_security_group  = true
+#   vpc_id                 = module.network.vpc_id
 
-#   # 설정 안할 시 AWS가 임의 시간대로 설정
-#   maintenance_window          = "mon:03:00-mon:04:00"       # 정기 점검 시간
-#   snapshot_window             = "00:00-04:00"               # 스냅샷 수행 시간대
-#   snapshot_retention_limit    = 1                           # 스냅샷 보관 일수
+#   create_subnet_group    = var.create_subnet_group
+#   db_subnet_group_name   = var.db_subnet_group_name
+
+#   multi_az               = var.multi_az
+#   backup_retention_period = var.backup_retention_period
+#   backup_window          = var.backup_window
+#   maintenance_window     = var.maintenance_window
+
+#   skip_final_snapshot    = var.skip_final_snapshot
+#   deletion_protection    = var.deletion_protection
 
 #   tags = var.default_tags
 # }
+#####################
+# ElastiCache 설정 모듈 호출
+module "elasticache" {
+  source             = "./modules/elasticache"
+  name_prefix        = var.name_prefix                      # 리소스 네이밍 접두어(필수값)
+  vpc_id             = module.network.vpc_id
+  private_subnet_ids = module.network.private_subnet_id
+  eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
 
+  auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
+
+  # 설정 안할 시 AWS가 임의 시간대로 설정
+  maintenance_window          = var.maintenance_window       # 정기 점검 시간
+  snapshot_window             = var.snapshot_window          # 스냅샷 수행 시간대
+  snapshot_retention_limit    = 1                            # 스냅샷 보관 일수
+
+  tags = var.default_tags
+}
+#####################
 # S3 모듈 호출
 module "s3_bucket" {
   source                  = "./modules/s3"
+  create_bucket           = true
   bucket_name             = var.bucket_name
   force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
   enable_versioning       = var.enable_versioning
@@ -144,31 +142,21 @@ module "s3_bucket" {
   tags                    = var.default_tags
 }
 
-resource "aws_s3_bucket" "this" {
-  bucket        = var.bucket_name
-  force_destroy = var.force_destroy   # true면 객체 포함 강제 삭제
-  tags          = var.default_tags
-}
-
 
 # VPN 모듈 호출
-module "vpn" {
-  source = "./modules/vpn"
+# module "vpn" {
+#   source = "./modules/vpn"
 
-  name_prefix              = var.name_prefix
-  vpc_id                   = module.network.vpc_id
-  create_security_group    = true
-  client_cidr_block        = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
-  server_certificate_arn    = var.server_certificate_arn
-  client_ca_certificate_arn = var.client_ca_certificate_arn
+#   name_prefix              = var.name_prefix
+#   vpc_id                   = module.network.vpc_id
+#   vpc_cidr                 = var.vpc_cidr
+#   create_security_group    = true
+#   client_cidr_block        = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+#   server_certificate_arn    = var.server_certificate_arn
+#   client_ca_certificate_arn = var.client_ca_certificate_arn
 
-  # cloudwatch는 확인 필요
-  cloudwatch_log_group     = "your-log-group"
-  cloudwatch_log_stream    = "your-log-stream"
+#   # cloudwatch는 확인 필요
+#   cloudwatch_log_group     = "matchfit-vpn-logs"
 
-  subnet_ids               = module.network.private_subnet_id
-
-    depends_on = [
-    module.rds
-  ]
-}
+#   subnet_ids               = module.network.private_subnet_id
+# }
