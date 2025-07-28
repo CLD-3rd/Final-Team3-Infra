@@ -151,7 +151,7 @@ module "ecr" {
   encryption_type      = var.ecr_encryption_type       # 암호화 방식
 
   tags = var.default_tags
-=======
+}
 
 # VPN 모듈 호출
 module "vpn" {
