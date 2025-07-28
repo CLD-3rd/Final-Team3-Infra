@@ -37,6 +37,10 @@ variable "security_group_id" {
   type        = string
   default     = ""
   description = "기존 보안 그룹 ID (create_security_group가 false일 때 사용)"
+  validation {
+    condition     = var.create_security_group || (length(var.security_group_id) > 0)
+    error_message = "create_security_group이 false인 경우, security_group_id는 필수입니다."
+  }
 }
 
 variable "create_security_group" {

@@ -9,7 +9,8 @@ terraform {
     }
   }
 }
-# # TFC 사용 시 필요
+#####################
+# TFC 사용 시 필요
 # terraform {
 #   backend "remote" {
 #     organization = "team3-matchfit"
@@ -18,12 +19,12 @@ terraform {
 #     }
 #   }
 # }
-
+#####################
 # AWS Provider 정의
 provider "aws" {
   region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
 }
-
+#####################
 # network 설정 모듈 호출
 locals {
   private_subnet_ids = module.network.private_subnet_id
@@ -55,7 +56,7 @@ module "network" {
     }
   ]
 }
-
+#####################
 # EKS 클러스터 모듈 호출
 module "eks" {
   source                = "./modules/eks"
@@ -77,34 +78,34 @@ module "eks" {
 }
 #####################
 # RDS 모듈 호출
-# module "rds" {
-#   source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
+module "rds" {
+  source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
 
-#   name_prefix            = var.name_prefix
-#   db_name                = var.db_name
-#   username               = var.db_username
-#   password               = var.db_password
+  name_prefix            = var.name_prefix
+  db_name                = var.db_name
+  username               = var.db_username
+  password               = var.db_password
 
-#   # vpc_security_group_ids = var.rds_security_group_ids
-#   vpc_security_group_ids = []
-#   private_subnet_ids = module.network.private_subnet_id
+  # vpc_security_group_ids = var.rds_security_group_ids
+  vpc_security_group_ids = []
+  private_subnet_ids = module.network.private_subnet_id
 
-#   create_security_group  = true
-#   vpc_id                 = module.network.vpc_id
+  create_security_group  = true
+  vpc_id                 = module.network.vpc_id
 
-#   create_subnet_group    = var.create_subnet_group
-#   db_subnet_group_name   = var.db_subnet_group_name
+  create_subnet_group    = var.create_subnet_group
+  db_subnet_group_name   = var.db_subnet_group_name
 
-#   multi_az               = var.multi_az
-#   backup_retention_period = var.backup_retention_period
-#   backup_window          = var.backup_window
-#   maintenance_window     = var.maintenance_window
+  multi_az               = var.multi_az
+  backup_retention_period = var.backup_retention_period
+  backup_window          = var.backup_window
+  maintenance_window     = var.maintenance_window
 
-#   skip_final_snapshot    = var.skip_final_snapshot
-#   deletion_protection    = var.deletion_protection
+  skip_final_snapshot    = var.skip_final_snapshot
+  deletion_protection    = var.deletion_protection
 
-#   tags = var.default_tags
-# }
+  tags = var.default_tags
+}
 #####################
 # ElastiCache 설정 모듈 호출
 module "elasticache" {
@@ -141,7 +142,7 @@ module "s3_bucket" {
   bucket_policy           = var.bucket_policy
   tags                    = var.default_tags
 }
-
+#####################
 # ECR 모듈 호출
 module "ecr" {
   source = "./modules/ecr"
@@ -154,21 +155,18 @@ module "ecr" {
 
   tags = var.default_tags
 }
-
+#####################
 # VPN 모듈 호출
-# module "vpn" {
-#   source = "./modules/vpn"
+module "vpn" {
+  source = "./modules/vpn"
 
-#   name_prefix              = var.name_prefix
-#   vpc_id                   = module.network.vpc_id
-#   vpc_cidr                 = var.vpc_cidr
-#   create_security_group    = true
-#   client_cidr_block        = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
-#   server_certificate_arn    = var.server_certificate_arn
-#   client_ca_certificate_arn = var.client_ca_certificate_arn
-
-#   # cloudwatch는 확인 필요
-#   cloudwatch_log_group     = "matchfit-vpn-logs"
-
-#   subnet_ids               = module.network.private_subnet_id
-# }
+  name_prefix               = var.name_prefix
+  vpc_id                    = module.network.vpc_id
+  vpc_cidr                  = var.vpc_cidr
+  create_security_group     = true
+  client_cidr_block         = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+  server_certificate_arn    = var.server_certificate_arn
+  client_ca_certificate_arn = var.client_ca_certificate_arn
+  cloudwatch_log_group      = "matchfit-vpn-logs"
+  subnet_ids                = module.network.private_subnet_id
+}
