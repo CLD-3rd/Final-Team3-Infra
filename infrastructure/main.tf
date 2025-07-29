@@ -56,7 +56,7 @@ module "network" {
     }
   ]
 }
-#####################
+# #####################
 # EKS 클러스터 모듈 호출
 module "eks" {
   source                = "./modules/eks"
@@ -74,7 +74,6 @@ module "eks" {
   depends_on = [
     module.network
   ]
-
 }
 #####################
 # RDS 모듈 호출
@@ -124,8 +123,8 @@ module "elasticache" {
 
   tags = var.default_tags
 }
-#####################
-# S3 모듈 호출
+# #####################
+# # S3 모듈 호출
 module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
@@ -142,8 +141,8 @@ module "s3_bucket" {
   bucket_policy           = var.bucket_policy
   tags                    = var.default_tags
 }
-#####################
-# ECR 모듈 호출
+# #####################
+# # ECR 모듈 호출
 module "ecr" {
   source = "./modules/ecr"
 
@@ -155,8 +154,8 @@ module "ecr" {
 
   tags = var.default_tags
 }
-#####################
-# VPN 모듈 호출
+# #####################
+# # VPN 모듈 호출
 module "vpn" {
   source = "./modules/vpn"
 
@@ -192,6 +191,6 @@ module "alb_controller" {
 }
 
 # ArgoCD Helm 설치
-module "argocd" {
-  source = "./modules/argocd"
-}
+# module "argocd" {
+#   source = "./modules/argocd"
+# }
