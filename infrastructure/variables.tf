@@ -234,3 +234,9 @@ variable "ecr_encryption_type" {
   type        = string
   default     = "AES256"
 }
+
+variable "domain_name" {
+  description = "Route53에 등록할 최상위 도메인"
+  type        = string
+  default = "match-fit.store"
+}

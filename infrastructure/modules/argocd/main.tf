@@ -1,42 +1,53 @@
+# ArgoCD Helm 차트를 설치하는 리소스
 resource "helm_release" "argocd" {
-  name             = "argocd"
-  repository       = "https://argoproj.github.io/argo-helm"
-  chart            = "argo-cd"
-  version          = "6.7.4"
-  namespace        = "argocd"
-  create_namespace = true
+  name             = "argocd"                            # Helm release 이름
+  repository       = "https://argoproj.github.io/argo-helm"  # Helm 차트 저장소 URL
+  chart            = "argo-cd"                           # 설치할 Helm 차트명
+  version          = "6.7.4"                             # 설치할 Helm 차트 버전
+  namespace        = "argocd"                            # 설치할 네임스페이스
+  create_namespace = true                                # 네임스페이스가 없으면 생성
 
-# values 값은 Helm 차트의 설정값을 YAML로 인코딩해서 전달
-values = [
-  yamlencode({
-    server = {
-      ingress = {
-        enabled = true  # Ingress 리소스를 활성화하여 외부 접근 허용
-        ingressClassName = "alb"  # 사용하는 Ingress Controller는 AWS ALB
-        annotations = {
-          # 인터넷에 노출되는 ALB로 구성
-          "alb.ingress.kubernetes.io/scheme"                      = "internet-facing"
+  # Helm 차트에 전달할 값들을 YAML로 인코딩하여 전달
+  values = [
+    yamlencode({
+      server = {
+        ingress = {
+          enabled          = true                          # Ingress 리소스 활성화
+          ingressClassName = "alb"                         # AWS ALB Ingress Controller 사용 지정
+          annotations = {
+            # 인터넷에 노출되는 ALB 설정
+            "alb.ingress.kubernetes.io/scheme"           = "internet-facing"
 
-          # ALB가 대상으로 삼을 타입: ip → Pod의 IP로 트래픽 전달
-          "alb.ingress.kubernetes.io/target-type"                 = "ip"
+            # ALB 타겟 타입: Pod IP를 대상으로 지정
+            "alb.ingress.kubernetes.io/target-type"      = "ip"
 
-          # ALB 그룹을 "argocd"로 지정 (다른 ALB Ingress와 격리)
-          "alb.ingress.kubernetes.io/group.name"                  = "argocd"
+            # ALB 그룹 이름 지정 (여러 ALB 격리 목적)
+            "alb.ingress.kubernetes.io/group.name"       = "argocd"
 
-          # ALB가 수신할 포트를 JSON 배열 형식으로 설정 (HTTP 80)
-          "alb.ingress.kubernetes.io/listen-ports"                = "[{\"HTTP\": 80}]"
+            # ALB가 수신할 포트 설정, HTTP 80 포트만 열림
+            "alb.ingress.kubernetes.io/listen-ports"     = "[{\"HTTP\": 80}]"
 
-          # ALB가 헬스체크를 수행할 경로 설정 (ArgoCD 서버 기본 health endpoint)
-          "alb.ingress.kubernetes.io/healthcheck-path"            = "/healthz"
+            # ALB 헬스체크 경로 설정 (ArgoCD 기본 헬스 체크)
+            "alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
 
-          # ALB 헬스체크 시 성공으로 간주할 HTTP 코드
-          "alb.ingress.kubernetes.io/success-codes"               = "200"
+            # 헬스체크 시 정상으로 판단할 HTTP 응답 코드
+            "alb.ingress.kubernetes.io/success-codes"    = "200"
+          }
+
+          # ALB가 라우팅할 도메인 호스트 이름
+          hosts = ["argocd.match-fit.store"]
         }
-
-        # ALB 도메인 라우팅을 위한 호스트 이름 지정
-        hosts = ["argocd.match-fit.store"]
       }
-    }
-  })
-]
+    })
+  ]
+}
+
+# ArgoCD Ingress 리소스를 참조하는 데이터 소스
+data "kubernetes_ingress_v1" "argocd" {
+  metadata {
+    name      = "argocd-server"                         # ArgoCD 서버 Ingress 이름
+    namespace = "argocd"                                # 네임스페이스
+  }
+
+  depends_on = [helm_release.argocd]                    # Helm 설치 완료 후 조회
 }

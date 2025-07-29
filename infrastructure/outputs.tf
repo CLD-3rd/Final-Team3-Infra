@@ -117,3 +117,8 @@ output "ecr_repository_arn" {
   description = "생성된 ECR 리포지토리의 ARN 출력 (IAM 정책에 활용)"
   value = module.ecr.repository_arn
 }
+
+output "route53_zone_id" {
+  description = "생성된 Route53 호스팅 존의 Zone ID"
+  value       = module.route53.zone_id
+}
