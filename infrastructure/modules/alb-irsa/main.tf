@@ -22,12 +22,17 @@ resource "aws_iam_role" "alb_controller_irsa" {
   tags = var.tags
 }
 
-resource "aws_iam_policy" "alb_controller_policy" {
-  name   = "AWSLoadBalancerControllerIAMPolicy"
-  policy = file("${path.module}/iam-policy-alb-controller.json") # 공식 정책 JSON 파일
+
+data "aws_iam_policy" "alb_controller_policy" {
+  name = "AWSLoadBalancerControllerIAMPolicy"
 }
+
+# resource "aws_iam_policy" "alb_controller_policy" {
+#   name   = "AWSLoadBalancerControllerIAMPolicy"
+#   policy = file("${path.module}/iam-policy-alb-controller.json") # 공식 정책 JSON 파일
+# }
 
 resource "aws_iam_role_policy_attachment" "alb_controller_attach" {
   role       = aws_iam_role.alb_controller_irsa.name
-  policy_arn = aws_iam_policy.alb_controller_policy.arn
+  policy_arn = data.aws_iam_policy.alb_controller_policy.arn
 }
