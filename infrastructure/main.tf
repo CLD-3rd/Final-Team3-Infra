@@ -193,7 +193,6 @@ module "alb_controller" {
 }
 
 # ArgoCD Helm 설치
-<<<<<<< HEAD
 module "argocd" {
   source = "./modules/argocd"
 
@@ -208,8 +207,3 @@ module "route53" {
 
   depends_on = [module.alb_controller]
 }
-=======
-# module "argocd" {
-#   source = "./modules/argocd"
-# }
->>>>>>> 6450ea9b14b86936b061975e3e3c993733b802cf

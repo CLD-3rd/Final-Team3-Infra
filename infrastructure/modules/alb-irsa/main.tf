@@ -23,15 +23,6 @@ resource "aws_iam_role" "alb_controller_irsa" {
   tags = var.tags
 }
 
-<<<<<<< HEAD:infrastructure/modules/irsa-alb/main.tf
-# ALB Controller가 필요로 하는 IAM 정책 생성 (외부 json 파일 참조)
-resource "aws_iam_policy" "alb_controller_policy" {
-  name   = "AWSLoadBalancerControllerIAMPolicy"
-  policy = file("${path.module}/iam-policy-alb-controller.json")
-}
-
-# 생성한 IAM 역할에 정책 연결
-=======
 
 data "aws_iam_policy" "alb_controller_policy" {
   name = "AWSLoadBalancerControllerIAMPolicy"
@@ -42,7 +33,6 @@ data "aws_iam_policy" "alb_controller_policy" {
 #   policy = file("${path.module}/iam-policy-alb-controller.json") # 공식 정책 JSON 파일
 # }
 
->>>>>>> 6450ea9b14b86936b061975e3e3c993733b802cf:infrastructure/modules/alb-irsa/main.tf
 resource "aws_iam_role_policy_attachment" "alb_controller_attach" {
   role       = aws_iam_role.alb_controller_irsa.name
   policy_arn = data.aws_iam_policy.alb_controller_policy.arn
