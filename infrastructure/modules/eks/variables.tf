@@ -32,6 +32,14 @@ variable "worker_access_cidr" {
   type = list(string)
 }
 
+variable "admin_user_arn" {
+  description = "관리자 IAM 사용자의 ARN"
+  type        = string
+}
+variable "eks_admin_policy_arn" {
+  default = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+}
+
 variable "create_instance_profile" {
   description = "EC2 IAM 역할 연결 관련 Profile을 생성할지 여부"
   type        = bool

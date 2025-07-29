@@ -161,7 +161,7 @@ resource "aws_eks_cluster" "this" {
     subnet_ids              = var.subnet_ids                         # 클러스터에 연결할 서브넷들
     security_group_ids      = [aws_security_group.eks_cluster_sg.id] # 보안 그룹 ID
     endpoint_private_access = true                                   # 프라이빗 접근만 허용
-    endpoint_public_access  = false                                  # 퍼블릭 접근 비활성화
+    endpoint_public_access  = true                                  # 퍼블릭 접근 비활성화
   }
 
   kubernetes_network_config {
@@ -169,6 +169,19 @@ resource "aws_eks_cluster" "this" {
   }
 
   tags = merge({ Name = var.cluster_name }, var.tags)
+}
+
+# EKS Access Policy Association - 관리자 권한 부여
+resource "aws_eks_access_policy_association" "eks_admin" {
+  # depends_on     = [module.eks_cluster]
+
+  cluster_name   = var.cluster_name
+  principal_arn  = var.admin_user_arn
+  policy_arn     = var.eks_admin_policy_arn
+
+  access_scope {
+    type = "cluster"
+  }
 }
 
 # EKS 노드 그룹 생성

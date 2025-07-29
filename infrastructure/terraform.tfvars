@@ -25,6 +25,9 @@ default_tags = {
   Environment = "dev"
 }
 
+# admin role
+admin_user_arn = "arn:aws:iam::061039804626:user/lion3fteam03"
+
 # RDS DB 기본 설정
 db_name     = "matchfit_db"
 db_username = "admin"

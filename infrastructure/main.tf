@@ -57,6 +57,13 @@ module "network" {
   ]
 }
 # #####################
+# IAM - EKS Admin Role
+module "eks-admin-role" {
+  source = "./modules/iam"
+  name_prefix            = var.name_prefix
+  admin_user_arn = var.admin_user_arn
+  tags           = var.default_tags
+}
 # EKS 클러스터 모듈 호출
 module "eks" {
   source                = "./modules/eks"
@@ -68,92 +75,87 @@ module "eks" {
   service_ipv4_cidr     = var.service_ipv4_cidr
   tags                  = var.default_tags
   worker_access_cidr    = var.worker_access_cidr
-
+  admin_user_arn = var.admin_user_arn
   ssh_key_name = var.ssh_key_name       # SSH 접근용 키
-
-  depends_on = [
-    module.network
-  ]
-}
-#####################
-# RDS 모듈 호출
-module "rds" {
-  source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
-
-  name_prefix            = var.name_prefix
-  db_name                = var.db_name
-  username               = var.db_username
-  password               = var.db_password
-
-  # vpc_security_group_ids = var.rds_security_group_ids
-  vpc_security_group_ids = []
-  private_subnet_ids = module.network.private_subnet_id
-
-  create_security_group  = true
-  vpc_id                 = module.network.vpc_id
-
-  create_subnet_group    = var.create_subnet_group
-  db_subnet_group_name   = var.db_subnet_group_name
-
-  multi_az               = var.multi_az
-  backup_retention_period = var.backup_retention_period
-  backup_window          = var.backup_window
-  maintenance_window     = var.maintenance_window
-
-  skip_final_snapshot    = var.skip_final_snapshot
-  deletion_protection    = var.deletion_protection
-
-  tags = var.default_tags
-}
-#####################
-# ElastiCache 설정 모듈 호출
-module "elasticache" {
-  source             = "./modules/elasticache"
-  name_prefix        = var.name_prefix                      # 리소스 네이밍 접두어(필수값)
-  vpc_id             = module.network.vpc_id
-  private_subnet_ids = module.network.private_subnet_id
-  eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
-
-  auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
-
-  # 설정 안할 시 AWS가 임의 시간대로 설정
-  maintenance_window          = var.maintenance_window       # 정기 점검 시간
-  snapshot_window             = var.snapshot_window          # 스냅샷 수행 시간대
-  snapshot_retention_limit    = 1                            # 스냅샷 보관 일수
-
-  tags = var.default_tags
 }
 # #####################
-# # S3 모듈 호출
-module "s3_bucket" {
-  source                  = "./modules/s3"
-  create_bucket           = true
-  bucket_name             = var.bucket_name
-  force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
-  enable_versioning       = var.enable_versioning
-  enable_website          = var.enable_website
-  index_document          = var.index_document
-  error_document          = var.error_document
-  block_public_acls       = var.block_public_acls
-  block_public_policy     = var.block_public_policy
-  ignore_public_acls      = var.ignore_public_acls
-  restrict_public_buckets = var.restrict_public_buckets
-  bucket_policy           = var.bucket_policy
-  tags                    = var.default_tags
-}
+# # RDS 모듈 호출
+# module "rds" {
+#   source = "./modules/rds"  # 모듈 경로 (상황에 맞게 수정)
+
+#   name_prefix            = var.name_prefix
+#   db_name                = var.db_name
+#   username               = var.db_username
+#   password               = var.db_password
+
+#   # vpc_security_group_ids = var.rds_security_group_ids
+#   vpc_security_group_ids = []
+#   private_subnet_ids = module.network.private_subnet_id
+
+#   create_security_group  = true
+#   vpc_id                 = module.network.vpc_id
+
+#   create_subnet_group    = var.create_subnet_group
+#   db_subnet_group_name   = var.db_subnet_group_name
+
+#   multi_az               = var.multi_az
+#   backup_retention_period = var.backup_retention_period
+#   backup_window          = var.backup_window
+#   maintenance_window     = var.maintenance_window
+
+#   skip_final_snapshot    = var.skip_final_snapshot
+#   deletion_protection    = var.deletion_protection
+
+#   tags = var.default_tags
+# }
 # #####################
-# # ECR 모듈 호출
-module "ecr" {
-  source = "./modules/ecr"
+# # ElastiCache 설정 모듈 호출
+# module "elasticache" {
+#   source             = "./modules/elasticache"
+#   name_prefix        = var.name_prefix                      # 리소스 네이밍 접두어(필수값)
+#   vpc_id             = module.network.vpc_id
+#   private_subnet_ids = module.network.private_subnet_id
+#   eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
 
-  name_prefix        = var.name_prefix                  # 리포지토리 이름
-  image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
-  force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
-  scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
-  encryption_type      = var.ecr_encryption_type       # 암호화 방식
+#   auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
 
-  tags = var.default_tags
-}
+#   # 설정 안할 시 AWS가 임의 시간대로 설정
+#   maintenance_window          = var.maintenance_window       # 정기 점검 시간
+#   snapshot_window             = var.snapshot_window          # 스냅샷 수행 시간대
+#   snapshot_retention_limit    = 1                            # 스냅샷 보관 일수
+
+#   tags = var.default_tags
+# }
+# # #####################
+# # # S3 모듈 호출
+# module "s3_bucket" {
+#   source                  = "./modules/s3"
+#   create_bucket           = true
+#   bucket_name             = var.bucket_name
+#   force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
+#   enable_versioning       = var.enable_versioning
+#   enable_website          = var.enable_website
+#   index_document          = var.index_document
+#   error_document          = var.error_document
+#   block_public_acls       = var.block_public_acls
+#   block_public_policy     = var.block_public_policy
+#   ignore_public_acls      = var.ignore_public_acls
+#   restrict_public_buckets = var.restrict_public_buckets
+#   bucket_policy           = var.bucket_policy
+#   tags                    = var.default_tags
+# }
+# # #####################
+# # # ECR 모듈 호출
+# module "ecr" {
+#   source = "./modules/ecr"
+
+#   name_prefix        = var.name_prefix                  # 리포지토리 이름
+#   image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
+#   force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
+#   scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
+#   encryption_type      = var.ecr_encryption_type       # 암호화 방식
+#   tags = var.default_tags
+# }
 # #####################
 # # VPN 모듈 호출
 module "vpn" {
@@ -170,58 +172,56 @@ module "vpn" {
   subnet_ids                = module.network.private_subnet_id
 }
 
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority)
-  token                  = data.aws_eks_cluster_auth.this.token
-}
+############################
+# 서비스 모듈
+# Helm Provider (수정: kubernetes 블록 → kubernetes 인자)
+# provider "helm" {
+#   kubernetes = {
+#     config_path = "~/.kube/config"
+#   }
+# }
+# provider "kubernetes" {
+#   config_path = "~/.kube/config"
+# }
+# # EKS 클러스터 인증 데이터
+# data "aws_eks_cluster_auth" "cluster" {
+#   name = module.eks.cluster_name
+# }
 
-provider "helm" {
-  kubernetes = {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority)
-    token                  = data.aws_eks_cluster_auth.this.token
-  }
-}
+# # IRSA용 IAM 역할 및 정책 구성
+# module "irsa-alb" {
+#   source = "./modules/alb-irsa"
+#   cluster_name = var.cluster_name
+#   oidc_provider_arn = module.eks.oidc_provider_arn
+#   oidc_provider_url = module.eks.cluster_oidc_issuer_url
+#   tags = var.default_tags
 
-data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_name
-}
+#   depends_on = [module.eks]
+# }
 
-# IRSA용 IAM 역할 및 정책 구성
-module "irsa-alb" {
-  source = "./modules/alb-irsa"
-  cluster_name = var.cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
-  oidc_provider_url = module.eks.cluster_oidc_issuer_url
-  tags = var.default_tags
+# # ALB Controller Helm 설치
+# module "alb_controller" {
+#   source = "./modules/alb-controller"
 
-  depends_on = [module.eks]
-}
+#   cluster_name                 = module.eks.cluster_name
+#   alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
 
-# ALB Controller Helm 설치
-module "alb_controller" {
-  source = "./modules/alb-controller"
+#   depends_on = [module.irsa-alb]
 
-  cluster_name                 = module.eks.cluster_name
-  alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
+# }
 
-  depends_on = [module.irsa-alb]
+# # ArgoCD Helm 설치
+# module "argocd" {
+#   source = "./modules/argocd"
 
-}
+#   depends_on = [module.alb_controller]
+# }
 
-# ArgoCD Helm 설치
-module "argocd" {
-  source = "./modules/argocd"
+# # Route53 DNS 설정 모듈 호출
+# module "route53" {
+#   source           = "./modules/route53"
+#   domain_name      = var.domain_name
+#   argocd_alb_dns = module.argocd.argocd_alb_dns
 
-  depends_on = [module.alb_controller]
-}
-
-# Route53 DNS 설정 모듈 호출
-module "route53" {
-  source           = "./modules/route53"
-  domain_name      = var.domain_name
-  argocd_alb_dns = module.argocd.argocd_alb_dns
-
-  depends_on = [module.alb_controller]
-}
+#   depends_on = [module.alb_controller]
+# }
