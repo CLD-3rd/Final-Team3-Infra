@@ -14,7 +14,7 @@ resource "aws_security_group" "vpn_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["192.168.200.0/22"]
+    self        = true
   }
 
   egress {
@@ -39,7 +39,6 @@ resource "aws_iam_role" "vpn_logging_role" {
     }]
   })
 }
-
 resource "aws_iam_policy" "vpn_logging_policy" {
   name = "${var.name_prefix}-vpn-logging-policy"
 
@@ -56,7 +55,6 @@ resource "aws_iam_policy" "vpn_logging_policy" {
     }]
   })
 }
-
 resource "aws_iam_role_policy_attachment" "vpn_logging_attach" {
   role       = aws_iam_role.vpn_logging_role.name
   policy_arn = aws_iam_policy.vpn_logging_policy.arn
