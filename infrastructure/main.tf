@@ -171,6 +171,17 @@ module "vpn" {
   subnet_ids                = module.network.private_subnet_id
 }
 
+provider "kubernetes" {
+  config_path = "~/.kube/config"
+}
+
+# Helm provider (helm chart 배포용)
+provider "helm" {
+  kubernetes = {
+    config_path = "~/.kube/config"
+  }
+}
+
 # IRSA용 IAM 역할 및 정책 구성
 module "irsa-alb" {
   source = "./modules/irsa-alb"
