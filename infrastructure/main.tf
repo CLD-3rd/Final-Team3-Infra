@@ -56,7 +56,7 @@ module "network" {
     }
   ]
 }
-#####################
+# #####################
 # EKS 클러스터 모듈 호출
 module "eks" {
   source                = "./modules/eks"
@@ -74,7 +74,6 @@ module "eks" {
   depends_on = [
     module.network
   ]
-
 }
 #####################
 # RDS 모듈 호출
@@ -124,8 +123,8 @@ module "elasticache" {
 
   tags = var.default_tags
 }
-#####################
-# S3 모듈 호출
+# #####################
+# # S3 모듈 호출
 module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
@@ -142,8 +141,8 @@ module "s3_bucket" {
   bucket_policy           = var.bucket_policy
   tags                    = var.default_tags
 }
-#####################
-# ECR 모듈 호출
+# #####################
+# # ECR 모듈 호출
 module "ecr" {
   source = "./modules/ecr"
 
@@ -155,8 +154,8 @@ module "ecr" {
 
   tags = var.default_tags
 }
-#####################
-# VPN 모듈 호출
+# #####################
+# # VPN 모듈 호출
 module "vpn" {
   source = "./modules/vpn"
 
@@ -170,3 +169,28 @@ module "vpn" {
   cloudwatch_log_group      = "matchfit-vpn-logs"
   subnet_ids                = module.network.private_subnet_id
 }
+
+# IRSA용 IAM 역할 및 정책 구성
+module "irsa-alb" {
+  source = "./modules/alb-irsa"
+  cluster_name = var.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = module.eks.cluster_oidc_issuer_url
+  tags = var.default_tags
+}
+
+# ALB Controller Helm 설치
+module "alb_controller" {
+  source = "./modules/alb-controller"
+
+  cluster_name                 = module.eks.cluster_name
+  alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
+
+  depends_on = [module.irsa-alb]
+
+}
+
+# ArgoCD Helm 설치
+# module "argocd" {
+#   source = "./modules/argocd"
+# }
