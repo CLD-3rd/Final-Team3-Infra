@@ -56,27 +56,34 @@ module "network" {
     }
   ]
 }
-# #####################
-# IAM - EKS Admin Role
-module "eks-admin-role" {
-  source = "./modules/iam"
-  name_prefix            = var.name_prefix
-  admin_user_arn = var.admin_user_arn
-  tags           = var.default_tags
+#####################
+# EKS Admin Role 생성 및 연결 모듈 호출
+module "eks_admin_role" {
+  source                  = "./modules/iam"
+  name_prefix             = var.name_prefix
+  cluster_name            = var.cluster_name
+  admin_user_arn          = var.admin_user_arn
+  eks_cluster_resource    = module.eks.cluster_resource
+  tags                    = var.default_tags
 }
 # EKS 클러스터 모듈 호출
 module "eks" {
-  source                = "./modules/eks"
+  source                     = "./modules/eks"
   create_instance_profile    = var.create_instance_profile
-  cluster_name          = var.cluster_name
-  kubernetes_version    = var.kubernetes_version
-  vpc_id                = module.network.vpc_id
-  subnet_ids            = module.network.private_subnet_id
-  service_ipv4_cidr     = var.service_ipv4_cidr
-  tags                  = var.default_tags
-  worker_access_cidr    = var.worker_access_cidr
-  admin_user_arn = var.admin_user_arn
-  ssh_key_name = var.ssh_key_name       # SSH 접근용 키
+  cluster_name               = var.cluster_name
+  kubernetes_version         = var.kubernetes_version
+  vpc_id                     = module.network.vpc_id
+  subnet_ids                 = module.network.private_subnet_id
+  service_ipv4_cidr          = var.service_ipv4_cidr
+  tags                       = var.default_tags
+  worker_access_cidr         = var.worker_access_cidr
+  vpn_security_group_id      = module.vpn.vpn_security_group_id
+
+  # ssh_key_name               = var.ssh_key_name       # SSH 접근용 키
+  # EKS Access 관련 추가
+  # admin_user_arn             = var.admin_user_arn                    # 사용자에게 kubectl 접근 허용
+  # admin_role_arn             = module.eks_admin_role.admin_role_arn         # EKS 관리용 Role
+  # node_role_arn              = module.eks_admin_role.node_role_arn          # 노드 역할
 }
 # #####################
 # # RDS 모듈 호출
@@ -156,22 +163,20 @@ module "eks" {
 #   encryption_type      = var.ecr_encryption_type       # 암호화 방식
 #   tags = var.default_tags
 # }
-# #####################
-# # VPN 모듈 호출
+#####################
+# VPN 모듈 호출
 module "vpn" {
-  source = "./modules/vpn"
-
-  name_prefix               = var.name_prefix
-  vpc_id                    = module.network.vpc_id
-  vpc_cidr                  = var.vpc_cidr
-  create_security_group     = true
-  client_cidr_block         = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
-  server_certificate_arn    = var.server_certificate_arn
-  client_ca_certificate_arn = var.client_ca_certificate_arn
-  cloudwatch_log_group      = "matchfit-vpn-logs"
-  subnet_ids                = module.network.private_subnet_id
+  source                      = "./modules/vpn"
+  name_prefix                 = var.name_prefix
+  vpc_id                      = module.network.vpc_id
+  vpc_cidr                    = var.vpc_cidr
+  create_security_group       = true
+  client_cidr_block           = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+  server_certificate_arn      = var.server_certificate_arn
+  client_ca_certificate_arn   = var.client_ca_certificate_arn
+  cloudwatch_log_group        = "matchfit-vpn-logs"
+  subnet_ids                  = module.network.private_subnet_id
 }
-
 ############################
 # 서비스 모듈
 # Helm Provider (수정: kubernetes 블록 → kubernetes 인자)

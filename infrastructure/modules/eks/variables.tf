@@ -1,11 +1,9 @@
 variable "cluster_name" {
   type = string
 }
-
 variable "kubernetes_version" {
   type = string
 }
-
 variable "subnet_ids" {
   type = list(string)
 }
@@ -18,10 +16,10 @@ variable "service_ipv4_cidr" {
   default = "172.20.0.0/16"
 }
 
-variable "ssh_key_name" {
-  type        = string
-  description = "EC2 SSH key pair name for remote access"
-}
+# variable "ssh_key_name" {
+#   type        = string
+#   description = "EC2 SSH key pair name for remote access"
+# }
 
 variable "tags" {
   type = map(string)
@@ -30,14 +28,6 @@ variable "tags" {
 variable "worker_access_cidr" {
   description = "Node → API 서버 허용 CIDR"
   type = list(string)
-}
-
-variable "admin_user_arn" {
-  description = "관리자 IAM 사용자의 ARN"
-  type        = string
-}
-variable "eks_admin_policy_arn" {
-  default = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 }
 
 variable "create_instance_profile" {
@@ -50,3 +40,22 @@ variable "oidc_thumbprint" {
   description = "OIDC 공급자의 thumbprint (IRSA용)"
   default = "9e99a48a9960b14926bb7f3b02e22da0afd40bd7"
 }
+
+variable "vpn_security_group_id" {
+  type        = string
+  description = "VPN Security Group ID to allow SSH from"
+}
+
+# aws_auth.tf 관련 변수
+# variable "node_role_arn" {
+#   description = "EKS Node IAM Role ARN"
+#   type        = string
+# }
+# variable "admin_role_arn" {
+#   description = "EKS Admin IAM Role ARN"
+#   type        = string
+# }
+# variable "admin_user_arn" {
+#   description = "EKS Admin IAM User ARN"
+#   type        = string
+# }

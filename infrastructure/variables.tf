@@ -60,7 +60,6 @@ variable "admin_user_arn" {
   description = "관리자 IAM 사용자의 ARN (예: arn:aws:iam::123456789012:user/your-username)"
   type        = string
 }
-
 # EKS 관련 루트 variables
 variable "kubernetes_version" {
   default = "1.32"
@@ -78,10 +77,10 @@ variable "worker_access_cidr" {
   type        = list(string)
   default     = ["10.0.2.0/24"]
 }
-variable "ssh_key_name" {
-  description = "EC2 인스턴스에 사용할 SSH 키 이름"
-  type        = string
-}
+# variable "ssh_key_name" {
+#   description = "EC2 인스턴스에 사용할 SSH 키 이름"
+#   type        = string
+# }
 variable "create_instance_profile" {
   type        = bool
   default     = true
@@ -208,8 +207,8 @@ variable "create_instance_profile" {
 #   type        = bool
 #   default     = false
 # }
-#####################
-# VPN 관련 설정
+# #####################
+# # VPN 관련 설정
 variable "server_certificate_arn" {
   description = "ACM 서버 인증서 ARN"
   type        = string
@@ -218,7 +217,7 @@ variable "client_ca_certificate_arn" {
   description = "클라이언트 CA 인증서 ARN"
   type        = string
 }
-#####################
+# #####################
 # ECR 관련 설정
 # variable "ecr_image_tag_mutability" {
 #   description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
