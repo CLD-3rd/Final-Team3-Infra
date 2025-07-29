@@ -171,14 +171,21 @@ module "vpn" {
 }
 
 provider "kubernetes" {
-  config_path = "~/.kube/config"
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority)
+  token                  = data.aws_eks_cluster_auth.this.token
 }
 
-# Helm provider (helm chart 배포용)
 provider "helm" {
   kubernetes = {
-    config_path = "~/.kube/config"
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority)
+    token                  = data.aws_eks_cluster_auth.this.token
   }
+}
+
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_name
 }
 
 # IRSA용 IAM 역할 및 정책 구성
@@ -204,7 +211,6 @@ module "alb_controller" {
 }
 
 # ArgoCD Helm 설치
-<<<<<<< HEAD
 module "argocd" {
   source = "./modules/argocd"
 
@@ -219,8 +225,3 @@ module "route53" {
 
   depends_on = [module.alb_controller]
 }
-=======
-# module "argocd" {
-#   source = "./modules/argocd"
-# }
->>>>>>> 6450ea9b14b86936b061975e3e3c993733b802cf
