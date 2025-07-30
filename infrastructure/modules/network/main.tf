@@ -21,6 +21,9 @@ resource "aws_subnet" "public" {
 
   tags = {
     Name = "${var.name_prefix}-public-${count.index + 1}"
+    # ALB 컨트롤러 인식용 서브넷 태그 - Public.ver
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    "kubernetes.io/role/elb"         = "1"
   }
 }
 
@@ -33,6 +36,9 @@ resource "aws_subnet" "private" {
 
   tags = {
     Name = "${var.name_prefix}-private-${count.index + 1}"
+    # ALB 컨트롤러 인식용 서브넷 태그 - Public.ver
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+    "kubernetes.io/role/internal-elb" = "1"
   }
 }
 
