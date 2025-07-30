@@ -16,10 +16,10 @@ variable "service_ipv4_cidr" {
   default = "172.20.0.0/16"
 }
 
-# variable "ssh_key_name" {
-#   type        = string
-#   description = "EC2 SSH key pair name for remote access"
-# }
+variable "ssh_key_name" {
+  type        = string
+  description = "EC2 SSH key pair name for remote access"
+}
 
 variable "tags" {
   type = map(string)

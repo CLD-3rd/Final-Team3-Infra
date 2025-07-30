@@ -81,34 +81,34 @@ output "node_group_name" {
 #   value       = module.rds.rds_address
 #   sensitive   = true
 # }
-# #####################
-# # S3 루트 출력
-# output "s3_bucket_id" {
-#   description = "The ID of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_id
-# }
-# output "s3_bucket_arn" {
-#   description = "The ARN of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_arn
-# }
-# output "s3_bucket_domain" {
-#   description = "The domain name of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_domain_name
-# }
-# output "s3_bucket_regional_domain" {
-#   description = "The regional domain name of the bucket"
-#   value       = module.s3_bucket.bucket_regional_domain_name
-# }
-# output "s3_website_endpoint" {
-#   description = "S3 static website endpoint (if enabled)"
-#   value       = module.s3_bucket.website_endpoint
-# }
-# output "s3_website_domain" {
-#   description = "S3 static website domain (if enabled)"
-#   value       = module.s3_bucket.website_domain
-# }
-# #####################
-# # ECR 출력
+#####################
+# S3 루트 출력
+output "s3_bucket_id" {
+  description = "The ID of the created S3 bucket"
+  value       = module.s3_bucket.bucket_id
+}
+output "s3_bucket_arn" {
+  description = "The ARN of the created S3 bucket"
+  value       = module.s3_bucket.bucket_arn
+}
+output "s3_bucket_domain" {
+  description = "The domain name of the created S3 bucket"
+  value       = module.s3_bucket.bucket_domain_name
+}
+output "s3_bucket_regional_domain" {
+  description = "The regional domain name of the bucket"
+  value       = module.s3_bucket.bucket_regional_domain_name
+}
+output "s3_website_endpoint" {
+  description = "S3 static website endpoint (if enabled)"
+  value       = module.s3_bucket.website_endpoint
+}
+output "s3_website_domain" {
+  description = "S3 static website domain (if enabled)"
+  value       = module.s3_bucket.website_domain
+}
+#####################
+# ECR 출력
 # output "ecr_repository_url" {
 #   description = "생성된 ECR 리포지토리의 URL 출력 (이미지 push/pull 시 사용)"
 #   value = module.ecr.repository_url
@@ -117,8 +117,9 @@ output "node_group_name" {
 #   description = "생성된 ECR 리포지토리의 ARN 출력 (IAM 정책에 활용)"
 #   value = module.ecr.repository_arn
 # }
-
-# output "route53_zone_id" {
-#   description = "생성된 Route53 호스팅 존의 Zone ID"
-#   value       = module.route53.zone_id
-# }
+#####################
+# Route53 출력
+output "route53_zone_id" {
+  description = "생성된 Route53 호스팅 존의 Zone ID"
+  value       = module.route53.zone_id
+}

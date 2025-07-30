@@ -64,7 +64,7 @@ resource "aws_iam_policy" "allow_assume_role" {
       {
         Effect = "Allow"
         Action = "sts:AssumeRole"
-        Resource = "arn:aws:iam::571170910853:role/matchfit-eks-admin-role"
+        Resource = "arn:aws:iam::061039804626:role/matchfit-eks-admin-role"
       }
     ]
   })

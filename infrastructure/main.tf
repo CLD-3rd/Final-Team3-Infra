@@ -79,7 +79,7 @@ module "eks" {
   worker_access_cidr         = var.worker_access_cidr
   vpn_security_group_id      = module.vpn.vpn_security_group_id
 
-  # ssh_key_name               = var.ssh_key_name       # SSH 접근용 키
+  ssh_key_name               = var.ssh_key_name       # SSH 접근용 키
   # EKS Access 관련 추가
   # admin_user_arn             = var.admin_user_arn                    # 사용자에게 kubectl 접근 허용
   # admin_role_arn             = module.eks_admin_role.admin_role_arn         # EKS 관리용 Role
@@ -133,24 +133,24 @@ module "eks" {
 
 #   tags = var.default_tags
 # }
-# # #####################
-# # # S3 모듈 호출
-# module "s3_bucket" {
-#   source                  = "./modules/s3"
-#   create_bucket           = true
-#   bucket_name             = var.bucket_name
-#   force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
-#   enable_versioning       = var.enable_versioning
-#   enable_website          = var.enable_website
-#   index_document          = var.index_document
-#   error_document          = var.error_document
-#   block_public_acls       = var.block_public_acls
-#   block_public_policy     = var.block_public_policy
-#   ignore_public_acls      = var.ignore_public_acls
-#   restrict_public_buckets = var.restrict_public_buckets
-#   bucket_policy           = var.bucket_policy
-#   tags                    = var.default_tags
-# }
+# #####################
+# # S3 모듈 호출
+module "s3_bucket" {
+  source                  = "./modules/s3"
+  create_bucket           = true
+  bucket_name             = var.bucket_name
+  force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
+  enable_versioning       = var.enable_versioning
+  enable_website          = var.enable_website
+  index_document          = var.index_document
+  error_document          = var.error_document
+  block_public_acls       = var.block_public_acls
+  block_public_policy     = var.block_public_policy
+  ignore_public_acls      = var.ignore_public_acls
+  restrict_public_buckets = var.restrict_public_buckets
+  bucket_policy           = var.bucket_policy
+  tags                    = var.default_tags
+}
 # # #####################
 # # # ECR 모듈 호출
 # module "ecr" {
@@ -179,54 +179,54 @@ module "vpn" {
 }
 ############################
 # 서비스 모듈
+provider "kubernetes" {
+  config_path = "~/.kube/config"
+}
 # Helm Provider (수정: kubernetes 블록 → kubernetes 인자)
-# provider "helm" {
-#   kubernetes = {
-#     config_path = "~/.kube/config"
-#   }
-# }
-# provider "kubernetes" {
-#   config_path = "~/.kube/config"
-# }
-# # EKS 클러스터 인증 데이터
-# data "aws_eks_cluster_auth" "cluster" {
-#   name = module.eks.cluster_name
-# }
+provider "helm" {
+  kubernetes = {
+    config_path = "~/.kube/config"
+  }
+}
+# EKS 클러스터 인증 데이터
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_name
+}
 
 # # IRSA용 IAM 역할 및 정책 구성
-# module "irsa-alb" {
-#   source = "./modules/alb-irsa"
-#   cluster_name = var.cluster_name
-#   oidc_provider_arn = module.eks.oidc_provider_arn
-#   oidc_provider_url = module.eks.cluster_oidc_issuer_url
-#   tags = var.default_tags
+module "irsa-alb" {
+  source = "./modules/alb-irsa"
+  cluster_name = var.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider_url = module.eks.cluster_oidc_issuer_url
+  tags = var.default_tags
 
-#   depends_on = [module.eks]
-# }
+  depends_on = [module.eks]
+}
 
-# # ALB Controller Helm 설치
-# module "alb_controller" {
-#   source = "./modules/alb-controller"
+# ALB Controller Helm 설치
+module "alb_controller" {
+  source = "./modules/alb-controller"
 
-#   cluster_name                 = module.eks.cluster_name
-#   alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
+  cluster_name                 = module.eks.cluster_name
+  alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
 
-#   depends_on = [module.irsa-alb]
+  depends_on = [module.irsa-alb]
 
-# }
+}
 
-# # ArgoCD Helm 설치
-# module "argocd" {
-#   source = "./modules/argocd"
+# ArgoCD Helm 설치
+module "argocd" {
+  source = "./modules/argocd"
 
-#   depends_on = [module.alb_controller]
-# }
+  depends_on = [module.alb_controller]
+}
 
-# # Route53 DNS 설정 모듈 호출
-# module "route53" {
-#   source           = "./modules/route53"
-#   domain_name      = var.domain_name
-#   argocd_alb_dns = module.argocd.argocd_alb_dns
+# Route53 DNS 설정 모듈 호출
+module "route53" {
+  source           = "./modules/route53"
+  domain_name      = var.domain_name
+  argocd_alb_dns   = module.argocd.argocd_alb_dns
 
-#   depends_on = [module.alb_controller]
-# }
+  depends_on = [module.alb_controller]
+}

@@ -77,10 +77,10 @@ variable "worker_access_cidr" {
   type        = list(string)
   default     = ["10.0.2.0/24"]
 }
-# variable "ssh_key_name" {
-#   description = "EC2 인스턴스에 사용할 SSH 키 이름"
-#   type        = string
-# }
+variable "ssh_key_name" {
+  description = "EC2 인스턴스에 사용할 SSH 키 이름"
+  type        = string
+}
 variable "create_instance_profile" {
   type        = bool
   default     = true
@@ -142,7 +142,7 @@ variable "create_instance_profile" {
 #   default     = false
 # }
 # #####################
-# # ElastiCache Redis 관련 변수들
+# # ElastiCache Redis 관련 루트 변수
 # variable "auth_token" {
 #   description = "ElastiCache Redis 인증 토큰"
 #   type        = string
@@ -158,57 +158,57 @@ variable "create_instance_profile" {
 #   type        = string
 #   default     = "11:30-13:00"
 # }
-# #####################
-# # S3 관련 루트 변수
-# variable "bucket_name" {
-#   description = "Name of the S3 bucket (globally unique)"
-#   type        = string
-#   default     = "matchfit-bucket"
-# }
-# variable "enable_versioning" {
-#   type        = bool
-#   default     = false
-# }
-# variable "enable_website" {
-#   type        = bool
-#   default     = false
-# }
-# variable "index_document" {
-#   type        = string
-#   default     = "index.html"
-# }
-# variable "error_document" {
-#   type        = string
-#   default     = "error.html"
-# }
-# variable "block_public_acls" {
-#   type        = bool
-#   default     = true
-# }
-# variable "block_public_policy" {
-#   type        = bool
-#   default     = true
-# }
-# variable "ignore_public_acls" {
-#   type        = bool
-#   default     = true
-# }
-# variable "restrict_public_buckets" {
-#   type        = bool
-#   default     = true
-# }
-# variable "bucket_policy" {
-#   description = "Optional S3 Bucket policy as JSON object"
-#   type        = any
-#   default     = null
-# }
-# variable "force_destroy" {
-#   description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
-#   type        = bool
-#   default     = false
-# }
-# #####################
-# # VPN 관련 설정
+#####################
+# S3 관련 루트 변수
+variable "bucket_name" {
+  description = "Name of the S3 bucket (globally unique)"
+  type        = string
+  default     = "matchfit-bucket"
+}
+variable "enable_versioning" {
+  type        = bool
+  default     = false
+}
+variable "enable_website" {
+  type        = bool
+  default     = false
+}
+variable "index_document" {
+  type        = string
+  default     = "index.html"
+}
+variable "error_document" {
+  type        = string
+  default     = "error.html"
+}
+variable "block_public_acls" {
+  type        = bool
+  default     = true
+}
+variable "block_public_policy" {
+  type        = bool
+  default     = true
+}
+variable "ignore_public_acls" {
+  type        = bool
+  default     = true
+}
+variable "restrict_public_buckets" {
+  type        = bool
+  default     = true
+}
+variable "bucket_policy" {
+  description = "Optional S3 Bucket policy as JSON object"
+  type        = any
+  default     = null
+}
+variable "force_destroy" {
+  description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
+  type        = bool
+  default     = false
+}
+#####################
+# VPN 관련 루트 변수
 variable "server_certificate_arn" {
   description = "ACM 서버 인증서 ARN"
   type        = string
@@ -218,7 +218,7 @@ variable "client_ca_certificate_arn" {
   type        = string
 }
 # #####################
-# ECR 관련 설정
+# ECR 관련 루트 변수
 # variable "ecr_image_tag_mutability" {
 #   description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
 #   type        = string
@@ -239,9 +239,10 @@ variable "client_ca_certificate_arn" {
 #   type        = string
 #   default     = "AES256"
 # }
-
-# variable "domain_name" {
-#   description = "Route53에 등록할 최상위 도메인"
-#   type        = string
-#   default = "match-fit.store"
-# }
+#####################
+# Route53 관련 루트 변수
+variable "domain_name" {
+  description = "Route53에 등록할 최상위 도메인"
+  type        = string
+  default = "match-fit.store"
+}
