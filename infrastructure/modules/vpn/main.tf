@@ -87,3 +87,25 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
     Name = "${var.name_prefix}-vpn"
   }
 }
+
+# 1) Subnet 연결하기: private_subnet_ids 목록으로 count 루프
+resource "aws_ec2_client_vpn_network_association" "subnet_assoc" {
+  count                    = length(var.subnet_ids)
+  client_vpn_endpoint_id   = var.client_vpn_endpoint_id
+  subnet_id                = var.subnet_ids[count.index]
+
+  # (선택) 확실한 순서를 위해 depends_on을 걸 수도 있습니다.
+  # depends_on = [aws_ec2_client_vpn_endpoint.example]
+}
+
+# 2) 권한 부여 (Authorization Rule): VPC CIDR 전체를 허용
+resource "aws_ec2_client_vpn_authorization_rule" "allow_vpc" {
+  client_vpn_endpoint_id   = var.client_vpn_endpoint_id
+  target_network_cidr      = var.vpc_cidr
+
+  # 모든 사용자 그룹 허용 시
+  authorize_all_groups     = true
+
+  # 특정 Active Directory 그룹만 허용하려면:
+  # access_group_id        = aws_directory_service_directory.my_ds.id
+}

@@ -53,3 +53,8 @@ variable "vpc_cidr" {
   type        = string
   description = "VPC CIDR (VPN 라우팅용)"
 }
+
+variable "client_vpn_endpoint_id" {
+  description = "사용 중인 Client VPN Endpoint ID"
+  type        = string
+}
