@@ -47,6 +47,8 @@ deletion_protection = false
 
 # S3
 bucket_name = "matchfit-bucket"
+app_bucket_name = "matchfit-web-assets"
+
 
 # Redis 접속 비밀번호(16자리 이상)
 auth_token = "matchfit250822redis"

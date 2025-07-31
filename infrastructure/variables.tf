@@ -207,6 +207,41 @@ variable "force_destroy" {
   type        = bool
   default     = false
 }
+#################################
+# CloudFront + S3 설정
+#################################
+variable "app_domain_name" {
+  description = "CloudFront에 연결할 도메인"
+  type        = string
+}
+
+variable "acm_certificate_arn" {
+  description = "CloudFront용 인증서 ARN (us-east-1)"
+  type        = string
+}
+
+variable "price_class" {
+  description = "CloudFront 가격 클래스"
+  type        = string
+  default     = "PriceClass_200"
+}
+
+variable "custom_error_responses" {
+  description = "커스텀 에러 페이지 설정 (SPA 라우팅용)"
+  type = list(object({
+    error_code         = number
+    response_code      = number
+    response_page_path = string
+  }))
+  default = []
+}
+variable "app_bucket_name" {
+  description = "웹/백엔드 통합 S3 버킷 이름"
+  type        = string
+}
+
+
+
 #####################
 # VPN 관련 루트 변수
 variable "server_certificate_arn" {

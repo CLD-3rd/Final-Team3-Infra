@@ -129,24 +129,54 @@ module "elasticache" {
 
   tags = var.default_tags
 }
+
+
 ############################
 # # S3 모듈 호출
 module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
-  bucket_name             = var.bucket_name
-  force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
-  enable_versioning       = var.enable_versioning
-  enable_website          = var.enable_website
-  index_document          = var.index_document
-  error_document          = var.error_document
-  block_public_acls       = var.block_public_acls
-  block_public_policy     = var.block_public_policy
-  ignore_public_acls      = var.ignore_public_acls
-  restrict_public_buckets = var.restrict_public_buckets
-  bucket_policy           = var.bucket_policy
+  bucket_name             = var.app_bucket_name
+  force_destroy           = true
+  enable_versioning       = true
+  enable_website          = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
   tags                    = var.default_tags
 }
+
+#################################
+# CloudFront (OAC + HTTPS)
+#################################
+module "cloudfront" {
+  source                  = "./modules/cloudfront"
+  service_name            = var.name_prefix
+  domain_name             = var.app_domain_name
+  certificate_arn         = var.acm_certificate_arn
+  s3_origin_domain        = module.s3_bucket.bucket_regional_domain_name  # 기존 S3 모듈의 도메인
+  s3_bucket_id            = module.s3_bucket.bucket_id                     # 기존 S3 모듈의 ID
+  s3_bucket_arn           = module.s3_bucket.bucket_arn                    # 기존 S3 모듈의 ARN
+  price_class             = var.price_class
+  custom_error_responses  = var.custom_error_responses
+  tags                    = var.default_tags
+}
+#################################
+# Route53 (CloudFront 연결)
+#################################
+resource "aws_route53_record" "cloudfront" {
+  zone_id = module.route53.zone_id
+  name    = var.app_domain_name
+  type    = "A"
+
+  alias {
+    name                   = module.cloudfront.cloudfront_domain_name
+    zone_id                = "Z2FDTNDATAQYW2"
+    evaluate_target_health = false
+  }
+}
+
 ############################
 # ECR 모듈 호출
 module "ecr" {
