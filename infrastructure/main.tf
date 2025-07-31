@@ -17,6 +17,16 @@ terraform {
     }
   }
 }
+provider "kubernetes" {
+  config_path = "~/.kube/config"  # 본인 kubeconfig 경로
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"
+  }
+}
+
 #####################
 # TFC 사용 시 필요
 # terraform {
@@ -66,6 +76,15 @@ module "network" {
   ]
 }
 #####################
+# EKS Admin Role 생성 및 연결 모듈 호출
+module "eks_admin_role" {
+  source                  = "./modules/iam"
+  name_prefix             = var.name_prefix
+  cluster_name            = var.cluster_name
+  admin_user_arn          = var.admin_user_arn
+  eks_cluster_resource    = module.eks.cluster_resource
+  tags                    = var.default_tags
+}
 # EKS 클러스터 모듈 호출
 module "eks" {
   source                     = "./modules/eks"
@@ -195,6 +214,7 @@ module "irsa-alb" {
 module "alb_controller" {
   source = "./modules/alb-controller"
   cluster_name                 = module.eks.cluster_name
+  vpc_id                       = module.network.vpc_id
   alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
   depends_on = [module.irsa-alb]
 }

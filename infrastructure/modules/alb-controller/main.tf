@@ -11,6 +11,7 @@ resource "helm_release" "alb_controller" {
   values = [
     yamlencode({
       clusterName = var.cluster_name                      # 대상 EKS 클러스터 이름
+      vpcId       = var.vpc_id
       serviceAccount = {
         create = true                                     # 서비스 계정 생성 여부
         name   = "aws-load-balancer-controller"          # IRSA용 서비스 계정 이름
