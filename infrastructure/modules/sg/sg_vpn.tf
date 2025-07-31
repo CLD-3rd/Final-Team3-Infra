@@ -21,5 +21,7 @@ resource "aws_security_group" "vpn_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = merge({ Name = "${var.name_prefix}-eks-node-sg" }, var.tags)
+  tags = {
+    Name = "${var.name_prefix}-vpn-sg"
+  }
 }

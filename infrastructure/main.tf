@@ -51,10 +51,10 @@ module "network" {
   tags   = var.default_tags                           # 공통 태그
   route_tables = [      # 커스텀 라우팅 테이블 정보
     {
-      name       = "private-rt"
+      name       = "${var.name_prefix}-private-rt"
       subnet_ids = local.private_subnet_ids
       tags       = {
-        Name = "private-rt"
+        Name = "${var.name_prefix}-private-rt"
       }
       routes = [
         {

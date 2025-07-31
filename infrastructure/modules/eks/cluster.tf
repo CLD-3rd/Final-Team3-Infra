@@ -179,6 +179,11 @@ resource "aws_eks_node_group" "default" {
     source_security_group_ids = [var.vpn_security_group_id]   # 노드 보안그룹 ID
   }
 
+  # custom launch template 사용
+  launch_template {
+    id      = aws_launch_template.eks_node.id
+    version = aws_launch_template.eks_node.latest_version
+  }
 }
 
 # OIDC 관련 설정 (IRSA를 위한 구성)
@@ -190,4 +195,19 @@ resource "aws_iam_openid_connect_provider" "this" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [var.oidc_thumbprint]
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+# 1) 커스텀 Launch Template 정의
+resource "aws_launch_template" "eks_node" {
+  name_prefix   = "${var.cluster_name}-node-"
+  image_id      = data.aws_ssm_parameter.eks_ami.value
+  instance_type = "t3.medium"
+  update_default_version = true
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = merge(var.tags, {
+      Name = "${var.cluster_name}-worker"
+    })
+  }
 }
