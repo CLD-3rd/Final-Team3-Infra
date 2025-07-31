@@ -25,7 +25,6 @@ resource "aws_iam_role_policy_attachment" "eks_vpc_controller_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
 }
 
-
 # EKS 노드 그룹용 IAM 역할 생성
 resource "aws_iam_role" "eks_node_role" {
   name = "${var.cluster_name}-node-role"
@@ -107,7 +106,6 @@ resource "aws_security_group" "eks_node_sg" {
     protocol    = "tcp"
     security_groups = [aws_security_group.eks_cluster_sg.id]
   }
-
   # 노드 간 통신 허용 (same SG)
   ingress {
     description     = "Allow node to node communication"
@@ -116,7 +114,13 @@ resource "aws_security_group" "eks_node_sg" {
     protocol        = "tcp"
     self            = true
   }
-
+  # VPN 보안그룹 설정
+    ingress {
+    from_port          = 22
+    to_port            = 22
+    protocol           = "tcp"
+    security_groups    = [var.vpn_security_group_id]
+  }
   # 노드 → 외부로 나가는 트래픽 허용
   egress {
     from_port   = 0
@@ -127,41 +131,21 @@ resource "aws_security_group" "eks_node_sg" {
 
   tags = merge({ Name = "${var.cluster_name}-node-sg" }, var.tags)
 }
-# EKS Node ssh Access 그룹 생성
-resource "aws_security_group" "eks_ssh_sg" {
-  name        = "${var.cluster_name}-node-ssh-sg"
-  description = "SSH access for EKS nodes"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    description      = "Allow SSH from VPN Endpoint"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["192.168.200.0/22"]   # VPN의 CIDR
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge({ Name = "${var.cluster_name}-node-ssh-sg" }, var.tags)
-}
 
 # EKS 클러스터 생성
 resource "aws_eks_cluster" "this" {
   name     = var.cluster_name                       # 클러스터 이름
   version  = var.kubernetes_version                 # 쿠버네티스 버전
   role_arn = aws_iam_role.eks_cluster_role.arn     # 클러스터용 IAM 역할
-
+  
+  access_config {
+    authentication_mode = "API_AND_CONFIG_MAP"
+  }
   vpc_config {
     subnet_ids              = var.subnet_ids                         # 클러스터에 연결할 서브넷들
     security_group_ids      = [aws_security_group.eks_cluster_sg.id] # 보안 그룹 ID
     endpoint_private_access = true                                   # 프라이빗 접근만 허용
-    endpoint_public_access  = false                                  # 퍼블릭 접근 비활성화
+    endpoint_public_access  = true                                  # 퍼블릭 접근 비활성화
   }
 
   kubernetes_network_config {
@@ -170,6 +154,7 @@ resource "aws_eks_cluster" "this" {
 
   tags = merge({ Name = var.cluster_name }, var.tags)
 }
+
 
 # EKS 노드 그룹 생성
 resource "aws_eks_node_group" "default" {
@@ -185,13 +170,13 @@ resource "aws_eks_node_group" "default" {
   }
 
   instance_types = ["t3.medium"]         # 노드 인스턴스 타입
-  ami_type       = "AL2_x86_64"          # Amazon Linux 2 AMI
+  ami_type       = "AL2023_x86_64_STANDARD"          # Amazon Linux 2 AMI
 
   tags = var.tags
 
   remote_access {
     ec2_ssh_key = var.ssh_key_name
-    source_security_group_ids = [aws_security_group.eks_ssh_sg.id]   # 노드 보안그룹 ID
+    source_security_group_ids = [var.vpn_security_group_id]   # 노드 보안그룹 ID
   }
 
 }

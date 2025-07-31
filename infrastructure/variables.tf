@@ -55,6 +55,11 @@ variable "route_tables" {
   default = []  # 테스트용으로는 비워 둘 수도 있음
 }
 #####################
+# eks-admin-role
+variable "admin_user_arn" {
+  description = "관리자 IAM 사용자의 ARN (예: arn:aws:iam::123456789012:user/your-username)"
+  type        = string
+}
 # EKS 관련 루트 variables
 variable "kubernetes_version" {
   default = "1.32"
@@ -137,7 +142,7 @@ variable "deletion_protection" {
   default     = false
 }
 #####################
-# ElastiCache Redis 관련 변수들
+# ElastiCache Redis 관련 루트 변수
 variable "auth_token" {
   description = "ElastiCache Redis 인증 토큰"
   type        = string
@@ -203,7 +208,7 @@ variable "force_destroy" {
   default     = false
 }
 #####################
-# VPN 관련 설정
+# VPN 관련 루트 변수
 variable "server_certificate_arn" {
   description = "ACM 서버 인증서 ARN"
   type        = string
@@ -213,7 +218,7 @@ variable "client_ca_certificate_arn" {
   type        = string
 }
 #####################
-# ECR 관련 설정
+# ECR 관련 루트 변수
 variable "ecr_image_tag_mutability" {
   description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
   type        = string
@@ -233,4 +238,11 @@ variable "ecr_encryption_type" {
   description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
   type        = string
   default     = "AES256"
+}
+#####################
+# Route53 관련 루트 변수
+variable "domain_name" {
+  description = "Route53에 등록할 최상위 도메인"
+  type        = string
+  default = "match-fit.store"
 }

@@ -70,3 +70,9 @@ variable "name" {
   description = "인터넷 게이트웨이 이름 태그 값"
   type        = string
 }
+
+# ALB 관련 Tag 작업
+variable "cluster_name" {
+  description = "EKS 클러스터 이름 (서브넷 태그용)"
+  type        = string
+}

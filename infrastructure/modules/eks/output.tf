@@ -1,6 +1,9 @@
 output "cluster_name" {
   value = aws_eks_cluster.this.name
 }
+output "cluster_resource" {
+  value = aws_eks_cluster.this
+}
 output "cluster_endpoint" {
   value = aws_eks_cluster.this.endpoint
 }
@@ -28,6 +31,7 @@ output "node_group_name" {
 output "eks_node_sg_id" {
   value = aws_security_group.eks_node_sg.id
 }
+
 
 output "oidc_provider_arn" {
   value = aws_iam_openid_connect_provider.this.arn

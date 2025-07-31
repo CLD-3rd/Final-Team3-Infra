@@ -1,11 +1,9 @@
 variable "cluster_name" {
   type = string
 }
-
 variable "kubernetes_version" {
   type = string
 }
-
 variable "subnet_ids" {
   type = list(string)
 }
@@ -41,4 +39,9 @@ variable "create_instance_profile" {
 variable "oidc_thumbprint" {
   description = "OIDC 공급자의 thumbprint (IRSA용)"
   default = "9e99a48a9960b14926bb7f3b02e22da0afd40bd7"
+}
+
+variable "vpn_security_group_id" {
+  type        = string
+  description = "VPN Security Group ID to allow SSH from"
 }
