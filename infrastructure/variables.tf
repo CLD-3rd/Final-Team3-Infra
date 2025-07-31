@@ -6,7 +6,7 @@ variable "aws_region" {
 # 네이밍 접두어 (예: team1 → team1-vpc 등)
 variable "name_prefix" {
   description = "리소스 이름 접두어"
-  default     = "team3"
+  default     = "matchfit"
 }
 # 공통 태그 (선택 사항)
 variable "default_tags" {
