@@ -6,7 +6,7 @@ resource "aws_elasticache_subnet_group" "this" {
 
 # Redis에 접근하기 위한 보안 그룹 설정
 resource "aws_security_group" "this" {
-  name        = "${var.name_prefix}-sg"
+  name        = "${var.name_prefix}-elasticache-sg"
   description = "Security group for Redis ElastiCache"
   vpc_id      = var.vpc_id
 
