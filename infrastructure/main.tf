@@ -214,6 +214,7 @@ module "irsa-alb" {
 module "alb_controller" {
   source = "./modules/alb-controller"
   cluster_name                 = module.eks.cluster_name
+  vpc_id                       = module.network.vpc_id
   alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
   depends_on = [module.irsa-alb]
 }
