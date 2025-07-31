@@ -17,6 +17,20 @@ terraform {
     }
   }
 }
+# AWS Provider 정의
+provider "aws" {
+  region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
+}
+# Kebernetes Provider 정의
+provider "kubernetes" {
+  config_path = "~/.kube/config"  # 본인 kubeconfig 경로
+}
+# Helm Provider 정의
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"
+  }
+}
 #####################
 # TFC 사용 시 필요
 # terraform {
@@ -27,11 +41,6 @@ terraform {
 #     }
 #   }
 # }
-#####################
-# AWS Provider 정의
-provider "aws" {
-  region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
-}
 #####################
 # network 설정 모듈 호출
 locals {
@@ -131,22 +140,22 @@ module "elasticache" {
 }
 ############################
 # # S3 모듈 호출
-module "s3_bucket" {
-  source                  = "./modules/s3"
-  create_bucket           = true
-  bucket_name             = var.bucket_name
-  force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
-  enable_versioning       = var.enable_versioning
-  enable_website          = var.enable_website
-  index_document          = var.index_document
-  error_document          = var.error_document
-  block_public_acls       = var.block_public_acls
-  block_public_policy     = var.block_public_policy
-  ignore_public_acls      = var.ignore_public_acls
-  restrict_public_buckets = var.restrict_public_buckets
-  bucket_policy           = var.bucket_policy
-  tags                    = var.default_tags
-}
+# module "s3_bucket" {
+#   source                  = "./modules/s3"
+#   create_bucket           = true
+#   bucket_name             = var.bucket_name
+#   force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
+#   enable_versioning       = var.enable_versioning
+#   enable_website          = var.enable_website
+#   index_document          = var.index_document
+#   error_document          = var.error_document
+#   block_public_acls       = var.block_public_acls
+#   block_public_policy     = var.block_public_policy
+#   ignore_public_acls      = var.ignore_public_acls
+#   restrict_public_buckets = var.restrict_public_buckets
+#   bucket_policy           = var.bucket_policy
+#   tags                    = var.default_tags
+# }
 ############################
 # ECR 모듈 호출
 module "ecr" {
@@ -182,22 +191,22 @@ module "route53" {
 ############################
 # 서비스 모듈
 # IRSA용 IAM 역할 및 정책 구성
-module "irsa-alb" {
-  source = "./modules/alb-irsa"
-  cluster_name = var.cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
-  oidc_provider_url = module.eks.cluster_oidc_issuer_url
-  tags = var.default_tags
+# module "irsa-alb" {
+#   source = "./modules/alb-irsa"
+#   cluster_name = var.cluster_name
+#   oidc_provider_arn = module.eks.oidc_provider_arn
+#   oidc_provider_url = module.eks.cluster_oidc_issuer_url
+#   tags = var.default_tags
 
-  depends_on = [module.eks]
-}
-# ALB Controller Helm 설치
-module "alb_controller" {
-  source = "./modules/alb-controller"
-  cluster_name                 = module.eks.cluster_name
-  alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
-  depends_on = [module.irsa-alb]
-}
+#   depends_on = [module.eks]
+# }
+# # ALB Controller Helm 설치
+# module "alb_controller" {
+#   source = "./modules/alb-controller"
+#   cluster_name                 = module.eks.cluster_name
+#   alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
+#   depends_on = [module.irsa-alb]
+# }
 # ArgoCD Helm 설치
 # module "argocd" {
 #   source = "./modules/argocd"
