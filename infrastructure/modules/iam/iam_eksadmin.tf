@@ -1,14 +1,3 @@
-# 루트메인
-# EKS Admin Role 생성 및 연결 모듈 호출
-module "eks_admin_role" {
-  source                  = "./modules/iam"
-  name_prefix             = var.name_prefix
-  cluster_name            = var.cluster_name
-  admin_user_arn          = var.admin_user_arn
-  eks_cluster_resource    = module.eks.cluster_resource
-  tags                    = var.default_tags
-}
-
 #########################################################
 # IAM 역할 관련 모듈 main.tf
 # EKS Admin Role 생성
@@ -85,38 +74,4 @@ resource "aws_iam_policy" "allow_assume_role" {
 resource "aws_iam_user_policy_attachment" "attach_assume_role" {
   user       = "lion3fteam03"   # var.iam_user_name
   policy_arn = aws_iam_policy.allow_assume_role.arn
-}
-
-#########################################################
-# IAM 역할 관련 모듈 variables.tf
-# EKS 관련 IAM 역할 변수
-variable "cluster_name" {
-  description = "EKS 클러스터 이름"
-  type        = string
-}
-variable "eks_admin_policy_arn" {
-  description = "EKS 클러스터 관리자 액세스 정책 ARN"
-  type        = string
-  default     = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-}
-variable "eks_cluster_resource" {
-  description = "The EKS cluster resource for dependency"
-  type        = any
-}
-
-#########################################################
-# IAM 역할 관련 모듈 outputs.tf
-output "eks_admin_role_arn" {
-  description = "생성된 EKS 관리자 IAM 역할 ARN"
-  value       = aws_iam_role.eks_admin_role.arn
-}
-
-output "eks_admin_role_name" {
-  description = "생성된 EKS 관리자 IAM 역할 이름"
-  value       = aws_iam_role.eks_admin_role.name
-}
-
-output "admin_role_arn" {
-  description = "EKS 관리자 role ARN"
-  value       = aws_iam_role.eks_admin_role.arn
 }
