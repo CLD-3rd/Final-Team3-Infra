@@ -168,21 +168,41 @@ resource "aws_eks_node_group" "default" {
     max_size     = 3     # 최대 확장 수
     min_size     = 1     # 최소 유지 수
   }
-
-  instance_types = ["t3.medium"]         # 노드 인스턴스 타입
-  ami_type       = "AL2023_x86_64_STANDARD"          # Amazon Linux 2 AMI
+  # instance_types = ["t3.medium"]         # 노드 인스턴스 타입
+  # ami_type       = "AL2023_x86_64_STANDARD"          # Amazon Linux 2 AMI
 
   tags = var.tags
-
-  remote_access {
-    ec2_ssh_key = var.ssh_key_name
-    source_security_group_ids = [var.vpn_security_group_id]   # 노드 보안그룹 ID
-  }
 
   # custom launch template 사용
   launch_template {
     id      = aws_launch_template.eks_node.id
     version = aws_launch_template.eks_node.latest_version
+  }
+}
+# 1) 커스텀 Launch Template 정의
+data "aws_ssm_parameter" "eks_ami" {
+  name = "/aws/service/eks/optimized-ami/1.29/amazon-linux-2/recommended/image_id"
+}
+
+resource "aws_launch_template" "eks_node" {
+  name_prefix     = "${var.cluster_name}-node-"
+  instance_type = "t3.medium"
+  update_default_version = true
+  key_name = var.ssh_key_name
+
+  network_interfaces {
+    associate_public_ip_address = false
+    security_groups             = [
+      aws_security_group.eks_node_sg.id,
+      var.vpn_security_group_id  # VPN 보안 그룹 지정
+    ]
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = merge(var.tags, {
+      Name = "${var.cluster_name}-worker"
+    })
   }
 }
 
@@ -195,19 +215,4 @@ resource "aws_iam_openid_connect_provider" "this" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [var.oidc_thumbprint]
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
-}
-
-# 1) 커스텀 Launch Template 정의
-resource "aws_launch_template" "eks_node" {
-  name_prefix   = "${var.cluster_name}-node-"
-  image_id      = data.aws_ssm_parameter.eks_ami.value
-  instance_type = "t3.medium"
-  update_default_version = true
-
-  tag_specifications {
-    resource_type = "instance"
-    tags = merge(var.tags, {
-      Name = "${var.cluster_name}-worker"
-    })
-  }
 }
