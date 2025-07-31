@@ -12,17 +12,15 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "cluster_name" {
-  description = "EKS 클러스터 이름"
-  type        = string
+# VPN Logging 관련 IAM역할 변수
+variable "create_vpn_logging_role" {
+  type        = bool
+  description = "이미 존재하는 vpn logging role을 사용하지 않고 새로 생성할지 여부"
+  default     = false
 }
 
-variable "eks_admin_policy_arn" {
-  description = "EKS 클러스터 관리자 액세스 정책 ARN"
-  type        = string
-  default     = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-}
-variable "eks_cluster_resource" {
-  description = "The EKS cluster resource for dependency"
-  type        = any
+variable "create_vpn_logging_policy" {
+  type        = bool
+  description = "이미 존재하는 vpn logging policy를 사용하지 않고 새로 생성할지 여부"
+  default     = false
 }

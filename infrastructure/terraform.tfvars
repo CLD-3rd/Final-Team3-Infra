@@ -12,7 +12,7 @@ private_subnet_cidr = ["100.0.1.0/24", "100.0.2.0/24", "100.0.3.0/24"]
 az                  = ["ap-northeast-2a", "ap-northeast-2b", "ap-northeast-2c"]
 
 cluster_name        = "matchfit-eks"
-kubernetes_version  = "1.32"
+kubernetes_version  = "1.33"
 service_ipv4_cidr   = "172.20.0.0/16"
 ssh_key_name        = "matchfit-eks-key"
 #worker_access_cidr  = ["10.0.2.0/24"]
@@ -31,7 +31,7 @@ admin_user_arn = "arn:aws:iam::061039804626:user/lion3fteam03"
 # RDS DB 기본 설정
 db_name     = "matchfit_db"
 db_username = "admin"
-db_password = "yourSecurePassword123!"  # 실제 운영 시엔 tfvars 파일을 git에 커밋하지 말고, Secret Manager 사용 권장
+db_password = "matchfit!123fit"  # 실제 운영 시엔 tfvars 파일을 git에 커밋하지 말고, Secret Manager 사용 권장
 # Subnet Group 생성 여부
 create_subnet_group = true
 db_subnet_group_name = null  # 외부에서 주입 시: "my-custom-subnet-group"

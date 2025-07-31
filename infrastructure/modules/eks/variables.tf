@@ -45,17 +45,3 @@ variable "vpn_security_group_id" {
   type        = string
   description = "VPN Security Group ID to allow SSH from"
 }
-
-# aws_auth.tf 관련 변수
-# variable "node_role_arn" {
-#   description = "EKS Node IAM Role ARN"
-#   type        = string
-# }
-# variable "admin_role_arn" {
-#   description = "EKS Admin IAM Role ARN"
-#   type        = string
-# }
-# variable "admin_user_arn" {
-#   description = "EKS Admin IAM User ARN"
-#   type        = string
-# }

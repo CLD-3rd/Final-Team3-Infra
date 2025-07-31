@@ -170,7 +170,7 @@ resource "aws_eks_node_group" "default" {
   }
 
   instance_types = ["t3.medium"]         # 노드 인스턴스 타입
-  ami_type       = "AL2_x86_64"          # Amazon Linux 2 AMI
+  ami_type       = "AL2023_x86_64_STANDARD"          # Amazon Linux 2 AMI
 
   tags = var.tags
 
