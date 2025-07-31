@@ -28,9 +28,6 @@ resource "aws_subnet" "public" {
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     "kubernetes.io/role/elb"         = "1"
   }
-  # lifecycle {
-  # prevent_destroy = true
-  # }
 }
 
 # Private Subnet 생성
@@ -46,9 +43,6 @@ resource "aws_subnet" "private" {
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     "kubernetes.io/role/internal-elb" = "1"
   }
-  # lifecycle {
-  # prevent_destroy = true
-  # }
 }
 
 # Internet Gateway 생성
@@ -57,14 +51,14 @@ resource "aws_internet_gateway" "this" {
   tags = {
     Name = "${var.name_prefix}-igw"
   }
-  # lifecycle {
-  # prevent_destroy = true
-  # }
 }
 
 # Elastic IP for NAT Gateway
 resource "aws_eip" "nat" {
   domain = "vpc"
+  tags = {
+    Name = "${var.name_prefix}-nat-eip"
+  }
 }
 
 # NAT Gateway in a public subnet
