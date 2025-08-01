@@ -98,7 +98,21 @@ module "eks" {
   vpn_security_group_id      = module.vpn.vpn_security_group_id
 
   ssh_key_name               = var.ssh_key_name       # SSH 접근용 키
-  }
+}
+############################
+# VPN 모듈 호출
+module "vpn" {
+  source                      = "./modules/vpn"
+  name_prefix                 = var.name_prefix
+  vpc_id                      = module.network.vpc_id
+  vpc_cidr                    = var.vpc_cidr
+  create_security_group       = true
+  client_cidr_block           = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+  server_certificate_arn      = var.server_certificate_arn
+  client_ca_certificate_arn   = var.client_ca_certificate_arn
+  cloudwatch_log_group        = "matchfit-vpn-logs"
+  subnet_ids                  = module.network.private_subnet_id
+}
 #####################
 # RDS 모듈 호출
 # module "rds" {
@@ -109,9 +123,9 @@ module "eks" {
 #   username               = var.db_username
 #   password               = var.db_password
 
-#   # vpc_security_group_ids = var.rds_security_group_ids
-#   vpc_security_group_ids = []
-#   private_subnet_ids = module.network.private_subnet_id
+#   # vpc_security_group_ids  = var.rds_security_group_ids
+#   vpc_security_group_ids    = []
+#   private_subnet_ids        = module.network.private_subnet_id
 
 #   create_security_group  = true
 #   vpc_id                 = module.network.vpc_id
@@ -119,10 +133,10 @@ module "eks" {
 #   create_subnet_group    = var.create_subnet_group
 #   db_subnet_group_name   = var.db_subnet_group_name
 
-#   multi_az               = var.multi_az
+#   multi_az                = var.multi_az
 #   backup_retention_period = var.backup_retention_period
-#   backup_window          = var.backup_window
-#   maintenance_window     = var.maintenance_window
+#   backup_window           = var.backup_window
+#   maintenance_window      = var.maintenance_window
 
 #   skip_final_snapshot    = var.skip_final_snapshot
 #   deletion_protection    = var.deletion_protection
@@ -147,7 +161,7 @@ module "eks" {
 
 #   tags = var.default_tags
 # }
-############################
+# ############################
 # # S3 모듈 호출
 # module "s3_bucket" {
 #   source                  = "./modules/s3"
@@ -165,7 +179,7 @@ module "eks" {
 #   bucket_policy           = var.bucket_policy
 #   tags                    = var.default_tags
 # }
-############################
+# ############################
 # ECR 모듈 호출
 # module "ecr" {
 #   source = "./modules/ecr"
@@ -178,47 +192,8 @@ module "eks" {
 #   tags = var.default_tags
 # }
 ############################
-# VPN 모듈 호출
-module "vpn" {
-  source                      = "./modules/vpn"
-  name_prefix                 = var.name_prefix
-  vpc_id                      = module.network.vpc_id
-  vpc_cidr                    = var.vpc_cidr
-  create_security_group       = true
-  client_cidr_block           = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
-  server_certificate_arn      = var.server_certificate_arn
-  client_ca_certificate_arn   = var.client_ca_certificate_arn
-  cloudwatch_log_group        = "matchfit-vpn-logs"
-  subnet_ids                  = module.network.private_subnet_id
-}
-############################
 # Route53 DNS 설정 모듈 호출
-module "route53" {
-  source           = "./modules/route53"
-  domain_name      = var.domain_name
-}
-############################
-# 서비스 모듈
-# IRSA용 IAM 역할 및 정책 구성
-# module "irsa-alb" {
-#   source = "./modules/alb-irsa"
-#   cluster_name = var.cluster_name
-#   oidc_provider_arn = module.eks.oidc_provider_arn
-#   oidc_provider_url = module.eks.cluster_oidc_issuer_url
-#   tags = var.default_tags
-
-  depends_on = [module.eks]
-}
-# ALB Controller Helm 설치
-module "alb_controller" {
-  source = "./modules/alb-controller"
-  cluster_name                 = module.eks.cluster_name
-  vpc_id                       = module.network.vpc_id
-  alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
-  depends_on = [module.irsa-alb]
-}
-# ArgoCD Helm 설치
-# module "argocd" {
-#   source = "./modules/argocd"
-#   depends_on = [module.alb_controller]
+# module "route53" {
+#   source           = "./modules/route53"
+#   domain_name      = var.domain_name
 # }
