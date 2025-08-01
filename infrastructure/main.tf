@@ -17,13 +17,13 @@ terraform {
     }
   }
 
-  backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
-    bucket         = "matchfit-terraform-loc"
-    key            = "infrastructure/infrastructure.tfstate"
-    region         = "ap-northeast-2"
-    dynamodb_table = "matchfit-terraform-lock-table"
-    encrypt        = true
-  }
+  # backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
+  #   bucket         = "matchfit-terraform-loc"
+  #   key            = "infrastructure/infrastructure.tfstate"
+  #   region         = "ap-northeast-2"
+  #   dynamodb_table = "matchfit-terraform-lock-table"
+  #   encrypt        = true
+  # }
 
 }
 # AWS Provider 정의
@@ -192,23 +192,23 @@ module "s3_bucket" {
 # CloudFront (OAC + HTTPS)
 #################################
 module "cloudfront" {
-  source                  = "./modules/cloudfront"
-  service_name            = var.name_prefix
-  domain_name             = var.app_domain_name
-  certificate_arn         = var.acm_certificate_arn
-  s3_origin_domain        = module.s3_bucket.bucket_regional_domain_name  # 기존 S3 모듈의 도메인
-  s3_bucket_id            = module.s3_bucket.bucket_id                     # 기존 S3 모듈의 ID
-  s3_bucket_arn           = module.s3_bucket.bucket_arn                    # 기존 S3 모듈의 ARN
-  price_class             = var.price_class
-  custom_error_responses  = var.custom_error_responses
-  tags                    = var.default_tags
+  source                         = "./modules/cloudfront"
+  service_name                   = var.name_prefix
+  domain_name                    = var.domain_name
+  cloudfront_certificate_arn     = var.cloudfront_certificate_arn
+  s3_origin_domain               = module.s3_bucket.bucket_regional_domain_name  # 기존 S3 모듈의 도메인
+  s3_bucket_id                   = module.s3_bucket.bucket_id                     # 기존 S3 모듈의 ID
+  s3_bucket_arn                  = module.s3_bucket.bucket_arn                    # 기존 S3 모듈의 ARN
+  price_class                    = var.price_class
+  custom_error_responses         = var.custom_error_responses
+  tags                           = var.default_tags
 }
 #################################
 # Route53 (CloudFront 연결)
 #################################
 resource "aws_route53_record" "cloudfront" {
   zone_id = module.route53.zone_id
-  name    = var.app_domain_name
+  name    = var.domain_name
   type    = "A"
 
   alias {
@@ -217,7 +217,6 @@ resource "aws_route53_record" "cloudfront" {
     evaluate_target_health = false
   }
 }
-
 ############################
 # ECR 모듈 호출
 module "ecr" {
@@ -232,7 +231,10 @@ module "ecr" {
 }
 ############################
 # Route53 DNS 설정 모듈 호출
-# module "route53" {
-#   source           = "./modules/route53"
-#   domain_name      = var.domain_name
-# }
+module "route53" {
+  source           = "./modules/route53"
+  alb_zone_id      = "Z3W03O7B5YMIYP"
+  domain_name      = var.domain_name
+  argocd_alb_dns   = module.argocd.argocd_alb_dns
+  depends_on       = [module.alb_controller]
+}

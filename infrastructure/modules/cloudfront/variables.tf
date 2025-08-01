@@ -8,7 +8,7 @@ variable "domain_name" {
   type        = string
 }
 
-variable "certificate_arn" {
+variable "cloudfront_certificate_arn" {
   description = "ACM 인증서 ARN (us-east-1)"
   type        = string
 }

@@ -220,12 +220,8 @@ variable "force_destroy" {
 #################################
 # CloudFront + S3 설정
 #################################
-variable "app_domain_name" {
-  description = "CloudFront에 연결할 도메인"
-  type        = string
-}
 
-variable "acm_certificate_arn" {
+variable "cloudfront_certificate_arn" {
   description = "CloudFront용 인증서 ARN (us-east-1)"
   type        = string
 }
@@ -250,18 +246,6 @@ variable "app_bucket_name" {
   type        = string
 }
 
-
-
-#####################
-# VPN 관련 루트 변수
-variable "server_certificate_arn" {
-  description = "ACM 서버 인증서 ARN"
-  type        = string
-}
-variable "client_ca_certificate_arn" {
-  description = "클라이언트 CA 인증서 ARN"
-  type        = string
-}
 #####################
 # ECR 관련 루트 변수
 variable "ecr_image_tag_mutability" {
@@ -286,8 +270,7 @@ variable "ecr_encryption_type" {
 }
 #####################
 # Route53 관련 루트 변수
-# variable "domain_name" {
-#   description = "Route53에 등록할 최상위 도메인"
-#   type        = string
-#   default = "match-fit.store"
-# }
+variable "domain_name" {
+  description = "Route53 도메인 이름"
+  type        = string
+}
