@@ -115,12 +115,12 @@ resource "aws_security_group" "eks_node_sg" {
     self            = true
   }
   # VPN 보안그룹 설정
-    ingress {
-    from_port          = 22
-    to_port            = 22
-    protocol           = "tcp"
-    security_groups    = [var.vpn_security_group_id]
-  }
+  #   ingress {
+  #   from_port          = 22
+  #   to_port            = 22
+  #   protocol           = "tcp"
+  #   security_groups    = [var.vpn_security_group_id]
+  # }
   # 노드 → 외부로 나가는 트래픽 허용
   egress {
     from_port   = 0
@@ -141,6 +141,7 @@ resource "aws_eks_cluster" "this" {
   access_config {
     authentication_mode = "API_AND_CONFIG_MAP"
   }
+
   vpc_config {
     subnet_ids              = var.subnet_ids                         # 클러스터에 연결할 서브넷들
     security_group_ids      = [aws_security_group.eks_cluster_sg.id] # 보안 그룹 ID
@@ -168,23 +169,47 @@ resource "aws_eks_node_group" "default" {
     max_size     = 3     # 최대 확장 수
     min_size     = 1     # 최소 유지 수
   }
-
   instance_types = ["t3.medium"]         # 노드 인스턴스 타입
   ami_type       = "AL2023_x86_64_STANDARD"          # Amazon Linux 2 AMI
-
-  tags = var.tags
 
   remote_access {
     ec2_ssh_key = var.ssh_key_name
     source_security_group_ids = [var.vpn_security_group_id]   # 노드 보안그룹 ID
   }
+  tags = var.tags
 
-  # custom launch template 사용
-  launch_template {
-    id      = aws_launch_template.eks_node.id
-    version = aws_launch_template.eks_node.latest_version
-  }
+  # # custom launch template 사용
+  # launch_template {
+  #   id      = aws_launch_template.eks_node.id
+  #   version = aws_launch_template.eks_node.latest_version
+  # }
 }
+# 1) 커스텀 Launch Template 정의
+# data "aws_ssm_parameter" "eks_ami" {
+#   name = "/aws/service/eks/optimized-ami/1.31/amazon-linux-2023/x86_64/standard/recommended/image_id"
+# }
+# resource "aws_launch_template" "eks_node" {
+#   name_prefix               = "${var.cluster_name}-node-"
+#   image_id                  = "ami-01e5621c2b0cac662"
+#   instance_type             = "t3.medium"
+#   update_default_version    = true
+#   # key_name                = var.ssh_key_name
+
+#   network_interfaces {
+#     associate_public_ip_address = false
+#     security_groups             = [
+#       aws_security_group.eks_node_sg.id,
+#       var.vpn_security_group_id  # VPN 보안 그룹 지정
+#     ]
+#   }
+
+#   tag_specifications {
+#     resource_type = "instance"
+#     tags = merge(var.tags, {
+#       Name = "${var.cluster_name}-worker"
+#     })
+#   }
+# }
 
 # OIDC 관련 설정 (IRSA를 위한 구성)
 data "tls_certificate" "eks_cluster" {
@@ -195,19 +220,4 @@ resource "aws_iam_openid_connect_provider" "this" {
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = [var.oidc_thumbprint]
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
-}
-
-# 1) 커스텀 Launch Template 정의
-resource "aws_launch_template" "eks_node" {
-  name_prefix   = "${var.cluster_name}-node-"
-  image_id      = data.aws_ssm_parameter.eks_ami.value
-  instance_type = "t3.medium"
-  update_default_version = true
-
-  tag_specifications {
-    resource_type = "instance"
-    tags = merge(var.tags, {
-      Name = "${var.cluster_name}-worker"
-    })
-  }
 }
