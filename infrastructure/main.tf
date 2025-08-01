@@ -233,7 +233,7 @@ module "ecr" {
 # Route53 DNS 설정 모듈 호출
 module "route53" {
   source           = "./modules/route53"
-  alb_zone_id      = "Z3W03O7B5YMIYP"
+  alb_zone_id      = "ZWKZPGTI48KDX"
   domain_name      = var.domain_name
   argocd_alb_dns   = module.argocd.argocd_alb_dns
   depends_on       = [module.alb_controller]
