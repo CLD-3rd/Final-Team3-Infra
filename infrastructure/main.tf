@@ -187,7 +187,6 @@ module "s3_bucket" {
   restrict_public_buckets = true
   tags                    = var.default_tags
 }
-
 #################################
 # CloudFront (OAC + HTTPS)
 #################################
@@ -203,20 +202,7 @@ module "cloudfront" {
   custom_error_responses         = var.custom_error_responses
   tags                           = var.default_tags
 }
-#################################
-# Route53 (CloudFront 연결)
-#################################
-resource "aws_route53_record" "cloudfront" {
-  zone_id = module.route53.zone_id
-  name    = var.domain_name
-  type    = "A"
-
-  alias {
-    name                   = module.cloudfront.cloudfront_domain_name
-    zone_id                = "Z2FDTNDATAQYW2"
-    evaluate_target_health = false
-  }
-}
+### 개선사항 : 캐시무효화 자동화ㅏ에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
 ############################
 # ECR 모듈 호출
 module "ecr" {
@@ -228,13 +214,4 @@ module "ecr" {
   scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
   encryption_type      = var.ecr_encryption_type       # 암호화 방식
   tags = var.default_tags
-}
-############################
-# Route53 DNS 설정 모듈 호출
-module "route53" {
-  source           = "./modules/route53"
-  alb_zone_id      = "ZWKZPGTI48KDX"
-  domain_name      = var.domain_name
-  argocd_alb_dns   = module.argocd.argocd_alb_dns
-  depends_on       = [module.alb_controller]
 }

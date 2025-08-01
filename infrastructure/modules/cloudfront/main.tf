@@ -5,16 +5,8 @@ data "aws_cloudfront_cache_policy" "caching_optimized" {
   name = "Managed-CachingOptimized"
 }
 
-data "aws_cloudfront_cache_policy" "caching_disabled" {
-  name = "Managed-CachingDisabled" # API 요청 캐싱 비활성화
-}
-
 data "aws_cloudfront_origin_request_policy" "cors_s3_origin" {
   name = "Managed-CORS-S3Origin"
-}
-
-data "aws_cloudfront_response_headers_policy" "security_headers" {
-  name = "Managed-SecurityHeadersPolicy" # HSTS, CSP 등 보안 헤더
 }
 
 ########################################
@@ -44,28 +36,17 @@ resource "aws_cloudfront_distribution" "this" {
     origin_access_control_id = aws_cloudfront_origin_access_control.this.id
   }
 
-  # 기본 캐시 동작 (정적 콘텐츠)
+  # 기본 캐시 동작
   default_cache_behavior {
-    target_origin_id           = var.origin_id
-    viewer_protocol_policy     = "redirect-to-https"
-    allowed_methods            = ["GET", "HEAD"]
-    cached_methods             = ["GET", "HEAD"]
-    compress                   = true
-    cache_policy_id            = data.aws_cloudfront_cache_policy.caching_optimized.id
-    origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_s3_origin.id
-    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.security_headers.id
-  }
+    target_origin_id         = var.origin_id
+    viewer_protocol_policy   = "redirect-to-https"
+    allowed_methods          = ["GET", "HEAD"]
+    cached_methods           = ["GET", "HEAD"]
+    compress                 = true
 
-  # 추가 캐시 동작 (API: 캐싱 비활성화)
-  ordered_cache_behavior {
-    path_pattern               = "/api/*"
-    target_origin_id           = var.origin_id
-    viewer_protocol_policy     = "redirect-to-https"
-    allowed_methods            = ["GET", "HEAD", "OPTIONS"]
-    cached_methods             = ["GET", "HEAD"]
-    cache_policy_id            = data.aws_cloudfront_cache_policy.caching_disabled.id
-    origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_s3_origin.id
-    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.security_headers.id
+    # 새 방식: Managed Policy 사용
+    cache_policy_id          = data.aws_cloudfront_cache_policy.caching_optimized.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.cors_s3_origin.id
   }
 
   # 커스텀 에러 페이지 (SPA 라우팅 대응)
