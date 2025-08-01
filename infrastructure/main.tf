@@ -16,6 +16,15 @@ terraform {
       version = "~> 2.12" # 안정적인 최신 버전
     }
   }
+
+  backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
+    bucket         = "matchfit-terraform-loc"
+    key            = "infrastructure/infrastructure.tfstate"
+    region         = "ap-northeast-2"
+    dynamodb_table = "matchfit-terraform-lock-table"
+    encrypt        = true
+  }
+
 }
 # AWS Provider 정의
 provider "aws" {
