@@ -114,13 +114,6 @@ resource "aws_security_group" "eks_node_sg" {
     protocol        = "tcp"
     self            = true
   }
-  # VPN 보안그룹 설정
-  #   ingress {
-  #   from_port          = 22
-  #   to_port            = 22
-  #   protocol           = "tcp"
-  #   security_groups    = [var.vpn_security_group_id]
-  # }
   # 노드 → 외부로 나가는 트래픽 허용
   egress {
     from_port   = 0
