@@ -7,3 +7,6 @@ variable "alb_controller_irsa_role_arn" {
   type        = string
   description = "ALB Controller가 사용할 IAM 역할의 ARN (IRSA에 연결된 역할)"
 }
+variable "vpc_id" {
+  type = string
+}

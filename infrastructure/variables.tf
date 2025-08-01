@@ -6,7 +6,7 @@ variable "aws_region" {
 # 네이밍 접두어 (예: team1 → team1-vpc 등)
 variable "name_prefix" {
   description = "리소스 이름 접두어"
-  default     = "team3"
+  default     = "matchfit"
 }
 # 공통 태그 (선택 사항)
 variable "default_tags" {
@@ -62,7 +62,7 @@ variable "admin_user_arn" {
 }
 # EKS 관련 루트 variables
 variable "kubernetes_version" {
-  default = "1.32"
+  default = "1.33"
 }
 variable "cluster_name" {
   default = "matchfit-eks"
@@ -85,6 +85,16 @@ variable "create_instance_profile" {
   type        = bool
   default     = true
   description = "EC2 IAM 역할 연결 관련 Profile을 생성할지 여부"
+}
+#####################
+# VPN 관련 루트 변수
+variable "server_certificate_arn" {
+  description = "ACM 서버 인증서 ARN"
+  type        = string
+}
+variable "client_ca_certificate_arn" {
+  description = "클라이언트 CA 인증서 ARN"
+  type        = string
 }
 #####################
 # RDS 관련 루트 변수
@@ -276,8 +286,8 @@ variable "ecr_encryption_type" {
 }
 #####################
 # Route53 관련 루트 변수
-variable "domain_name" {
-  description = "Route53에 등록할 최상위 도메인"
-  type        = string
-  default = "match-fit.store"
-}
+# variable "domain_name" {
+#   description = "Route53에 등록할 최상위 도메인"
+#   type        = string
+#   default = "match-fit.store"
+# }
