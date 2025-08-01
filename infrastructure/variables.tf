@@ -274,3 +274,7 @@ variable "domain_name" {
   description = "Route53 도메인 이름"
   type        = string
 }
+variable "zone_id" {
+  description = "Route53 호스팅 영역 ID"
+  type        = string
+}
