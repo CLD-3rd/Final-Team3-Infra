@@ -47,9 +47,16 @@ deletion_protection = false
 
 # S3
 bucket_name = "matchfit-bucket"
+app_bucket_name = "matchfitcloudfronttest"
+
 
 # Redis 접속 비밀번호(16자리 이상)
 auth_token = "matchfit250822redis"
 
 server_certificate_arn="arn:aws:acm:ap-northeast-2:061039804626:certificate/8b1167e0-2d9c-458e-a109-101781388822"
 client_ca_certificate_arn="arn:aws:acm:ap-northeast-2:061039804626:certificate/29ad88cc-1c1b-446d-bdb5-ee356de27ab8"
+
+domain_name = "match-fit.store"
+zone_id = "Z01882122J35K2XZ7POYR"
+cloudfront_certificate_arn = "arn:aws:acm:us-east-1:061039804626:certificate/d5e49178-628b-4cae-bd23-e2087649c1fa"
+

@@ -17,13 +17,13 @@ terraform {
     }
   }
 
-  backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
-    bucket         = "matchfit-terraform-loc"
-    key            = "infrastructure/infrastructure.tfstate"
-    region         = "ap-northeast-2"
-    dynamodb_table = "matchfit-terraform-lock-table"
-    encrypt        = true
-  }
+  # backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
+  #   bucket         = "matchfit-terraform-loc"
+  #   key            = "infrastructure/infrastructure.tfstate"
+  #   region         = "ap-northeast-2"
+  #   dynamodb_table = "matchfit-terraform-lock-table"
+  #   encrypt        = true
+  # }
 
 }
 # AWS Provider 정의
@@ -170,25 +170,40 @@ module "elasticache" {
 
   tags = var.default_tags
 }
-# ############################
+
+
+############################
 # # S3 모듈 호출
-# module "s3_bucket" {
-#   source                  = "./modules/s3"
-#   create_bucket           = true
-#   bucket_name             = var.bucket_name
-#   force_destroy           = var.force_destroy         # 추가: 버킷 삭제 동작 제어
-#   enable_versioning       = var.enable_versioning
-#   enable_website          = var.enable_website
-#   index_document          = var.index_document
-#   error_document          = var.error_document
-#   block_public_acls       = var.block_public_acls
-#   block_public_policy     = var.block_public_policy
-#   ignore_public_acls      = var.ignore_public_acls
-#   restrict_public_buckets = var.restrict_public_buckets
-#   bucket_policy           = var.bucket_policy
-#   tags                    = var.default_tags
-# }
-# ############################
+module "s3_bucket" {
+  source                  = "./modules/s3"
+  create_bucket           = true
+  bucket_name             = var.app_bucket_name
+  force_destroy           = true
+  enable_versioning       = true
+  enable_website          = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+  tags                    = var.default_tags
+}
+#################################
+# CloudFront (OAC + HTTPS)
+#################################
+module "cloudfront" {
+  source                         = "./modules/cloudfront"
+  service_name                   = var.name_prefix
+  domain_name                    = var.domain_name
+  cloudfront_certificate_arn     = var.cloudfront_certificate_arn
+  s3_origin_domain               = module.s3_bucket.bucket_regional_domain_name  # 기존 S3 모듈의 도메인
+  s3_bucket_id                   = module.s3_bucket.bucket_id                     # 기존 S3 모듈의 ID
+  s3_bucket_arn                  = module.s3_bucket.bucket_arn                    # 기존 S3 모듈의 ARN
+  price_class                    = var.price_class
+  custom_error_responses         = var.custom_error_responses
+  tags                           = var.default_tags
+}
+### 개선사항 : 캐시무효화 자동화ㅏ에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
+############################
 # ECR 모듈 호출
 module "ecr" {
   source = "./modules/ecr"
@@ -200,9 +215,3 @@ module "ecr" {
   encryption_type      = var.ecr_encryption_type       # 암호화 방식
   tags = var.default_tags
 }
-############################
-# Route53 DNS 설정 모듈 호출
-# module "route53" {
-#   source           = "./modules/route53"
-#   domain_name      = var.domain_name
-# }

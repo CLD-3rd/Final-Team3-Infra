@@ -170,53 +170,82 @@ variable "snapshot_window" {
 }
 #####################
 # S3 관련 루트 변수
-# variable "bucket_name" {
-#   description = "Name of the S3 bucket (globally unique)"
-#   type        = string
-#   default     = "matchfit-bucket"
-# }
-# variable "enable_versioning" {
-#   type        = bool
-#   default     = false
-# }
-# variable "enable_website" {
-#   type        = bool
-#   default     = false
-# }
-# variable "index_document" {
-#   type        = string
-#   default     = "index.html"
-# }
-# variable "error_document" {
-#   type        = string
-#   default     = "error.html"
-# }
-# variable "block_public_acls" {
-#   type        = bool
-#   default     = true
-# }
-# variable "block_public_policy" {
-#   type        = bool
-#   default     = true
-# }
-# variable "ignore_public_acls" {
-#   type        = bool
-#   default     = true
-# }
-# variable "restrict_public_buckets" {
-#   type        = bool
-#   default     = true
-# }
-# variable "bucket_policy" {
-#   description = "Optional S3 Bucket policy as JSON object"
-#   type        = any
-#   default     = null
-# }
-# variable "force_destroy" {
-#   description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
-#   type        = bool
-#   default     = false
-# }
+variable "bucket_name" {
+  description = "Name of the S3 bucket (globally unique)"
+  type        = string
+  default     = "matchfit-bucket"
+}
+variable "enable_versioning" {
+  type        = bool
+  default     = false
+}
+variable "enable_website" {
+  type        = bool
+  default     = false
+}
+variable "index_document" {
+  type        = string
+  default     = "index.html"
+}
+variable "error_document" {
+  type        = string
+  default     = "error.html"
+}
+variable "block_public_acls" {
+  type        = bool
+  default     = true
+}
+variable "block_public_policy" {
+  type        = bool
+  default     = true
+}
+variable "ignore_public_acls" {
+  type        = bool
+  default     = true
+}
+variable "restrict_public_buckets" {
+  type        = bool
+  default     = true
+}
+variable "bucket_policy" {
+  description = "Optional S3 Bucket policy as JSON object"
+  type        = any
+  default     = null
+}
+variable "force_destroy" {
+  description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
+  type        = bool
+  default     = false
+}
+#################################
+# CloudFront + S3 설정
+#################################
+
+variable "cloudfront_certificate_arn" {
+  description = "CloudFront용 인증서 ARN (us-east-1)"
+  type        = string
+}
+
+variable "price_class" {
+  description = "CloudFront 가격 클래스"
+  type        = string
+  default     = "PriceClass_200"
+}
+
+variable "custom_error_responses" {
+  description = "커스텀 에러 페이지 설정 (SPA 라우팅용)"
+  type = list(object({
+    error_code         = number
+    response_code      = number
+    response_page_path = string
+  }))
+  default = []
+}
+variable "app_bucket_name" {
+  description = "웹/백엔드 통합 S3 버킷 이름"
+  type        = string
+}
+
 #####################
 # ECR 관련 루트 변수
 variable "ecr_image_tag_mutability" {
@@ -241,8 +270,11 @@ variable "ecr_encryption_type" {
 }
 #####################
 # Route53 관련 루트 변수
-# variable "domain_name" {
-#   description = "Route53에 등록할 최상위 도메인"
-#   type        = string
-#   default = "match-fit.store"
-# }
+variable "domain_name" {
+  description = "Route53 도메인 이름"
+  type        = string
+}
+variable "zone_id" {
+  description = "Route53 호스팅 영역 ID"
+  type        = string
+}

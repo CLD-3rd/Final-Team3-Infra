@@ -83,30 +83,48 @@ output "rds_address" {
 }
 #####################
 # S3 루트 출력
-# output "s3_bucket_id" {
-#   description = "The ID of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_id
-# }
-# output "s3_bucket_arn" {
-#   description = "The ARN of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_arn
-# }
-# output "s3_bucket_domain" {
-#   description = "The domain name of the created S3 bucket"
-#   value       = module.s3_bucket.bucket_domain_name
-# }
-# output "s3_bucket_regional_domain" {
-#   description = "The regional domain name of the bucket"
-#   value       = module.s3_bucket.bucket_regional_domain_name
-# }
-# output "s3_website_endpoint" {
-#   description = "S3 static website endpoint (if enabled)"
-#   value       = module.s3_bucket.website_endpoint
-# }
-# output "s3_website_domain" {
-#   description = "S3 static website domain (if enabled)"
-#   value       = module.s3_bucket.website_domain
-# }
+output "s3_bucket_id" {
+  description = "The ID of the created S3 bucket"
+  value       = module.s3_bucket.bucket_id
+}
+output "s3_bucket_arn" {
+  description = "The ARN of the created S3 bucket"
+  value       = module.s3_bucket.bucket_arn
+}
+output "s3_bucket_domain" {
+  description = "The domain name of the created S3 bucket"
+  value       = module.s3_bucket.bucket_domain_name
+}
+output "s3_bucket_regional_domain" {
+  description = "The regional domain name of the bucket"
+  value       = module.s3_bucket.bucket_regional_domain_name
+}
+output "s3_website_endpoint" {
+  description = "S3 static website endpoint (if enabled)"
+  value       = module.s3_bucket.website_endpoint
+}
+output "s3_website_domain" {
+  description = "S3 static website domain (if enabled)"
+  value       = module.s3_bucket.website_domain
+}
+########################################
+# S3 버킷 정보 출력
+########################################
+output "bucket_id" {
+  description = "웹/백엔드 통합 S3 버킷 ID"
+  value       = module.s3_bucket.bucket_id
+}
+
+output "bucket_arn" {
+  description = "웹/백엔드 통합 S3 버킷 ARN"
+  value       = module.s3_bucket.bucket_arn
+}
+
+output "bucket_regional_domain_name" {
+  description = "웹/백엔드 통합 S3 버킷 리전별 도메인"
+  value       = module.s3_bucket.bucket_regional_domain_name
+}
+
 #####################
 # ECR 출력
 output "ecr_repository_url" {
@@ -119,7 +137,7 @@ output "ecr_repository_arn" {
 }
 #####################
 # Route53 출력
-# output "route53_zone_id" {
-#   description = "생성된 Route53 호스팅 존의 Zone ID"
-#   value       = module.route53.zone_id
-# }
+output "route53_zone_id" {
+  description = "생성된 Route53 호스팅 존의 Zone ID"
+  value       = module.route53.zone_id
+}
