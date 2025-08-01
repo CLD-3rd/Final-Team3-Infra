@@ -137,7 +137,7 @@ output "ecr_repository_arn" {
 }
 #####################
 # Route53 출력
-output "route53_zone_id" {
-  description = "생성된 Route53 호스팅 존의 Zone ID"
-  value       = module.route53.zone_id
-}
+# output "route53_zone_id" {
+#   description = "생성된 Route53 호스팅 존의 Zone ID"
+#   value       = module.route53.zone_id
+# }

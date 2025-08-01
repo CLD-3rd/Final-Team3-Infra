@@ -25,4 +25,8 @@ resource "aws_security_group" "this" {
     protocol    = "tcp"
     security_groups = [var.eks_node_sg_id]
   }
+
+  tags = {
+    Name = "${var.name_prefix}-elasticache-sg"
+  }
 }

@@ -16,6 +16,29 @@ terraform {
       version = "~> 2.12" # 안정적인 최신 버전
     }
   }
+
+  backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
+    bucket         = "matchfit-terraform-loc"
+    key            = "infrastructure/infrastructure.tfstate"
+    region         = "ap-northeast-2"
+    dynamodb_table = "matchfit-terraform-lock-table"
+    encrypt        = true
+  }
+
+}
+# AWS Provider 정의
+provider "aws" {
+  region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
+}
+# Kebernetes Provider 정의
+provider "kubernetes" {
+  config_path = "~/.kube/config"  # 본인 kubeconfig 경로
+}
+# Helm Provider 정의
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"
+  }
 }
 #####################
 # TFC 사용 시 필요
@@ -27,11 +50,6 @@ terraform {
 #     }
 #   }
 # }
-#####################
-# AWS Provider 정의
-provider "aws" {
-  region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
-}
 #####################
 # network 설정 모듈 호출
 locals {
@@ -51,10 +69,10 @@ module "network" {
   tags   = var.default_tags                           # 공통 태그
   route_tables = [      # 커스텀 라우팅 테이블 정보
     {
-      name       = "private-rt"
+      name       = "${var.name_prefix}-private-rt"
       subnet_ids = local.private_subnet_ids
       tags       = {
-        Name = "private-rt"
+        Name = "${var.name_prefix}-private-rt"
       }
       routes = [
         {
@@ -66,6 +84,15 @@ module "network" {
   ]
 }
 #####################
+# EKS Admin Role 생성 및 연결 모듈 호출
+module "eks_admin_role" {
+  source                  = "./modules/iam"
+  name_prefix             = var.name_prefix
+  cluster_name            = var.cluster_name
+  admin_user_arn          = var.admin_user_arn
+  eks_cluster_resource    = module.eks.cluster_resource
+  tags                    = var.default_tags
+}
 # EKS 클러스터 모듈 호출
 module "eks" {
   source                     = "./modules/eks"
@@ -80,7 +107,21 @@ module "eks" {
   vpn_security_group_id      = module.vpn.vpn_security_group_id
 
   ssh_key_name               = var.ssh_key_name       # SSH 접근용 키
-  }
+}
+############################
+# VPN 모듈 호출
+module "vpn" {
+  source                      = "./modules/vpn"
+  name_prefix                 = var.name_prefix
+  vpc_id                      = module.network.vpc_id
+  vpc_cidr                    = var.vpc_cidr
+  create_security_group       = true
+  client_cidr_block           = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
+  server_certificate_arn      = var.server_certificate_arn
+  client_ca_certificate_arn   = var.client_ca_certificate_arn
+  cloudwatch_log_group        = "matchfit-vpn-logs"
+  subnet_ids                  = module.network.private_subnet_id
+}
 #####################
 # RDS 모듈 호출
 module "rds" {
@@ -91,9 +132,9 @@ module "rds" {
   username               = var.db_username
   password               = var.db_password
 
-  # vpc_security_group_ids = var.rds_security_group_ids
-  vpc_security_group_ids = []
-  private_subnet_ids = module.network.private_subnet_id
+  # vpc_security_group_ids  = var.rds_security_group_ids
+  vpc_security_group_ids    = []
+  private_subnet_ids        = module.network.private_subnet_id
 
   create_security_group  = true
   vpc_id                 = module.network.vpc_id
@@ -101,10 +142,10 @@ module "rds" {
   create_subnet_group    = var.create_subnet_group
   db_subnet_group_name   = var.db_subnet_group_name
 
-  multi_az               = var.multi_az
+  multi_az                = var.multi_az
   backup_retention_period = var.backup_retention_period
-  backup_window          = var.backup_window
-  maintenance_window     = var.maintenance_window
+  backup_window           = var.backup_window
+  maintenance_window      = var.maintenance_window
 
   skip_final_snapshot    = var.skip_final_snapshot
   deletion_protection    = var.deletion_protection
@@ -190,46 +231,8 @@ module "ecr" {
   tags = var.default_tags
 }
 ############################
-# VPN 모듈 호출
-module "vpn" {
-  source                      = "./modules/vpn"
-  name_prefix                 = var.name_prefix
-  vpc_id                      = module.network.vpc_id
-  vpc_cidr                    = var.vpc_cidr
-  create_security_group       = true
-  client_cidr_block           = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
-  server_certificate_arn      = var.server_certificate_arn
-  client_ca_certificate_arn   = var.client_ca_certificate_arn
-  cloudwatch_log_group        = "matchfit-vpn-logs"
-  subnet_ids                  = module.network.private_subnet_id
-}
-############################
 # Route53 DNS 설정 모듈 호출
-module "route53" {
-  source           = "./modules/route53"
-  domain_name      = var.domain_name
-}
-############################
-# 서비스 모듈
-# IRSA용 IAM 역할 및 정책 구성
-module "irsa-alb" {
-  source = "./modules/alb-irsa"
-  cluster_name = var.cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
-  oidc_provider_url = module.eks.cluster_oidc_issuer_url
-  tags = var.default_tags
-
-  depends_on = [module.eks]
-}
-# ALB Controller Helm 설치
-module "alb_controller" {
-  source = "./modules/alb-controller"
-  cluster_name                 = module.eks.cluster_name
-  alb_controller_irsa_role_arn = module.irsa-alb.alb_controller_irsa_role_arn
-  depends_on = [module.irsa-alb]
-}
-# ArgoCD Helm 설치
-# module "argocd" {
-#   source = "./modules/argocd"
-#   depends_on = [module.alb_controller]
+# module "route53" {
+#   source           = "./modules/route53"
+#   domain_name      = var.domain_name
 # }
