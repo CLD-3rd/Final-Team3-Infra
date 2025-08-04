@@ -4,11 +4,11 @@ variable "domain_name" {
 }
 
 variable "argocd_alb_dns" {
-  type        = string
   description = "ArgoCD ALB DNS 이름"
+  type        = string
 }
 
 variable "cloudfront_dns" {
-  description = "CloudFront DNS name"
+  description = "CloudFront DNS 이름"
   type        = string
 }

@@ -6,7 +6,7 @@ variable "aws_region" {
 # 네이밍 접두어 (예: team1 → team1-vpc 등)
 variable "name_prefix" {
   description = "리소스 이름 접두어"
-  default     = "matchfit"
+  default     = "matchfit-test"
 }
 # 공통 태그 (선택 사항)
 variable "default_tags" {
@@ -14,7 +14,7 @@ variable "default_tags" {
   type        = map(string)
   default = {
     Environment = "dev"
-    Owner       = "matchfit"
+    Owner       = "matchfit-test"
   }
 }
 #####################
@@ -65,7 +65,7 @@ variable "kubernetes_version" {
   default = "1.33"
 }
 variable "cluster_name" {
-  default = "matchfit-eks"
+  default = "basic-eks"
 }
 variable "service_ipv4_cidr" {
   description = "Kubernetes 서비스 네트워크 CIDR"
@@ -169,11 +169,33 @@ variable "snapshot_window" {
   default     = "11:30-13:00"
 }
 #####################
+# ECR 관련 루트 변수
+variable "ecr_image_tag_mutability" {
+  description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
+  type        = string
+  default     = "MUTABLE"
+}
+variable "ecr_force_delete" {
+  description = "리포지토리에 이미지가 있어도 삭제할 수 있는지 여부"
+  type        = bool
+  default     = true
+}
+variable "ecr_scan_on_push" {
+  description = "이미지 푸시 시 자동으로 취약점 검사를 수행할지 여부"
+  type        = bool
+  default     = true
+}
+variable "ecr_encryption_type" {
+  description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
+  type        = string
+  default     = "AES256"
+}
+#####################
 # S3 관련 루트 변수
 variable "bucket_name" {
   description = "Name of the S3 bucket (globally unique)"
   type        = string
-  default     = "matchfit-bucket"
+  default     = "basic-bucket"
 }
 variable "enable_versioning" {
   type        = bool
@@ -220,18 +242,15 @@ variable "force_destroy" {
 #################################
 # CloudFront + S3 설정
 #################################
-
 variable "cloudfront_certificate_arn" {
   description = "CloudFront용 인증서 ARN (us-east-1)"
   type        = string
 }
-
 variable "price_class" {
   description = "CloudFront 가격 클래스"
   type        = string
   default     = "PriceClass_200"
 }
-
 variable "custom_error_responses" {
   description = "커스텀 에러 페이지 설정 (SPA 라우팅용)"
   type = list(object({
@@ -246,28 +265,7 @@ variable "app_bucket_name" {
   type        = string
 }
 
-#####################
-# ECR 관련 루트 변수
-variable "ecr_image_tag_mutability" {
-  description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
-  type        = string
-  default     = "MUTABLE"
-}
-variable "ecr_force_delete" {
-  description = "리포지토리에 이미지가 있어도 삭제할 수 있는지 여부"
-  type        = bool
-  default     = true
-}
-variable "ecr_scan_on_push" {
-  description = "이미지 푸시 시 자동으로 취약점 검사를 수행할지 여부"
-  type        = bool
-  default     = true
-}
-variable "ecr_encryption_type" {
-  description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
-  type        = string
-  default     = "AES256"
-}
+
 #####################
 # Route53 관련 루트 변수
 variable "domain_name" {
