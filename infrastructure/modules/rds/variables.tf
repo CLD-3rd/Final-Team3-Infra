@@ -60,7 +60,7 @@ variable "parameter_group_name" {
   description = "사용할 파라미터 그룹 이름"
 }
 
-variable "vpc_security_group_id" {
+variable "vpc_security_group_ids" {
   type        = list(string)
   description = "RDS에 연결할 보안 그룹 ID 리스트"
 }
@@ -134,6 +134,7 @@ variable "rds_security_group_ids" {
   type        = list(string)
   default     = []
 }
+
 variable "vpn_security_group_id" {
   description = "VPN Security Group ID to allow SSH from"
   type        = string
