@@ -77,7 +77,7 @@ resource "aws_db_instance" "this" {
   }
 
   lifecycle {
-  # 보안그룹을 list로 받고 있는데 실제 보안그룹은 1개라 계속 업데이트가 일어남
-  ignore_changes = [vpc_security_group_ids]
+  # prevent_destroy = true # 삭제 막기
+    ignore_changes = all # 모든 변경 무시
   }
 }
