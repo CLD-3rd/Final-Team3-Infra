@@ -23,6 +23,7 @@ resource "aws_route53_record" "argocd" {
 resource "aws_route53_record" "cloudfront" {
   zone_id = data.aws_route53_zone.primary.zone_id
   # name    = var.domain_name
+
   name    = "cloudfront.${var.domain_name}"
   type    = "A"
 
