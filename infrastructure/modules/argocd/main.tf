@@ -35,8 +35,24 @@ resource "helm_release" "argocd" {
           }
 
           # ALB가 라우팅할 도메인 호스트 이름
-          hosts = ["argocd.match-fit.store"]
+          hostname = "argocd.match-fit.store"
+          https = false
         }
+
+        extraArgs = ["--insecure"]
+
+        config = {
+          "server.insecure" = true
+        }
+
+        service = {
+          type = "ClusterIP"
+          ports = {
+            http  = 80
+          }
+        }
+
+
       }
     })
   ]
