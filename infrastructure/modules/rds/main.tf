@@ -29,7 +29,7 @@ resource "aws_security_group" "rds" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks  = ["192.168.200.0/22"]
+    security_groups = [var.vpn_security_group_id]
   }
   egress {
     from_port   = 0
@@ -59,7 +59,8 @@ resource "aws_db_instance" "this" {
   password               = var.password
   parameter_group_name   = var.parameter_group_name
 
-  vpc_security_group_ids = var.vpc_security_group_ids
+  # vpc_security_group_ids = var.vpc_security_group_ids
+  vpc_security_group_ids = var.create_security_group ? [aws_security_group.rds[0].id] : var.vpc_security_group_ids
   db_subnet_group_name   = var.create_subnet_group ? aws_db_subnet_group.this[0].name : var.db_subnet_group_name
 
   multi_az               = var.multi_az
