@@ -18,10 +18,10 @@ terraform {
   }
 
   # backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
-  #   bucket         = "matchfit-terraform-loc"
+  #   bucket         = "matchfit-test-terraform-loc"
   #   key            = "infrastructure/infrastructure.tfstate"
   #   region         = "ap-northeast-2"
-  #   dynamodb_table = "matchfit-terraform-lock-table"
+  #   dynamodb_table = "matchfit-test-terraform-lock-table"
   #   encrypt        = true
   # }
 
@@ -44,7 +44,7 @@ provider "helm" {
 # TFC 사용 시 필요
 # terraform {
 #   backend "remote" {
-#     organization = "team3-matchfit"
+#     organization = "team3-matchfit-test"
 #     workspaces {
 #       name = "Final-Team3-Infra"
 #     }
@@ -133,8 +133,10 @@ module "rds" {
   password               = var.db_password
 
   # vpc_security_group_ids  = var.rds_security_group_ids
+  vpn_security_group_id      = module.vpn.vpn_security_group_id
   vpc_security_group_ids    = []
   private_subnet_ids        = module.network.private_subnet_id
+  eks_node_sg_id            = module.eks.eks_node_sg_id
 
   create_security_group  = true
   vpc_id                 = module.network.vpc_id
@@ -170,10 +172,20 @@ module "elasticache" {
 
   tags = var.default_tags
 }
+###########################
+# ECR 모듈 호출
+module "ecr" {
+  source = "./modules/ecr"
 
-
-############################
-# # S3 모듈 호출
+  name_prefix        = var.name_prefix                  # 리포지토리 이름
+  image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
+  force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
+  scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
+  encryption_type      = var.ecr_encryption_type       # 암호화 방식
+  tags = var.default_tags
+}
+###########################
+# S3 모듈 호출
 module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
@@ -203,19 +215,6 @@ module "cloudfront" {
   tags                           = var.default_tags
 }
 ### 개선사항 : 캐시무효화 자동화ㅏ에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
-############################
-# ECR 모듈 호출
-module "ecr" {
-  source = "./modules/ecr"
-
-  name_prefix        = var.name_prefix                  # 리포지토리 이름
-  image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
-  force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
-  scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
-  encryption_type      = var.ecr_encryption_type       # 암호화 방식
-  tags = var.default_tags
-}
-
 ############################
 # CA 모듈 호출
 module "cluster_autoscaler" {

@@ -22,14 +22,21 @@ resource "aws_security_group" "rds" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # 실제 운영에서는 제한 필요!
+    cidr_blocks = [var.vpc_cidr]
   }
   # VPN 엔드포인트 접속 허용
   ingress {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks  = ["192.168.200.0/22"]
+    security_groups = [var.vpn_security_group_id]
+  }
+  # EKS 노드로부터 RDS에 대한 접근 허용
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups = [var.eks_node_sg_id]
   }
   egress {
     from_port   = 0
@@ -59,7 +66,8 @@ resource "aws_db_instance" "this" {
   password               = var.password
   parameter_group_name   = var.parameter_group_name
 
-  vpc_security_group_ids = var.vpc_security_group_ids
+  # vpc_security_group_ids = var.vpc_security_group_ids
+  vpc_security_group_ids = var.create_security_group ? [aws_security_group.rds[0].id] : var.vpc_security_group_ids
   db_subnet_group_name   = var.create_subnet_group ? aws_db_subnet_group.this[0].name : var.db_subnet_group_name
 
   multi_az               = var.multi_az
@@ -76,8 +84,8 @@ resource "aws_db_instance" "this" {
     Name = "${var.name_prefix}-rds"
   }
 
-  lifecycle {
-  # 보안그룹을 list로 받고 있는데 실제 보안그룹은 1개라 계속 업데이트가 일어남
-  ignore_changes = [vpc_security_group_ids]
-  }
+  # lifecycle {
+  # # prevent_destroy = true # 삭제 막기
+  #   ignore_changes = all # 모든 변경 무시
+  # }
 }

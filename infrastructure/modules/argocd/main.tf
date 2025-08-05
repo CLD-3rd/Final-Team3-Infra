@@ -35,7 +35,8 @@ resource "helm_release" "argocd" {
           }
 
           # ALB가 라우팅할 도메인 호스트 이름
-          hostname = "argocd.match-fit.store"
+          hostname = "argocd.${var.domain_name}" 
+          hosts = ["argocd.${var.domain_name}"]
           https = false
         }
 
