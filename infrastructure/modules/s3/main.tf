@@ -5,9 +5,9 @@ resource "aws_s3_bucket" "this" {
   bucket         = var.bucket_name              # 사용자 정의 버킷 이름 (전역 고유)
   force_destroy  = var.force_destroy            # 버킷 삭제 시 객체가 남아 있으면 삭제 불가(false) 또는 강제 삭제(true)
   tags           = var.tags                     # 리소스에 공통 태그 적용
-  lifecycle {
-  prevent_destroy = true
-  }
+  # lifecycle {
+  # prevent_destroy = true
+  # }
 }
 
 # 버킷 버전 관리 설정 - 객체 이력 보존 기능

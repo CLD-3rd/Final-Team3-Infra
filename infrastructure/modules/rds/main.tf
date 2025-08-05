@@ -22,7 +22,7 @@ resource "aws_security_group" "rds" {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # 실제 운영에서는 제한 필요!
+    cidr_blocks = [var.vpc_cidr]
   }
   # VPN 엔드포인트 접속 허용
   ingress {
@@ -30,6 +30,13 @@ resource "aws_security_group" "rds" {
     to_port     = 3306
     protocol    = "tcp"
     security_groups = [var.vpn_security_group_id]
+  }
+  # EKS 노드로부터 RDS에 대한 접근 허용
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    security_groups = [var.eks_node_sg_id]
   }
   egress {
     from_port   = 0
@@ -77,8 +84,8 @@ resource "aws_db_instance" "this" {
     Name = "${var.name_prefix}-rds"
   }
 
-  lifecycle {
-  # prevent_destroy = true # 삭제 막기
-    ignore_changes = all # 모든 변경 무시
-  }
+  # lifecycle {
+  # # prevent_destroy = true # 삭제 막기
+  #   ignore_changes = all # 모든 변경 무시
+  # }
 }

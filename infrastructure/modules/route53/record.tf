@@ -14,7 +14,7 @@ resource "aws_route53_record" "argocd" {
   type    = "A"
 
   alias {
-    name                   = var.domain_name
+    name                   = var.argocd_alb_dns
     zone_id                = "ZWKZPGTI48KDX"
     evaluate_target_health = true
   }
@@ -22,8 +22,6 @@ resource "aws_route53_record" "argocd" {
 
 resource "aws_route53_record" "cloudfront" {
   zone_id = data.aws_route53_zone.primary.zone_id
-  # name    = var.domain_name
-
   name    = "cloudfront.${var.domain_name}"
   type    = "A"
 

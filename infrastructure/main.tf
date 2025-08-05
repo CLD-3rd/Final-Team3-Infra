@@ -119,7 +119,7 @@ module "vpn" {
   client_cidr_block           = "192.168.200.0/22"       # VPN 클라이언트 IP 풀
   server_certificate_arn      = var.server_certificate_arn
   client_ca_certificate_arn   = var.client_ca_certificate_arn
-  cloudwatch_log_group        = "matchfit-test-vpn-logs"
+  cloudwatch_log_group        = "matchfit-vpn-logs"
   subnet_ids                  = module.network.private_subnet_id
 }
 #####################
@@ -133,8 +133,10 @@ module "rds" {
   password               = var.db_password
 
   # vpc_security_group_ids  = var.rds_security_group_ids
+  vpn_security_group_id      = module.vpn.vpn_security_group_id
   vpc_security_group_ids    = []
   private_subnet_ids        = module.network.private_subnet_id
+  eks_node_sg_id            = module.eks.eks_node_sg_id
 
   create_security_group  = true
   vpc_id                 = module.network.vpc_id
