@@ -187,6 +187,17 @@ module "s3_bucket" {
   restrict_public_buckets = true
   tags                    = var.default_tags
 }
+module "public_bucket" {
+  source            = "./modules/s3"
+  bucket_name       = "matchfit-public-bucket"
+  is_public         = true
+  force_destroy     = true
+  enable_versioning = false
+  enable_website    = true
+  index_document    = "index.html"
+  error_document    = "error.html"
+  tags              = merge(var.default_tags, { Purpose = "Public" })
+}
 
 #################################
 # CloudFront (OAC + HTTPS)
