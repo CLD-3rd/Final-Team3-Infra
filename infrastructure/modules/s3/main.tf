@@ -35,7 +35,6 @@ resource "aws_s3_bucket_website_configuration" "this" {
 # 퍼블릭 접근 차단 설정 - 보안 강화를 위한 필수 설정
 resource "aws_s3_bucket_public_access_block" "this" {
   bucket = aws_s3_bucket.this[0].id
-
   block_public_acls       = var.block_public_acls       # 퍼블릭 ACL 차단 여부
   block_public_policy     = var.block_public_policy     # 퍼블릭 정책 차단 여부
   ignore_public_acls      = var.ignore_public_acls      # 퍼블릭 ACL 무시 여부
@@ -47,7 +46,6 @@ resource "aws_s3_bucket_policy" "this" {
   count  = var.bucket_policy != null ? 1 : 0             # 정책이 있을 경우만 생성
   bucket = aws_s3_bucket.this[0].id
   policy = jsonencode(var.bucket_policy)                 # JSON 오브젝트 문자열로 변환
-
   depends_on = [aws_s3_bucket_public_access_block.this]  # 보안 정책 적용 후 실행
 }
 

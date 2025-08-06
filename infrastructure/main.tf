@@ -178,25 +178,17 @@ module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
   bucket_name             = var.app_bucket_name
+  is_public               = true               # 퍼블릭 모드
   force_destroy           = true
-  enable_versioning       = true
-  enable_website          = false
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  enable_versioning       = false
+  enable_website          = true
+  index_document          = "index.html"
+  error_document          = "error.html"
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
   tags                    = var.default_tags
-}
-module "public_bucket" {
-  source            = "./modules/s3"
-  bucket_name       = "matchfit-public-bucket"
-  is_public         = true
-  force_destroy     = true
-  enable_versioning = false
-  enable_website    = true
-  index_document    = "index.html"
-  error_document    = "error.html"
-  tags              = merge(var.default_tags, { Purpose = "Public" })
 }
 
 #################################
