@@ -18,10 +18,10 @@ terraform {
   }
 
   # backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
-  #   bucket         = "matchfit-terraform-loc"
+  #   bucket         = "matchfit-test-terraform-loc"
   #   key            = "infrastructure/infrastructure.tfstate"
   #   region         = "ap-northeast-2"
-  #   dynamodb_table = "matchfit-terraform-lock-table"
+  #   dynamodb_table = "matchfit-test-terraform-lock-table"
   #   encrypt        = true
   # }
 
@@ -44,7 +44,7 @@ provider "helm" {
 # TFC 사용 시 필요
 # terraform {
 #   backend "remote" {
-#     organization = "team3-matchfit"
+#     organization = "team3-matchfit-test"
 #     workspaces {
 #       name = "Final-Team3-Infra"
 #     }
@@ -133,8 +133,10 @@ module "rds" {
   password               = var.db_password
 
   # vpc_security_group_ids  = var.rds_security_group_ids
+  vpn_security_group_id      = module.vpn.vpn_security_group_id
   vpc_security_group_ids    = []
   private_subnet_ids        = module.network.private_subnet_id
+  eks_node_sg_id            = module.eks.eks_node_sg_id
 
   create_security_group  = true
   vpc_id                 = module.network.vpc_id
@@ -170,10 +172,20 @@ module "elasticache" {
 
   tags = var.default_tags
 }
+###########################
+# ECR 모듈 호출
+module "ecr" {
+  source = "./modules/ecr"
 
-
-############################
-# # S3 모듈 호출
+  name_prefix        = var.name_prefix                  # 리포지토리 이름
+  image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
+  force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
+  scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
+  encryption_type      = var.ecr_encryption_type       # 암호화 방식
+  tags = var.default_tags
+}
+###########################
+# S3 모듈 호출
 module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
@@ -187,6 +199,7 @@ module "s3_bucket" {
   restrict_public_buckets = true
   tags                    = var.default_tags
 }
+# 이미지 저장용 S3 
 module "public_bucket" {
   source            = "./modules/s3"
   bucket_name       = "matchfit-public-bucket"
@@ -198,7 +211,6 @@ module "public_bucket" {
   error_document    = "error.html"
   tags              = merge(var.default_tags, { Purpose = "Public" })
 }
-
 #################################
 # CloudFront (OAC + HTTPS)
 #################################
@@ -214,38 +226,15 @@ module "cloudfront" {
   custom_error_responses         = var.custom_error_responses
   tags                           = var.default_tags
 }
-#################################
-# Route53 (CloudFront 연결)
-#################################
-resource "aws_route53_record" "cloudfront" {
-  zone_id = module.route53.zone_id
-  name    = var.domain_name
-  type    = "A"
-
-  alias {
-    name                   = module.cloudfront.cloudfront_domain_name
-    zone_id                = "Z2FDTNDATAQYW2"
-    evaluate_target_health = false
-  }
-}
+### 개선사항 : 캐시무효화 자동화ㅏ에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
 ############################
-# ECR 모듈 호출
-module "ecr" {
-  source = "./modules/ecr"
-
-  name_prefix        = var.name_prefix                  # 리포지토리 이름
-  image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
-  force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
-  scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
-  encryption_type      = var.ecr_encryption_type       # 암호화 방식
-  tags = var.default_tags
-}
-############################
-# Route53 DNS 설정 모듈 호출
-module "route53" {
-  source           = "./modules/route53"
-  alb_zone_id      = "ZWKZPGTI48KDX"
-  domain_name      = var.domain_name
-  argocd_alb_dns   = module.argocd.argocd_alb_dns
-  depends_on       = [module.alb_controller]
+# CA 모듈 호출
+module "cluster_autoscaler" {
+  source               = "./modules/cluster-autoscaler"
+  cluster_name         = var.cluster_name                    # CA가 관리할 클러스터 식별
+  node_group_name      = module.eks.node_group_name          # 특정 노드 그룹 식별
+  cluster_oidc_url     = module.eks.cluster_oidc_issuer_url  # IRSA를 위한 해당 URL로 IAM 역할의 신뢰 정책 작성
+  oidc_provider_arn    = module.eks.oidc_provider_arn        # 해당 ARN을 이용해 IAM 역할을 생성할 때 필요
+  aws_region           = var.aws_region
+  tags                 = var.default_tags
 }

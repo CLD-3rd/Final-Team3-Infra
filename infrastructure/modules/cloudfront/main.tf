@@ -93,6 +93,11 @@ resource "aws_cloudfront_distribution" "this" {
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
+    lifecycle {
+    # prevent_destroy = true
+    ignore_changes = all
+  }
+
   tags = var.tags
 }
 
