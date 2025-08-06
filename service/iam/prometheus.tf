@@ -18,7 +18,7 @@ resource "aws_iam_policy" "prometheus_policy" {
 }
 
 resource "aws_iam_role" "prometheus_irsa" {
-  name = "prometheus-irsa-role"
+  name = "matchfit-monitoring-prometheus-irsa-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [

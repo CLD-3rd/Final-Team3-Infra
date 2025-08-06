@@ -17,7 +17,7 @@ resource "aws_iam_policy" "fluentbit_policy" {
 }
 
 resource "aws_iam_role" "fluentbit_irsa" {
-  name = "fluentbit-irsa-role"
+  name = "matchfit-monitoring-fluentbit-irsa-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -29,7 +29,7 @@ resource "aws_iam_role" "fluentbit_irsa" {
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub" = "system:serviceaccount/monitoring/fluent-bit-sa"
+            "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub" = "system:serviceaccount/monitoring/fluentbit-sa"
           }
         }
       }

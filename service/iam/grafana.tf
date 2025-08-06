@@ -21,7 +21,7 @@ resource "aws_iam_policy" "grafana_policy" {
 }
 
 resource "aws_iam_role" "grafana_irsa" {
-  name = "grafana-irsa-role"
+  name = "matchfit-monitoring-grafana-irsa-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
