@@ -75,3 +75,10 @@ variable "create_bucket" {
   default = true
   description = "S3 버킷 또는 관련 리소스를 생성할지 여부"
 }
+
+
+variable "is_public" {
+  description = "퍼블릭 버킷 여부 (true면 퍼블릭 읽기 정책 추가)"
+  type        = bool
+  default     = false
+}

@@ -1,10 +1,10 @@
-# S3 모듈 main.tf
 # S3 버킷 생성
 resource "aws_s3_bucket" "this" {
   count          = var.create_bucket ? 1 : 0
   bucket         = var.bucket_name              # 사용자 정의 버킷 이름 (전역 고유)
   force_destroy  = var.force_destroy            # 버킷 삭제 시 객체가 남아 있으면 삭제 불가(false) 또는 강제 삭제(true)
   tags           = var.tags                     # 리소스에 공통 태그 적용
+  
   # lifecycle {
   # prevent_destroy = true
   # }
@@ -47,7 +47,25 @@ resource "aws_s3_bucket_public_access_block" "this" {
 resource "aws_s3_bucket_policy" "this" {
   count  = var.bucket_policy != null ? 1 : 0             # 정책이 있을 경우만 생성
   bucket = aws_s3_bucket.this[0].id
-  policy = jsonencode(var.bucket_policy)                # JSON 오브젝트 문자열로 변환
+  policy = jsonencode(var.bucket_policy)                 # JSON 오브젝트 문자열로 변환
 
-  depends_on = [aws_s3_bucket_public_access_block.this] # 보안 정책 적용 후 실행
+  depends_on = [aws_s3_bucket_public_access_block.this]  # 보안 정책 적용 후 실행
+}
+
+# 퍼블릭 읽기 정책 - 퍼블릭이고 외부 정책이 없을 때만 적용
+resource "aws_s3_bucket_policy" "public_read" {
+  count  = var.is_public && var.bucket_policy == null ? 1 : 0
+  bucket = aws_s3_bucket.this[0].id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject",
+        Effect    = "Allow",
+        Principal = "*",
+        Action    = ["s3:GetObject"],
+        Resource  = "${aws_s3_bucket.this[0].arn}/*"
+      }
+    ]
+  })
 }
