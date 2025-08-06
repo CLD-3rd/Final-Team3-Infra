@@ -11,7 +11,7 @@ resource "aws_iam_role" "ca_irsa" {
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
-          "${replace(var.cluster_oidc_url, "https://", "")}:sub" = "system:serviceaccount:kube-system:cluster-autoscaler"
+          "${replace(var.oidc_provider_url, "https://", "")}:sub" = "system:serviceaccount:kube-system:cluster-autoscaler"
         }  # 이 역할은 kube-system 네임스페이스의 cluster-autoscaler라는 이름의 SA가 위임할 수 있음을 의미
       }
     }]
@@ -47,7 +47,7 @@ resource "helm_release" "ca" {  # CA 설치
   values = [  # Helm Chart의 values.yaml에 전달할 값
     yamlencode({
       cloudProvider = "aws"
-      awsRegion     = var.aws_region
+      awsRegion     = var.region
       autoDiscovery = {
         clusterName = var.cluster_name
         tags = {
