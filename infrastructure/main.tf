@@ -1,55 +1,3 @@
-# Terraform 버전 및 프로바이더 정의
-terraform {
-  required_version = ">= 1.3.0"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.25" # 안정적인 최신 버전
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.12" # 안정적인 최신 버전
-    }
-  }
-
-  # backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
-  #   bucket         = "matchfit-terraform-loc"
-  #   key            = "infrastructure/infrastructure.tfstate"
-  #   region         = "ap-northeast-2"
-  #   dynamodb_table = "matchfit-terraform-lock-table"
-  #   encrypt        = true
-  # }
-
-}
-# AWS Provider 정의
-provider "aws" {
-  region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
-}
-# Kebernetes Provider 정의
-provider "kubernetes" {
-  config_path = "~/.kube/config"  # 본인 kubeconfig 경로
-}
-# Helm Provider 정의
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
-}
-#####################
-# TFC 사용 시 필요
-# terraform {
-#   backend "remote" {
-#     organization = "team3-matchfit-test"
-#     workspaces {
-#       name = "Final-Team3-Infra"
-#     }
-#   }
-# }
 #####################
 # network 설정 모듈 호출
 locals {
@@ -100,6 +48,7 @@ module "eks" {
   cluster_name               = var.cluster_name
   kubernetes_version         = var.kubernetes_version
   vpc_id                     = module.network.vpc_id
+  vpc_cidr                    = module.network.vpc_cidr
   subnet_ids                 = module.network.private_subnet_id
   service_ipv4_cidr          = var.service_ipv4_cidr
   tags                       = var.default_tags
@@ -232,6 +181,11 @@ module "cloudfront" {
   s3_bucket_arn                  = module.s3_bucket.bucket_arn                    # 기존 S3 모듈의 ARN
   price_class                    = var.price_class
   custom_error_responses         = var.custom_error_responses
+  # NLB 생성 시 필요 변수
+  vpc_id                        = module.network.vpc_id
+  cluster_name                  = module.eks.cluster_name
+  public_subnet_id              = module.network.public_subnet_id
+
   tags                           = var.default_tags
 }
-### 개선사항 : 캐시무효화 자동화ㅏ에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
+### 개선사항 : 캐시무효화 자동화에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
