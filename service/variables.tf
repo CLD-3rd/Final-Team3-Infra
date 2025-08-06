@@ -15,3 +15,23 @@ variable "remote_state_region" {
   description = "infrastructure의 tfstate가 저장된 AWS 리전"
   default     = "ap-northeast-2"
 }
+
+variable "region" {
+  default = "ap-northeast-2"
+}
+
+variable "cluster_name" {
+  type = string
+}
+
+variable "oidc_thumbprint" {
+  type = string
+}
+
+variable "tags" {
+  type = map(string)
+  default = {
+    Project = "matchfit"
+    Env     = "dev"
+  }
+}

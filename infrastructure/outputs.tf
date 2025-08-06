@@ -1,3 +1,12 @@
+output "name_prefix" {
+  description = "Prefix used for naming resources"
+  value       = var.name_prefix
+}
+output "default_tags" {
+  description = "Prefix used for naming resources"
+  value       = var.default_tags
+}
+#####################
 # VPC ID 출력
 output "vpc_id" {
   description = "ID of the VPC"

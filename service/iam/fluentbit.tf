@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "fluentbit_policy" {
-  name = "FluentBitCloudWatchLogsPolicy"
+  name   = var.fluentbit_policy_name
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -7,8 +7,10 @@ resource "aws_iam_policy" "fluentbit_policy" {
         Effect = "Allow",
         Action = [
           "logs:PutLogEvents",
+          "logs:DescribeLogStreams",
+          "logs:DescribeLogGroups",
           "logs:CreateLogStream",
-          "logs:DescribeLogStreams"
+          "logs:CreateLogGroup"
         ],
         Resource = "*"
       }
@@ -17,24 +19,25 @@ resource "aws_iam_policy" "fluentbit_policy" {
 }
 
 resource "aws_iam_role" "fluentbit_irsa" {
-  name = "matchfit-monitoring-fluentbit-irsa-role"
+  name = "${var.name_prefix}-monitoring-fluentbit-irsa-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Principal = {
-          Federated = aws_iam_openid_connect_provider.eks.arn
+          Federated = var.oidc_provider_arn
         },
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "${replace(aws_iam_openid_connect_provider.eks.url, "https://", "")}:sub" = "system:serviceaccount/monitoring/fluentbit-sa"
+            "${replace(var.oidc_provider_url, "https://", "")}:sub" = "system:serviceaccount/${var.monitoring_namespace}/${var.fluentbit_service_account}"
           }
         }
       }
     ]
   })
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "fluentbit_policy_attach" {
@@ -44,10 +47,18 @@ resource "aws_iam_role_policy_attachment" "fluentbit_policy_attach" {
 
 resource "kubernetes_service_account" "fluentbit_sa" {
   metadata {
-    name      = "fluentbit-sa"
-    namespace = "monitoring"
+    name      = var.fluentbit_service_account
+    namespace = var.monitoring_namespace
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.fluentbit_irsa.arn
     }
   }
+}
+
+#CloudWatch 로그 그룹 관련 리소스
+# FluentBit CloudWatch LogGroup
+resource "aws_cloudwatch_log_group" "fluentbit" {
+  name              = "/aws/eks/${var.cluster_name}/application"
+  retention_in_days = 30
+  tags              = var.tags
 }
