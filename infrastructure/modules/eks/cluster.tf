@@ -183,7 +183,7 @@ resource "aws_eks_node_group" "default" {
     max_size     = 5     # 최대 확장 수
     min_size     = 2     # 최소 유지 수
   }
-  instance_types = ["t3.medium"]         # 노드 인스턴스 타입
+  instance_types = ["m5.large"]         # 노드 인스턴스 타입
   ami_type       = "AL2023_x86_64_STANDARD"          # Amazon Linux 2 AMI
 
   remote_access {
