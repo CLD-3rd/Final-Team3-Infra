@@ -2,6 +2,11 @@ variable "name_prefix" {
   type        = string
   description = "리소스 이름 접두사 (예: myapp)"
 }
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "태그 목록"
+}
 
 # variable "environment" {
 #   type        = string
@@ -129,15 +134,20 @@ variable "vpc_id" {
   description = "보안 그룹을 생성할 VPC ID"
   type        = string
 }
+variable "vpc_cidr" {
+  description = "보안 그룹을 생성할 VPC cidr"
+  type        = string
+}
 variable "rds_security_group_ids" {
   description = "외부에서 전달받을 보안 그룹 ID 목록"
   type        = list(string)
   default     = []
 }
-
-
-variable "tags" {
-  type        = map(string)
-  default     = {}
-  description = "태그 목록"
+variable "vpn_security_group_id" {
+  description = "VPN Security Group ID to allow SSH from"
+  type        = string
+}
+variable "eks_node_sg_id" {
+  description = "EKS 노드의 Security Group ID (RDS 접근 허용 목적)"
+  type        = string
 }

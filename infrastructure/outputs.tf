@@ -82,6 +82,16 @@ output "rds_address" {
   sensitive   = true
 }
 #####################
+# ECR 출력
+output "ecr_repository_url" {
+  description = "생성된 ECR 리포지토리의 URL 출력 (이미지 push/pull 시 사용)"
+  value = module.ecr.repository_url
+}
+output "ecr_repository_arn" {
+  description = "생성된 ECR 리포지토리의 ARN 출력 (IAM 정책에 활용)"
+  value = module.ecr.repository_arn
+}
+#####################
 # S3 루트 출력
 output "s3_bucket_id" {
   description = "The ID of the created S3 bucket"
@@ -123,21 +133,4 @@ output "bucket_arn" {
 output "bucket_regional_domain_name" {
   description = "웹/백엔드 통합 S3 버킷 리전별 도메인"
   value       = module.s3_bucket.bucket_regional_domain_name
-}
-
-#####################
-# ECR 출력
-output "ecr_repository_url" {
-  description = "생성된 ECR 리포지토리의 URL 출력 (이미지 push/pull 시 사용)"
-  value = module.ecr.repository_url
-}
-output "ecr_repository_arn" {
-  description = "생성된 ECR 리포지토리의 ARN 출력 (IAM 정책에 활용)"
-  value = module.ecr.repository_arn
-}
-#####################
-# Route53 출력
-output "route53_zone_id" {
-  description = "생성된 Route53 호스팅 존의 Zone ID"
-  value       = module.route53.zone_id
 }

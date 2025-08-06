@@ -4,11 +4,11 @@ variable "domain_name" {
 }
 
 variable "argocd_alb_dns" {
-  type        = string
   description = "ArgoCD ALB DNS 이름"
+  type        = string
 }
 
-variable "alb_zone_id" {
-  description = "ALB의 zone_id (Route53 alias에 필요)"
+variable "cloudfront_dns" {
+  description = "CloudFront DNS 이름"
   type        = string
 }
