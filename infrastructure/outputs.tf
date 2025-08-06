@@ -1,3 +1,7 @@
+output "aws_region" {
+  description = "Prefix used for naming resources"
+  value       = var.aws_region
+}
 output "name_prefix" {
   description = "Prefix used for naming resources"
   value       = var.name_prefix
