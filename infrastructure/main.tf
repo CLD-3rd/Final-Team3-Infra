@@ -18,10 +18,10 @@ terraform {
   }
 
   # backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
-  #   bucket         = "matchfit-test-terraform-loc"
+  #   bucket         = "matchfit-terraform-loc"
   #   key            = "infrastructure/infrastructure.tfstate"
   #   region         = "ap-northeast-2"
-  #   dynamodb_table = "matchfit-test-terraform-lock-table"
+  #   dynamodb_table = "matchfit-terraform-lock-table"
   #   encrypt        = true
   # }
 
@@ -140,6 +140,7 @@ module "rds" {
 
   create_security_group  = true
   vpc_id                 = module.network.vpc_id
+  vpc_cidr               = module.network.vpc_cidr
 
   create_subnet_group    = var.create_subnet_group
   db_subnet_group_name   = var.db_subnet_group_name
