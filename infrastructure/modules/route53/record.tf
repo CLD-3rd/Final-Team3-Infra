@@ -18,6 +18,10 @@ resource "aws_route53_record" "argocd" {
     zone_id                = "ZWKZPGTI48KDX"
     evaluate_target_health = true
   }
+  lifecycle {
+  # prevent_destroy = true # 삭제 막기
+    ignore_changes = all # 모든 변경 무시
+  }
 }
 
 resource "aws_route53_record" "cloudfront" {
@@ -29,5 +33,9 @@ resource "aws_route53_record" "cloudfront" {
     name                   = var.cloudfront_dns
     zone_id                = "Z2FDTNDATAQYW2"
     evaluate_target_health = false
+  }
+  lifecycle {
+  # prevent_destroy = true # 삭제 막기
+    ignore_changes = all # 모든 변경 무시
   }
 }

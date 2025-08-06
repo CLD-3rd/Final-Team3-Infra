@@ -6,6 +6,10 @@ variable "vpc_id" {
   description = "ElastiCache가 배치될 VPC ID"
   type        = string
 }
+variable "vpc_cidr" {
+  description = "보안 그룹을 생성할 VPC cidr"
+  type        = string
+}
 variable "private_subnet_ids" {
   description = "Redis를 배포할 프라이빗 서브넷 ID 목록"
   type        = list(string)

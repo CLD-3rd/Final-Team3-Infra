@@ -84,8 +84,8 @@ resource "aws_db_instance" "this" {
     Name = "${var.name_prefix}-rds"
   }
 
-  # lifecycle {
-  # # prevent_destroy = true # 삭제 막기
-  #   ignore_changes = all # 모든 변경 무시
-  # }
+  lifecycle {
+  # prevent_destroy = true # 삭제 막기
+    ignore_changes = all # 모든 변경 무시
+  }
 }

@@ -161,6 +161,7 @@ module "elasticache" {
   source             = "./modules/elasticache"
   name_prefix        = var.name_prefix                      # 리소스 네이밍 접두어(필수값)
   vpc_id             = module.network.vpc_id
+  vpc_cidr               = module.network.vpc_cidr
   private_subnet_ids = module.network.private_subnet_id
   eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
 
@@ -234,14 +235,3 @@ module "cloudfront" {
   tags                           = var.default_tags
 }
 ### 개선사항 : 캐시무효화 자동화ㅏ에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
-############################
-# CA 모듈 호출
-module "cluster_autoscaler" {
-  source               = "./modules/cluster-autoscaler"
-  cluster_name         = var.cluster_name                    # CA가 관리할 클러스터 식별
-  node_group_name      = module.eks.node_group_name          # 특정 노드 그룹 식별
-  cluster_oidc_url     = module.eks.cluster_oidc_issuer_url  # IRSA를 위한 해당 URL로 IAM 역할의 신뢰 정책 작성
-  oidc_provider_arn    = module.eks.oidc_provider_arn        # 해당 ARN을 이용해 IAM 역할을 생성할 때 필요
-  aws_region           = var.aws_region
-  tags                 = var.default_tags
-}

@@ -59,6 +59,10 @@ resource "aws_iam_role_policy_attachment" "ssm_core_policy" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" #SSM 세션 매니저 연결을 위한 권한
 }
+resource "aws_iam_role_policy_attachment" "fluentbit_cloudwatch" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
 
 # EC2 인스턴스 프로파일 생성 (노드 그룹에서 사용)
 resource "aws_iam_instance_profile" "eks_node_instance_profile" {
@@ -131,6 +135,15 @@ resource "aws_eks_cluster" "this" {
   version  = var.kubernetes_version                 # 쿠버네티스 버전
   role_arn = aws_iam_role.eks_cluster_role.arn     # 클러스터용 IAM 역할
   
+  # CloudWatch 로깅 관련 내용
+  enabled_cluster_log_types = [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
+  ]
+
   access_config {
     authentication_mode = "API_AND_CONFIG_MAP"
   }
@@ -158,9 +171,9 @@ resource "aws_eks_node_group" "default" {
   subnet_ids      = var.subnet_ids                               # 노드를 배치할 서브넷 ID들
   
   scaling_config {
-    desired_size = 2     # 기본 노드 수
-    max_size     = 3     # 최대 확장 수
-    min_size     = 1     # 최소 유지 수
+    desired_size = 3     # 기본 노드 수
+    max_size     = 5     # 최대 확장 수
+    min_size     = 2     # 최소 유지 수
   }
   instance_types = ["t3.medium"]         # 노드 인스턴스 타입
   ami_type       = "AL2023_x86_64_STANDARD"          # Amazon Linux 2 AMI
