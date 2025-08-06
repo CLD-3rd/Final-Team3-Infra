@@ -261,11 +261,13 @@ variable "custom_error_responses" {
   default = []
 }
 variable "app_bucket_name" {
-  description = "웹/백엔드 통합 S3 버킷 이름"
+  description = "프론트엔드 전용 S3 버킷 이름"
   type        = string
 }
-
-
+variable "image_bucket_name" {
+  description = "이미지 전용 S3 버킷 이름"
+  type        = string
+}
 #####################
 # Route53 관련 루트 변수
 variable "domain_name" {

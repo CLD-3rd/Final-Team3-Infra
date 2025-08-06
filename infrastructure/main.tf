@@ -187,6 +187,7 @@ module "ecr" {
 }
 ###########################
 # S3 모듈 호출
+# CloudFront용 S3
 module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
@@ -203,14 +204,19 @@ module "s3_bucket" {
 # 이미지 저장용 S3 
 module "public_bucket" {
   source            = "./modules/s3"
-  bucket_name       = "matchfit-public-bucket"
-  is_public         = true
+  bucket_name       = var.image_bucket_name
+  is_public         = true    #퍼블릭 읽기 정책 자동 생성
   force_destroy     = true
   enable_versioning = false
   enable_website    = true
   index_document    = "index.html"
   error_document    = "error.html"
   tags              = merge(var.default_tags, { Purpose = "Public" })
+  # 퍼블릭 접근 권한
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 #################################
 # CloudFront (OAC + HTTPS)
