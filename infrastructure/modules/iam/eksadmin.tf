@@ -53,9 +53,6 @@ resource "aws_eks_access_policy_association" "eks_admin" {
   ]
 }
 
-# 현재 AWS 계정 정보를 가져옴
-data "aws_caller_identity" "current" {}
-
 # IAM 사용자에게 sts:AssumeRole 권한 주기
 resource "aws_iam_policy" "allow_assume_role" {
   # name = "${var.name_prefix}-eks-allow-role"
