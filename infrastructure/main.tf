@@ -189,3 +189,16 @@ module "cloudfront" {
   tags                           = var.default_tags
 }
 ### 개선사항 : 캐시무효화 자동화에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
+
+module "logging" {
+  source              = "./modules/logging"
+
+  cloudfront_log_bucket_name  = "your-cloudfront-log-bucket"
+  nlb_log_bucket_name = "your-nlb-log-bucket"
+  nlb_name            = "matchfit-nlb"
+  public_subnet_ids   = module.network.public_subnet_id
+  vpc_id              = module.network.vpc_id
+
+
+  tags = var.default_tags
+}
