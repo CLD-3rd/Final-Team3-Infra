@@ -23,16 +23,6 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "s3_origin_domain_name" {
-  description = "S3 오리진 도메인 (CloudFront 오리진으로 사용)"
-  type        = string
-}
-
-variable "origin_access_identity" {
-  description = "CloudFront S3 접근용 Origin Access Identity"
-  type        = string
-}
-
 variable "tags" {
   description = "공통 태그"
   type        = map(string)

@@ -191,15 +191,14 @@ module "cloudfront" {
 ### 개선사항 : 캐시무효화 자동화에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
 
 module "logging" {
-  source                 = "./modules/logging"
+  source              = "./modules/logging"
 
-  cloudfront_log_bucket_name  = "your-cloudfront-log-bucket"   # 예: 환경 변수나 tfvars서 값 주입
-  nlb_log_bucket_name    = "your-nlb-log-bucket"
-  nlb_name               = "matchfit-nlb"
-  public_subnet_ids      = module.network.public_subnet_id      # network 모듈의 프라이빗/퍼블릭 서브넷 호출
-  vpc_id                 = module.network.vpc_id
-  s3_origin_domain_name  = module.s3_bucket.bucket_regional_domain_name
-  origin_access_identity = module.cloudfront.origin_access_identity   # 필요시 직접 문자열 입력
+  cloudfront_log_bucket_name  = "your-cloudfront-log-bucket"
+  nlb_log_bucket_name = "your-nlb-log-bucket"
+  nlb_name            = "matchfit-nlb"
+  public_subnet_ids   = module.network.public_subnet_id
+  vpc_id              = module.network.vpc_id
+
 
   tags = var.default_tags
 }
