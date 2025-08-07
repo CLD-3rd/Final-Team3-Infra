@@ -55,11 +55,12 @@ variable "route_tables" {
   default = []  # 테스트용으로는 비워 둘 수도 있음
 }
 #####################
-# eks-admin-role
+# IAM 관련 루트 variables
 variable "admin_user_arn" {
   description = "관리자 IAM 사용자의 ARN (예: arn:aws:iam::123456789012:user/your-username)"
   type        = string
 }
+#####################
 # EKS 관련 루트 variables
 variable "kubernetes_version" {
   default = "1.33"
