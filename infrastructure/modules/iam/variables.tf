@@ -28,15 +28,13 @@ variable "eks_cluster_resource" {
   type        = any
 }
 #########################################################
-# VPN Logging 관련 IAM역할 변수
-variable "create_vpn_logging_role" {
-  type        = bool
-  description = "이미 존재하는 vpn logging role을 사용하지 않고 새로 생성할지 여부"
-  default     = false
+# S3 Object 접근 관련 IAM역할 변수
+variable "cloudfront_log_bucket_name" {
+  type        = string
 }
-
-variable "create_vpn_logging_policy" {
-  type        = bool
-  description = "이미 존재하는 vpn logging policy를 사용하지 않고 새로 생성할지 여부"
-  default     = false
+variable "nlb_log_bucket_name" {
+  type        = string
+}
+variable "image_bucket_name" {
+  type        = string
 }
