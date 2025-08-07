@@ -142,18 +142,16 @@ module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
   bucket_name             = var.app_bucket_name
-  is_public               = true               # 퍼블릭 모드
   force_destroy           = true
-  enable_versioning       = false
-  enable_website          = true
-  index_document          = "index.html"
-  error_document          = "error.html"
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  enable_versioning       = true
+  enable_website          = false
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
   tags                    = var.default_tags
 }
+# 이미지 저장용 S3 
 module "public_bucket" {
   source            = "./modules/s3"
   bucket_name       = var.image_bucket_name
@@ -170,7 +168,6 @@ module "public_bucket" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
-
 #################################
 # CloudFront (OAC + HTTPS)
 #################################
@@ -192,3 +189,17 @@ module "cloudfront" {
   tags                           = var.default_tags
 }
 ### 개선사항 : 캐시무효화 자동화에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
+
+module "logging" {
+  source                 = "./modules/logging"
+
+  cloudfront_log_bucket_name  = "your-cloudfront-log-bucket"   # 예: 환경 변수나 tfvars서 값 주입
+  nlb_log_bucket_name    = "your-nlb-log-bucket"
+  nlb_name               = "matchfit-nlb"
+  public_subnet_ids      = module.network.public_subnet_id      # network 모듈의 프라이빗/퍼블릭 서브넷 호출
+  vpc_id                 = module.network.vpc_id
+  s3_origin_domain_name  = module.s3_bucket.bucket_regional_domain_name
+  origin_access_identity = module.cloudfront.origin_access_identity   # 필요시 직접 문자열 입력
+
+  tags = var.default_tags
+}
