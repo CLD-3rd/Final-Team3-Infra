@@ -74,6 +74,12 @@ output "node_group_name" {
   value       = module.eks.node_group_name
   description = "EKS NodeGroup name"
 }
+output "oidc_provider_arn" {
+  value = module.eks.oidc_provider_arn
+}
+output "cluster_oidc_issuer_url" {
+  value = module.eks.cluster_oidc_issuer_url
+}
 #####################
 # RDS 출력
 output "rds_endpoint" {
