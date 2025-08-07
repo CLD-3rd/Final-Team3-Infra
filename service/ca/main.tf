@@ -6,12 +6,12 @@ resource "aws_iam_role" "ca_irsa" {
     Statement = [{
       Effect = "Allow"
       Principal = {
-        Federated = var.oidc_provider_arn  # EKS의 OIDC가 위임
+        Federated = var.eks_oidc_arn  # EKS의 OIDC가 위임
       }
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
-          "${replace(var.oidc_provider_url, "https://", "")}:sub" = "system:serviceaccount:kube-system:cluster-autoscaler"
+          "${replace(var.eks_oidc_url, "https://", "")}:sub" = "system:serviceaccount:kube-system:cluster-autoscaler"
         }  # 이 역할은 kube-system 네임스페이스의 cluster-autoscaler라는 이름의 SA가 위임할 수 있음을 의미
       }
     }]

@@ -15,12 +15,12 @@ variable "monitoring_namespace" {
   description = "Namespace for monitoring components"
 }
 
-variable "oidc_provider_arn" {
+variable "eks_oidc_arn" {
   type        = string
   description = "OIDC provider ARN from EKS cluster"
 }
 
-variable "oidc_provider_url" {
+variable "eks_oidc_url" {
   type        = string
   description = "OIDC provider URL from EKS cluster"
 }

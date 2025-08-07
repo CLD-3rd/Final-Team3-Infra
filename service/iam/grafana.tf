@@ -28,12 +28,12 @@ resource "aws_iam_role" "grafana_irsa" {
       {
         Effect = "Allow",
         Principal = {
-          Federated = var.oidc_provider_arn
+          Federated = var.eks_oidc_arn
         },
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "${replace(var.oidc_provider_url, "https://", "")}:sub" = "system:serviceaccount/${var.monitoring_namespace}/${var.grafana_service_account}"
+            "${replace(var.eks_oidc_url, "https://", "")}:sub" = "system:serviceaccount/${var.monitoring_namespace}/${var.grafana_service_account}"
           }
         }
       }
@@ -50,7 +50,7 @@ resource "aws_iam_role_policy_attachment" "grafana_policy_attach" {
 resource "kubernetes_service_account" "grafana_sa" {
   metadata {
     name      = var.grafana_service_account
-    namespace = var.monitoring_namespace
+    namespace = kubernetes_namespace.monitoring.metadata[0].name
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.grafana_irsa.arn
     }

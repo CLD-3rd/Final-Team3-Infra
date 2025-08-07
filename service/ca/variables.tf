@@ -3,12 +3,12 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "oidc_provider_url" {
+variable "eks_oidc_url" {
   description = "EKS 클러스터 OIDC 프로바이더 URL"
   type        = string
 }
 
-variable "oidc_provider_arn" {
+variable "eks_oidc_arn" {
   description = "EKS 클러스터에 생성된 OIDC 공급자의 ARN(IAM 역할과 연결할 때 사용)"
   type        = string
 }
