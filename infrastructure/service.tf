@@ -1,4 +1,10 @@
 # # 서비스 모듈
+
+# # apply 전에 명령어 꼭 수행하기!
+# # aws eks update-kubeconfig --name matchfit-eks --region ap-northeast-2 --role-arn arn:aws:iam::061039804626:role/matchfit-eks-admin-role
+
+# ############################
+# # EKS 내에 ALB 관련 Helm Chart 설치 모듈 호출부
 # # IRSA용 IAM 역할 및 정책 구성
 # module "irsa-alb" {
 #   source = "./modules/alb-irsa"

@@ -5,7 +5,9 @@ output "vpc_id" {
   description = "생성된 VPC의 ID"
   value       = aws_vpc.this.id
 }
-
+output "vpc_cidr" {
+  value = aws_vpc.this.cidr_block
+}
 # 퍼블릭 서브넷 ID 출력
 output "public_subnet_id" {
   description = "생성된 퍼블릭 서브넷 ID"

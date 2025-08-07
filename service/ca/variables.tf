@@ -3,7 +3,7 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "cluster_oidc_url" {
+variable "oidc_provider_url" {
   description = "EKS 클러스터 OIDC 프로바이더 URL"
   type        = string
 }
@@ -18,7 +18,7 @@ variable "node_group_name" {
   type        = string
 }
 
-variable "aws_region" {
+variable "region" {
   description = "AWS 리전"
   type        = string
 }

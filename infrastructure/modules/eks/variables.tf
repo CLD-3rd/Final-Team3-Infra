@@ -11,6 +11,10 @@ variable "subnet_ids" {
 variable "vpc_id" {
   type = string
 }
+variable "vpc_cidr" {
+  type        = string
+  description = "VPC CIDR"
+}
 
 variable "service_ipv4_cidr" {
   default = "172.20.0.0/16"

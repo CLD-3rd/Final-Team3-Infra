@@ -1,55 +1,3 @@
-# Terraform 버전 및 프로바이더 정의
-terraform {
-  required_version = ">= 1.3.0"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.25" # 안정적인 최신 버전
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.12" # 안정적인 최신 버전
-    }
-  }
-
-  # backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
-  #   bucket         = "matchfit-test-terraform-loc"
-  #   key            = "infrastructure/infrastructure.tfstate"
-  #   region         = "ap-northeast-2"
-  #   dynamodb_table = "matchfit-test-terraform-lock-table"
-  #   encrypt        = true
-  # }
-
-}
-# AWS Provider 정의
-provider "aws" {
-  region = var.aws_region   # 변수로부터 리전 설정 (예: ap-northeast-2)
-}
-# Kebernetes Provider 정의
-provider "kubernetes" {
-  config_path = "~/.kube/config"  # 본인 kubeconfig 경로
-}
-# Helm Provider 정의
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
-}
-#####################
-# TFC 사용 시 필요
-# terraform {
-#   backend "remote" {
-#     organization = "team3-matchfit-test"
-#     workspaces {
-#       name = "Final-Team3-Infra"
-#     }
-#   }
-# }
 #####################
 # network 설정 모듈 호출
 locals {
@@ -100,6 +48,7 @@ module "eks" {
   cluster_name               = var.cluster_name
   kubernetes_version         = var.kubernetes_version
   vpc_id                     = module.network.vpc_id
+  vpc_cidr                    = module.network.vpc_cidr
   subnet_ids                 = module.network.private_subnet_id
   service_ipv4_cidr          = var.service_ipv4_cidr
   tags                       = var.default_tags
@@ -140,6 +89,7 @@ module "rds" {
 
   create_security_group  = true
   vpc_id                 = module.network.vpc_id
+  vpc_cidr               = module.network.vpc_cidr
 
   create_subnet_group    = var.create_subnet_group
   db_subnet_group_name   = var.db_subnet_group_name
@@ -160,6 +110,7 @@ module "elasticache" {
   source             = "./modules/elasticache"
   name_prefix        = var.name_prefix                      # 리소스 네이밍 접두어(필수값)
   vpc_id             = module.network.vpc_id
+  vpc_cidr               = module.network.vpc_cidr
   private_subnet_ids = module.network.private_subnet_id
   eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
 
@@ -186,6 +137,7 @@ module "ecr" {
 }
 ###########################
 # S3 모듈 호출
+# CloudFront용 S3
 module "s3_bucket" {
   source                  = "./modules/s3"
   create_bucket           = true
@@ -204,14 +156,19 @@ module "s3_bucket" {
 }
 module "public_bucket" {
   source            = "./modules/s3"
-  bucket_name       = "matchfit-public-bucket"
-  is_public         = true
+  bucket_name       = var.image_bucket_name
+  is_public         = true    #퍼블릭 읽기 정책 자동 생성
   force_destroy     = true
   enable_versioning = false
   enable_website    = true
   index_document    = "index.html"
   error_document    = "error.html"
   tags              = merge(var.default_tags, { Purpose = "Public" })
+  # 퍼블릭 접근 권한
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
 #################################
@@ -227,17 +184,11 @@ module "cloudfront" {
   s3_bucket_arn                  = module.s3_bucket.bucket_arn                    # 기존 S3 모듈의 ARN
   price_class                    = var.price_class
   custom_error_responses         = var.custom_error_responses
+  # NLB 생성 시 필요 변수
+  vpc_id                        = module.network.vpc_id
+  cluster_name                  = module.eks.cluster_name
+  public_subnet_id              = module.network.public_subnet_id
+
   tags                           = var.default_tags
 }
-### 개선사항 : 캐시무효화 자동화ㅏ에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
-############################
-# CA 모듈 호출
-module "cluster_autoscaler" {
-  source               = "./modules/cluster-autoscaler"
-  cluster_name         = var.cluster_name                    # CA가 관리할 클러스터 식별
-  node_group_name      = module.eks.node_group_name          # 특정 노드 그룹 식별
-  cluster_oidc_url     = module.eks.cluster_oidc_issuer_url  # IRSA를 위한 해당 URL로 IAM 역할의 신뢰 정책 작성
-  oidc_provider_arn    = module.eks.oidc_provider_arn        # 해당 ARN을 이용해 IAM 역할을 생성할 때 필요
-  aws_region           = var.aws_region
-  tags                 = var.default_tags
-}
+### 개선사항 : 캐시무효화 자동화에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리

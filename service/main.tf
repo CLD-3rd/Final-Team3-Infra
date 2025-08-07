@@ -1,34 +1,21 @@
-# Terraform 버전 및 프로바이더 정의
-terraform {
-  required_version = ">= 1.3.0"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-
-  backend "s3" {  # backend 설정에는 variable을 사용할 수 없으므로 하드코딩
-    bucket         = "matchfit-terraform-loc"
-    key            = "service/service.tfstate"
-    region         = "ap-northeast-2"
-    dynamodb_table = "matchfit-terraform-lock-table"
-    encrypt        = true
-  }
-
+# EKS Autoscaling 관련 모듈 호출부
+# CA 모듈 호출
+module "cluster_autoscaler" {
+  source               = "./ca"
+  cluster_name         = local.cluster_name                    # CA가 관리할 클러스터 식별
+  node_group_name      = local.node_group_name          # 특정 노드 그룹 식별
+  oidc_provider_arn    = local.eks_oidc_arn      # 해당 ARN을 이용해 IAM 역할을 생성할 때 필요
+  oidc_provider_url    = local.eks_oidc_url      # IRSA를 위한 해당 URL로 IAM 역할의 신뢰 정책 작성
+  region               = local.region
+  tags                 = local.tag
 }
-
-# AWS Provider 정의
-provider "aws" {
-  region = "ap-northeast-2"
-}
-
-data "terraform_remote_state" "infra" {     # 읽기 전용, infrastructure의 output 참조
-  backend = "s3"
-  config = {
-    bucket = var.remote_state_bucket
-    key    = var.remote_state_key 
-    region = var.remote_state_region
-  }
+############################
+# 서비스 관련 IAM 역할 관련 모듈 호출부
+module "iam" {
+    source = "./iam"
+    name_prefix         = local.name_prefix
+    cluster_name        = local.cluster_name
+    oidc_provider_arn   = local.eks_oidc_arn
+    oidc_provider_url   = local.eks_oidc_url
+    tags                = local.tag
 }
