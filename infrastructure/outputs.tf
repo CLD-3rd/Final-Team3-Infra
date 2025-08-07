@@ -148,8 +148,12 @@ output "bucket_arn" {
   description = "웹/백엔드 통합 S3 버킷 ARN"
   value       = module.s3_bucket.bucket_arn
 }
-
 output "bucket_regional_domain_name" {
   description = "웹/백엔드 통합 S3 버킷 리전별 도메인"
   value       = module.s3_bucket.bucket_regional_domain_name
+}
+
+# Route 53
+output "domain_name" {
+    value =  module.route53.domain_name
 }
