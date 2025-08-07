@@ -1,10 +1,5 @@
-variable "cloudfront_log_bucket_name" {
-  description = "CloudFront 로그 저장용 S3 버킷 이름"
-  type        = string
-}
-
-variable "nlb_log_bucket_name" {
-  description = "NLB 로그 저장용 S3 버킷 이름"
+variable "name_prefix" {
+  description = "리소스 이름에 공통적으로 사용할 접두어"
   type        = string
 }
 
