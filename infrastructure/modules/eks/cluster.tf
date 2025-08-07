@@ -124,7 +124,7 @@ resource "aws_security_group" "eks_node_sg" {
     from_port        = 30080
     to_port          = 30080
     protocol         = "tcp"
-    cidr_blocks      = [var.vpc_cidr]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
   # 노드 → 외부로 나가는 트래픽 허용
   egress {

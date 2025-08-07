@@ -3,16 +3,6 @@ variable "name_prefix" {
   type        = string
 }
 
-variable "nlb_name" {
-  description = "NLB 이름"
-  type        = string
-}
-
-variable "public_subnet_ids" {
-  description = "퍼블릭 서브넷 ID 목록"
-  type        = list(string)
-}
-
 variable "vpc_id" {
   description = "VPC ID"
   type        = string

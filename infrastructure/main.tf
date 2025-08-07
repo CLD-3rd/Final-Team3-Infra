@@ -179,7 +179,7 @@ module "public_bucket" {
 #################################
 module "cloudfront" {
   source                         = "./modules/cloudfront"
-  service_name                   = var.name_prefix
+  name_prefix                   = var.name_prefix
   domain_name                    = var.domain_name
   cloudfront_certificate_arn     = var.cloudfront_certificate_arn
   s3_origin_domain               = module.s3_bucket.bucket_regional_domain_name  # 기존 S3 모듈의 도메인
@@ -192,7 +192,6 @@ module "cloudfront" {
   vpc_id                        = module.network.vpc_id
   cluster_name                  = module.eks.cluster_name
   public_subnet_id              = module.network.public_subnet_id
-  nlb_log_bucket_name           = module.logging.nlb_log_bucket_name
 
   tags                           = var.default_tags
 }
@@ -206,4 +205,12 @@ module "logging" {
   public_subnet_ids           = module.network.public_subnet_id
   vpc_id                      = module.network.vpc_id
   tags                        = var.default_tags
+}
+#################################
+# 외부 ALB
+module "internal_alb" {
+  source                  = "./modules/app-alb"
+  name_prefix             = var.name_prefix
+  vpc_id                  = module.network.vpc_id
+  public_subnet_id        = module.network.public_subnet_id
 }

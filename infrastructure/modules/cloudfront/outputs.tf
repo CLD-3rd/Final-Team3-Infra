@@ -17,7 +17,3 @@ output "cloudfront_status" {
   description = "CloudFront 배포 상태 (Deployed/InProgress)"
   value       = aws_cloudfront_distribution.this.status
 }
-
-output "nlb_name" {
-  value = aws_lb.eks_nlb.name
-}
