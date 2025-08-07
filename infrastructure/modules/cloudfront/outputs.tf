@@ -18,3 +18,6 @@ output "cloudfront_status" {
   value       = aws_cloudfront_distribution.this.status
 }
 
+output "nlb_name" {
+  value = aws_lb.eks_nlb.name
+}

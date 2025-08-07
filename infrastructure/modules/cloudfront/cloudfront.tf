@@ -94,6 +94,12 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
 
+  logging_config {
+    include_cookies = false
+    bucket          = "${var.cloudfront_log_bucket_name}.s3.amazonaws.com"
+    prefix          = "cloudfront-logs/"
+  }
+
   price_class = var.price_class
 
   restrictions {

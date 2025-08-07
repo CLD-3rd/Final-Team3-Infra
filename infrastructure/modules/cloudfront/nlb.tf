@@ -17,6 +17,12 @@ resource "aws_lb" "eks_nlb" {
 
   enable_deletion_protection = false
 
+  access_logs {
+    bucket  = var.nlb_log_bucket_name
+    enabled = true
+    prefix  = "nlb-logs"
+  }
+
   tags = {
     Name = "eks-public-nlb"
   }

@@ -55,3 +55,11 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# Logging
+variable "cloudfront_log_bucket_name" {
+  type = string
+}
+variable "nlb_log_bucket_name" {
+  type = string
+}
