@@ -54,3 +54,20 @@ variable "prometheus_service_account" {
   type        = string
   default     = "prometheus-sa"
 }
+
+# ExternalDNS-specific
+variable "externaldns_namespace" {
+  type        = string
+  default     = "kube-system"
+  description = "Namespace for externaldns components"
+}
+
+variable "externaldns_policy_name" {
+  type        = string
+  default = "externaldns-policy"
+}
+
+variable "externaldns_service_account" {
+  type        = string
+  default     = "externaldns-sa"
+}
