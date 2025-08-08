@@ -28,13 +28,3 @@ variable "eks_cluster_resource" {
   type        = any
 }
 #########################################################
-# S3 Object 접근 관련 IAM역할 변수
-variable "cloudfront_log_bucket_name" {
-  type        = string
-}
-variable "nlb_log_bucket_name" {
-  type        = string
-}
-variable "image_bucket_name" {
-  type        = string
-}

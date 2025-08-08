@@ -1,4 +1,4 @@
-variable "service_name" {
+variable "name_prefix" {
   description = "서비스 이름 (OAC 리소스 네이밍)"
   type        = string
 }
@@ -16,6 +16,10 @@ variable "cloudfront_certificate_arn" {
 variable "s3_origin_domain" {
   description = "CloudFront 오리진으로 사용할 S3 버킷 도메인"
   type        = string
+}
+variable "alb_dns_name" {
+  type        = string
+  description = "ALB의 DNS 이름 (CloudFront 오리진으로 사용)"
 }
 
 variable "s3_bucket_id" {
@@ -57,9 +61,11 @@ variable "tags" {
 }
 
 # Logging
-variable "cloudfront_log_bucket_name" {
+variable "cloudfront_bucket_name" {
   type = string
 }
-variable "nlb_log_bucket_name" {
+
+# ALB 연동
+variable "alb_dns_name" {
   type = string
 }

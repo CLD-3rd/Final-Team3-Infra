@@ -111,7 +111,7 @@ output "ecr_repository_arn" {
   value = module.ecr.repository_arn
 }
 #####################
-# S3 루트 출력
+# S3 버킷 정보 출력
 output "s3_bucket_id" {
   description = "The ID of the created S3 bucket"
   value       = module.s3_bucket.bucket_id
@@ -136,14 +136,10 @@ output "s3_website_domain" {
   description = "S3 static website domain (if enabled)"
   value       = module.s3_bucket.website_domain
 }
-########################################
-# S3 버킷 정보 출력
-########################################
 output "bucket_id" {
   description = "웹/백엔드 통합 S3 버킷 ID"
   value       = module.s3_bucket.bucket_id
 }
-
 output "bucket_arn" {
   description = "웹/백엔드 통합 S3 버킷 ARN"
   value       = module.s3_bucket.bucket_arn
@@ -152,8 +148,7 @@ output "bucket_regional_domain_name" {
   description = "웹/백엔드 통합 S3 버킷 리전별 도메인"
   value       = module.s3_bucket.bucket_regional_domain_name
 }
-
-# Route 53
-output "domain_name" {
-    value =  module.route53.domain_name
+output "app_bucket_name" {
+  description = "CloudFront용 S3 버킷"
+  value       = var.app_bucket_name
 }

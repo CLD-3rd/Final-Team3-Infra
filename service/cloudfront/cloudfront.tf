@@ -43,7 +43,7 @@ resource "aws_cloudfront_distribution" "this" {
 
   # 오리진 #2: ALB (백엔드 API)
   origin {
-    domain_name = aws_lb.cloudfront_alb.dns_name  # 새로 만든 ALB DNS
+    domain_name = data.aws_lb.eks_alb.dns_name  # ALB DNS
     origin_id   = "ALB-${var.name_prefix}"
 
     custom_origin_config {
@@ -96,7 +96,7 @@ resource "aws_cloudfront_distribution" "this" {
 
   logging_config {
     include_cookies = false
-    bucket          = "${var.cloudfront_log_bucket_name}.s3.amazonaws.com"
+    bucket          = "${var.cloudfront_bucket_name}.s3.amazonaws.com"
     prefix          = "cloudfront-logs/"
   }
 
@@ -146,3 +146,4 @@ resource "aws_s3_bucket_policy" "oac_policy" {
   bucket = var.s3_bucket_id
   policy = data.aws_iam_policy_document.s3_policy.json
 }
+
