@@ -64,7 +64,7 @@ resource "aws_db_instance" "this" {
   db_name                = var.db_name
   username               = var.username
   password               = var.password
-  parameter_group_name   =  aws_db_parameter_group.rds_logs.name
+  parameter_group_name   =  aws_db_parameter_group.mysql_param_group.name
   # logging
   enabled_cloudwatch_logs_exports = ["general", "slowquery", "error"]
 
@@ -86,12 +86,12 @@ resource "aws_db_instance" "this" {
     Name = "${var.name_prefix}-rds"
   }
 
-  lifecycle {
-  # prevent_destroy = true # 삭제 막기
-    ignore_changes = [
-      password,
-      backup_window,
-      maintenance_window
-    ]
-  }
+  # lifecycle {
+  # # prevent_destroy = true # 삭제 막기
+  #   ignore_changes = [
+  #     password,
+  #     backup_window,
+  #     maintenance_window
+  #   ]
+  # }
 }

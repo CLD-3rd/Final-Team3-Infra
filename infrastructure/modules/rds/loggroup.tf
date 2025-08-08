@@ -4,7 +4,9 @@ resource "aws_cloudwatch_log_group" "rds_general_log" {
   retention_in_days = 30
 }
 
-resource "aws_db_parameter_group" "rds_logs" {
+
+resource "aws_db_parameter_group" "mysql_param_group" {
+# resource "aws_db_parameter_group" "rds_logs" {
   name   = "rds-mysql-log-group"
   family = "mysql8.0"
 
