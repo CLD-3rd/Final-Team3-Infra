@@ -13,25 +13,6 @@ variable "cloudfront_certificate_arn" {
   type        = string
 }
 
-variable "s3_origin_domain" {
-  description = "CloudFront 오리진으로 사용할 S3 버킷 도메인"
-  type        = string
-}
-variable "alb_dns_name" {
-  type        = string
-  description = "ALB의 DNS 이름 (CloudFront 오리진으로 사용)"
-}
-
-variable "s3_bucket_id" {
-  description = "정책 적용 대상 S3 버킷 ID"
-  type        = string
-}
-
-variable "s3_bucket_arn" {
-  description = "정책 적용 대상 S3 버킷 ARN"
-  type        = string
-}
-
 variable "origin_id" {
   description = "CloudFront 오리진 ID"
   type        = string
@@ -65,7 +46,22 @@ variable "cloudfront_bucket_name" {
   type = string
 }
 
+variable "s3_origin_domain" {
+  description = "CloudFront 오리진으로 사용할 S3 버킷 도메인"
+  type        = string
+}
+
+variable "s3_bucket_id" {
+  description = "정책 적용 대상 S3 버킷 ID"
+  type        = string
+}
+
+variable "s3_bucket_arn" {
+  description = "정책 적용 대상 S3 버킷 ARN"
+  type        = string
+}
+
 # ALB 연동
-variable "alb_dns_name" {
+variable "cluster_name" {
   type = string
 }

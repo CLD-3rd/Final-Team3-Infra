@@ -30,7 +30,7 @@ module "alb_controller" {
   cluster_name                 = local.cluster_name
   vpc_id                       = local.vpc_id
   alb_irsa_role_arn            = module.iam.alb_irsa_role_arn
-  depends_on          = [module.iam]
+  depends_on                   = [module.iam]
 }
 # ArgoCD Helm 설치
 module "argocd" {
@@ -44,5 +44,9 @@ module "route53_argocd" {
   source          = "./route53"
   domain_name     = var.domain_name
   argocd_alb_dns  = module.argocd.argocd_alb_dns
-  depends_on          = [module.argocd]
+  cloudfront_dns  = module.cloudfront.cloudfront_dns
+  depends_on      = [
+    module.argocd
+    , module.cloudfront
+  ]
 }

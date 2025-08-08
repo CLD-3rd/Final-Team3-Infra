@@ -22,3 +22,8 @@ output "cloudfront_status" {
 output "cloudfront_log_bucket_name" {
   value = aws_s3_bucket.cloudfront_log_bucket.bucket
 }
+
+# ALB
+output "backend_alb_dns" {
+  value = data.aws_lb.eks_alb.dns_name
+}
