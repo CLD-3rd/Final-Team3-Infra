@@ -68,6 +68,7 @@ variable "externaldns_service_account" {
   default     = "externaldns-sa"
 }
 
+<<<<<<< HEAD
 # Backend S3 Access IRSA
 variable "image_bucket_name" {
   type = string
@@ -80,3 +81,17 @@ variable "backend_service_account" {
   type = string
   default = "backend-sa"
 }
+=======
+# CloudWatch Exporter-specific
+variable "cloudwatchexporter_policy_name" {
+  type        = string
+  default     = "CloudWatchExporterReadOnly"
+  description = "IAM policy name for CloudWatch Exporter"
+}
+
+variable "cloudwatchexporter_service_account" {
+  type        = string
+  default     = "cloudwatchexporter-sa"
+  description = "Service account name for CloudWatch Exporter"
+}
+>>>>>>> 127309eba036042717173761bb271a467d3b3db6
