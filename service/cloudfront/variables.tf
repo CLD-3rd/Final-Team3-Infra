@@ -1,3 +1,6 @@
+variable "region" {
+  type = string
+}
 variable "name_prefix" {
   description = "서비스 이름 (OAC 리소스 네이밍)"
   type        = string
@@ -45,23 +48,29 @@ variable "tags" {
 variable "cloudfront_bucket_name" {
   type = string
 }
-
 variable "s3_origin_domain" {
   description = "CloudFront 오리진으로 사용할 S3 버킷 도메인"
   type        = string
 }
-
 variable "s3_bucket_id" {
   description = "정책 적용 대상 S3 버킷 ID"
   type        = string
 }
-
 variable "s3_bucket_arn" {
   description = "정책 적용 대상 S3 버킷 ARN"
   type        = string
 }
+# Logging Result
+variable "grafana_irsa_role_name" {
+  type = string
+}
 
 # ALB 연동
 variable "cluster_name" {
+  type = string
+}
+
+# Route53 Recode 등록
+variable "hosting_zone_id" {
   type = string
 }
