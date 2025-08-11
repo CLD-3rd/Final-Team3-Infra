@@ -64,7 +64,9 @@ resource "aws_db_instance" "this" {
   db_name                = var.db_name
   username               = var.username
   password               = var.password
-  parameter_group_name   = var.parameter_group_name
+  parameter_group_name   =  aws_db_parameter_group.mysql_param_group.name
+  # logging
+  enabled_cloudwatch_logs_exports = ["general", "slowquery", "error"]
 
   # vpc_security_group_ids = var.vpc_security_group_ids
   vpc_security_group_ids = var.create_security_group ? [aws_security_group.rds[0].id] : var.vpc_security_group_ids
@@ -86,6 +88,11 @@ resource "aws_db_instance" "this" {
 
   lifecycle {
   # prevent_destroy = true # 삭제 막기
-    ignore_changes = all # 모든 변경 무시
+    ignore_changes = all
+    # [
+    #   password,
+    #   backup_window,
+    #   maintenance_window
+    # ]
   }
 }

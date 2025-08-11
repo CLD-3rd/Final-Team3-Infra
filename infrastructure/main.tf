@@ -33,17 +33,12 @@ module "network" {
 }
 #####################
 # EKS Admin Role 생성 및 연결 모듈 호출
-# module "iam" {
-module "eks_admin_role" {
-  source                  = "./modules/iam"
-  name_prefix             = var.name_prefix
-  cluster_name            = var.cluster_name
-  admin_user_arn          = var.admin_user_arn
-  eks_cluster_resource    = module.eks.cluster_resource
-  # S3 Object
-  cloudfront_log_bucket_name = module.logging.cloudfront_log_bucket_name
-  nlb_log_bucket_name        = module.logging.nlb_log_bucket_name
-  image_bucket_name          = var.image_bucket_name
+module "iam" {
+  source                     = "./modules/iam"
+  name_prefix                = var.name_prefix
+  cluster_name               = var.cluster_name
+  admin_user_arn             = var.admin_user_arn
+  eks_cluster_resource       = module.eks.cluster_resource
   tags                       = var.default_tags
 }
 #####################
@@ -54,7 +49,7 @@ module "eks" {
   cluster_name               = var.cluster_name
   kubernetes_version         = var.kubernetes_version
   vpc_id                     = module.network.vpc_id
-  vpc_cidr                    = module.network.vpc_cidr
+  vpc_cidr                   = module.network.vpc_cidr
   subnet_ids                 = module.network.private_subnet_id
   service_ipv4_cidr          = var.service_ipv4_cidr
   tags                       = var.default_tags
@@ -151,6 +146,7 @@ module "s3_bucket" {
   force_destroy           = true
   enable_versioning       = true
   enable_website          = false
+  # 퍼블릭 접근 권한 비활성화
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -168,42 +164,10 @@ module "public_bucket" {
   index_document    = "index.html"
   error_document    = "error.html"
   tags              = merge(var.default_tags, { Purpose = "Public" })
-  # 퍼블릭 접근 권한
+  # 퍼블릭 접근 권한 활성화
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
 #################################
-# CloudFront (OAC + HTTPS)
-#################################
-module "cloudfront" {
-  source                         = "./modules/cloudfront"
-  service_name                   = var.name_prefix
-  domain_name                    = var.domain_name
-  cloudfront_certificate_arn     = var.cloudfront_certificate_arn
-  s3_origin_domain               = module.s3_bucket.bucket_regional_domain_name  # 기존 S3 모듈의 도메인
-  s3_bucket_id                   = module.s3_bucket.bucket_id                     # 기존 S3 모듈의 ID
-  s3_bucket_arn                  = module.s3_bucket.bucket_arn                    # 기존 S3 모듈의 ARN
-  price_class                    = var.price_class
-  custom_error_responses         = var.custom_error_responses
-  cloudfront_log_bucket_name     = module.logging.cloudfront_log_bucket_name
-  # NLB 생성 시 필요 변수
-  vpc_id                        = module.network.vpc_id
-  cluster_name                  = module.eks.cluster_name
-  public_subnet_id              = module.network.public_subnet_id
-  nlb_log_bucket_name           = module.logging.nlb_log_bucket_name
-
-  tags                           = var.default_tags
-}
-### 개선사항 : 캐시무효화 자동화에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
-#################################
-# CloudFront & NLB Logging
-module "logging" {
-  source                      = "./modules/logging"
-  name_prefix                 = var.name_prefix
-  nlb_name                    = module.cloudfront.nlb_name
-  public_subnet_ids           = module.network.public_subnet_id
-  vpc_id                      = module.network.vpc_id
-  tags                        = var.default_tags
-}

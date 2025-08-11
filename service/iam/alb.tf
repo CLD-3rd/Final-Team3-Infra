@@ -1,6 +1,6 @@
 # ALB Controller용 IRSA (IAM Roles for Service Accounts) 역할 생성
 resource "aws_iam_role" "alb_controller_irsa" {
-  name = "${var.cluster_name}-alb-irsa-role"             # 역할 이름
+  name = "${var.name_prefix}-eks-alb-irsa-role"             # 역할 이름
 
   # OIDC Provider를 통한 AssumeRole 정책 (IRSA)
   assume_role_policy = jsonencode({
@@ -8,13 +8,13 @@ resource "aws_iam_role" "alb_controller_irsa" {
     Statement = [{
       Effect = "Allow"
       Principal = {
-        Federated = var.oidc_provider_arn                 # EKS OIDC Provider ARN
+        Federated = var.eks_oidc_arn                 # EKS OIDC Provider ARN
       }
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
           # 서비스 계정 이름과 네임스페이스에 대한 제약 조건
-          "${replace(var.oidc_provider_url, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+          "${replace(var.eks_oidc_url, "https://", "")}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
         }
       }
     }]
@@ -37,7 +37,7 @@ resource "aws_iam_role_policy_attachment" "alb_controller_attach_managed" {
 # (선택) 커스텀 정책 파일이 필요하면 아래 주석 해제 후 사용하세요.
 # resource "aws_iam_policy" "alb_controller_custom_policy" {
 #   name   = "${var.cluster_name}-alb-irsa-custom-policy"
-#   policy = file("${path.module}/iam-policy-alb-controller.json")
+#   policy = file("${path.module}/alb-custom-policy.json")
 # }
 #
 # resource "aws_iam_role_policy_attachment" "alb_controller_attach_custom" {

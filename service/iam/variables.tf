@@ -1,28 +1,25 @@
 variable "name_prefix" {
   type = string
 }
-variable "cluster_name" {
-  type = string
-}
 variable "tags" {
   type = map(string)
   default = {}
 }
-
-variable "monitoring_namespace" {
-  type        = string
-  default     = "monitoring"
-  description = "Namespace for monitoring components"
+variable "cluster_name" {
+  type = string
 }
-
 variable "eks_oidc_arn" {
   type        = string
   description = "OIDC provider ARN from EKS cluster"
 }
-
 variable "eks_oidc_url" {
   type        = string
   description = "OIDC provider URL from EKS cluster"
+}
+variable "monitoring_namespace" {
+  type        = string
+  default     = "monitoring"
+  description = "Namespace for monitoring components"
 }
 
 # Grafana-specific
@@ -61,7 +58,6 @@ variable "externaldns_namespace" {
   default     = "kube-system"
   description = "Namespace for externaldns components"
 }
-
 variable "externaldns_policy_name" {
   type        = string
   default = "externaldns-policy"
@@ -72,13 +68,25 @@ variable "externaldns_service_account" {
   default     = "externaldns-sa"
 }
 
+# Backend S3 Access IRSA
+variable "image_bucket_name" {
+  type = string
+}
+variable "backend_namespace" {
+  type = string
+  default = "argocd"
+}
+variable "backend_service_account" {
+  type = string
+  default = "backend-sa"
+}
+
 # CloudWatch Exporter-specific
 variable "cloudwatchexporter_policy_name" {
   type        = string
   default     = "CloudWatchExporterReadOnly"
   description = "IAM policy name for CloudWatch Exporter"
 }
-
 variable "cloudwatchexporter_service_account" {
   type        = string
   default     = "cloudwatchexporter-sa"

@@ -118,13 +118,13 @@ resource "aws_security_group" "eks_node_sg" {
     protocol        = "tcp"
     self            = true
   }
-  # NLB 관련 포트포워딩 
+  # ALB 관련 포트포워딩 
   ingress {
-    description      = "Allow NLB to access NodePort"
+    description      = "Allow ALB to access NodePort"
     from_port        = 30080
-    to_port          = 30080
+    to_port          = 30090
     protocol         = "tcp"
-    cidr_blocks      = [var.vpc_cidr]
+    cidr_blocks      = ["0.0.0.0/0"]
   }
   # 노드 → 외부로 나가는 트래픽 허용
   egress {

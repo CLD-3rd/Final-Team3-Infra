@@ -18,7 +18,7 @@ data "aws_cloudfront_response_headers_policy" "security_headers" {
 # Origin Access Control (CloudFront → S3)
 ########################################
 resource "aws_cloudfront_origin_access_control" "s3_oac" {
-  name                              = "${var.service_name}-s3-oac"
+  name                              = "${var.name_prefix}-s3-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
@@ -37,19 +37,19 @@ resource "aws_cloudfront_distribution" "this" {
   # 오리진 #1: S3 버킷 (정적 프론트엔드)
   origin {
     domain_name              = var.s3_origin_domain   # ex) your-bucket.s3.amazonaws.com
-    origin_id                = "S3-${var.service_name}"
+    origin_id                = "S3-${var.name_prefix}"
     origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id
   }
 
-  # 오리진 #2: NLB (백엔드 API)
+  # 오리진 #2: ALB (백엔드 API)
   origin {
-    domain_name = aws_lb.eks_nlb.dns_name  # ex) your-nlb-xxxx.elb.amazonaws.com
-    origin_id   = "NLB-${var.service_name}"
+    domain_name = data.aws_lb.eks_alb.dns_name  # ALB DNS
+    origin_id   = "ALB-${var.name_prefix}"
 
     custom_origin_config {
-      http_port              = 80
+      http_port              = 80    # ALB 리스너 포트
       https_port             = 443
-      origin_protocol_policy = "http-only"    # NLB는 HTTP로 받는 경우 많음
+      origin_protocol_policy = "http-only"  # HTTP로 ALB 접속하는 경우
       origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
@@ -58,7 +58,7 @@ resource "aws_cloudfront_distribution" "this" {
   # 기본 캐시 동작 (정적 콘텐츠 - S3)
   ########################################
   default_cache_behavior {
-    target_origin_id           = "S3-${var.service_name}"
+    target_origin_id           = "S3-${var.name_prefix}"
     viewer_protocol_policy     = "redirect-to-https"
     allowed_methods            = ["GET", "HEAD"]
     cached_methods             = ["GET", "HEAD"]
@@ -69,11 +69,11 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   ########################################
-  # 추가 캐시 동작 (API: 캐싱 비활성화 - NLB)
+  # 추가 캐시 동작 (API: 캐싱 비활성화 - ALB)
   ########################################
   ordered_cache_behavior {
     path_pattern               = "/api/*"
-    target_origin_id           = "NLB-${var.service_name}"
+    target_origin_id           = "ALB-${var.name_prefix}"   # 기존 NLB에서 ALB로 변경
     viewer_protocol_policy     = "redirect-to-https"
     allowed_methods            = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"]
     cached_methods             = ["GET", "HEAD"]
@@ -96,7 +96,10 @@ resource "aws_cloudfront_distribution" "this" {
 
   logging_config {
     include_cookies = false
-    bucket          = "${var.cloudfront_log_bucket_name}.s3.amazonaws.com"
+    # S3 버킷 생성 시에 사용하는 구문
+    # bucket        = "${aws_s3_bucket.cloudfront_log_bucket.bucket}.s3.amazonaws.com"
+    # 존재하는 S3 버킷 참조 시에 사용하는 구문
+    bucket          = "${data.aws_s3_bucket.cloudfront_log_bucket.bucket}.s3.amazonaws.com"
     prefix          = "cloudfront-logs/"
   }
 
@@ -146,3 +149,4 @@ resource "aws_s3_bucket_policy" "oac_policy" {
   bucket = var.s3_bucket_id
   policy = data.aws_iam_policy_document.s3_policy.json
 }
+

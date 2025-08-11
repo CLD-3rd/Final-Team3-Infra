@@ -16,7 +16,7 @@ resource "helm_release" "alb_controller" {
         create = true                                     # 서비스 계정 생성 여부
         name   = "aws-load-balancer-controller"          # IRSA용 서비스 계정 이름
         annotations = {
-          "eks.amazonaws.com/role-arn" = var.alb_controller_irsa_role_arn  # IAM Role ARN 연결
+          "eks.amazonaws.com/role-arn" = var.alb_irsa_role_arn  # IAM Role ARN 연결
         }
       }
     })
