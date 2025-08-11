@@ -146,6 +146,7 @@ module "s3_bucket" {
   force_destroy           = true
   enable_versioning       = true
   enable_website          = false
+  # 퍼블릭 접근 권한 비활성화
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -163,7 +164,7 @@ module "public_bucket" {
   index_document    = "index.html"
   error_document    = "error.html"
   tags              = merge(var.default_tags, { Purpose = "Public" })
-  # 퍼블릭 접근 권한
+  # 퍼블릭 접근 권한 활성화
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
