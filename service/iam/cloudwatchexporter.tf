@@ -25,19 +25,19 @@ resource "aws_iam_policy" "cloudwatchexporter_policy" {
 
 resource "aws_iam_role" "cloudwatchexporter_irsa" {
   name = "${var.name_prefix}-monitoring-cloudwatchexporter-irsa-role"
-  
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow"
+        Effect = "Allow",
         Principal = {
           Federated = var.eks_oidc_arn
-        }
-        Action = "sts:AssumeRoleWithWebIdentity"
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "${replace(var.eks_oidc_url, "https://", "")}:sub" = "system:serviceaccount/${var.monitoring_namespace}/${var.cloudwatchexporter_service_account}"
+            "${replace(var.eks_oidc_url, "https://", "")}:sub" = "system:serviceaccount:monitoring:cloudwatchexporter-sa"
+            "${replace(var.eks_oidc_url, "https://", "")}:aud" = "sts.amazonaws.com"
           }
         }
       }
