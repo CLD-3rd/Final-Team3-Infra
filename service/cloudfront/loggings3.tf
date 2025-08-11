@@ -29,7 +29,11 @@ resource "aws_s3_bucket_policy" "cloudfront_logs" {
         Principal = {
           Service = "cloudfront.amazonaws.com"
         },
-        Action    = "s3:PutObject",
+        Action = [
+          "s3:PutObject",
+          "s3:GetBucketAcl",
+          "s3:PutBucketAcl"
+        ]
         Resource  = "arn:aws:s3:::${aws_s3_bucket.cloudfront_log_bucket.bucket}/cloudfront-logs/*",
         Condition = {
           StringEquals = {

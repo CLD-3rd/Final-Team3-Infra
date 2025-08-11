@@ -12,6 +12,7 @@ locals {
   eks_oidc_url = data.terraform_remote_state.infra.outputs.cluster_oidc_issuer_url
   
   cloudfront_bucket_name = data.terraform_remote_state.infra.outputs.app_bucket_name
+  image_bucket_name      = data.terraform_remote_state.infra.outputs.image_bucket_name
   s3_bucket_id           = data.terraform_remote_state.infra.outputs.s3_bucket_id
   s3_bucket_arn          = data.terraform_remote_state.infra.outputs.s3_bucket_arn
   s3_origin_domain       = data.terraform_remote_state.infra.outputs.bucket_regional_domain_name

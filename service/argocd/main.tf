@@ -5,7 +5,8 @@ resource "helm_release" "argocd" {
   chart            = "argo-cd"                           # 설치할 Helm 차트명
   version          = "6.7.4"                             # 설치할 Helm 차트 버전
   namespace        = "argocd"                            # 설치할 네임스페이스
-  create_namespace = true                                # 네임스페이스가 없으면 생성
+  create_namespace = false                               # 네임스페이스가 없으면 생성
+                    # IAM 모듈에서 생성 중
 
   # Helm 차트에 전달할 값들을 YAML로 인코딩하여 전달
   values = [
@@ -52,7 +53,6 @@ resource "helm_release" "argocd" {
             http  = 80
           }
         }
-
 
       }
     })

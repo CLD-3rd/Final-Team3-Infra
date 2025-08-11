@@ -152,3 +152,7 @@ output "app_bucket_name" {
   description = "CloudFront용 S3 버킷"
   value       = var.app_bucket_name
 }
+output "image_bucket_name" {
+  description = "CloudFront용 S3 버킷"
+  value       = var.image_bucket_name
+}

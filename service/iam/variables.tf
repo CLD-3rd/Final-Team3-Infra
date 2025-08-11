@@ -67,3 +67,16 @@ variable "externaldns_service_account" {
   type        = string
   default     = "externaldns-sa"
 }
+
+# Backend S3 Access IRSA
+variable "image_bucket_name" {
+  type = string
+}
+variable "backend_namespace" {
+  type = string
+  default = "argocd"
+}
+variable "backend_service_account" {
+  type = string
+  default = "backend-sa"
+}

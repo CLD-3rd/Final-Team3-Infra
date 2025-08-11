@@ -3,3 +3,9 @@ resource "kubernetes_namespace" "monitoring" {
     name = "monitoring"
   }
 }
+
+resource "kubernetes_namespace" "argocd" {
+  metadata {
+    name = "argocd"
+  }
+}

@@ -20,6 +20,7 @@ module "iam" {
     cluster_name        = local.cluster_name
     eks_oidc_arn        = local.eks_oidc_arn
     eks_oidc_url        = local.eks_oidc_url
+    image_bucket_name   = local.image_bucket_name
     tags                = local.tag
 }
 ############################
