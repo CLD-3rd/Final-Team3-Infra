@@ -96,8 +96,10 @@ resource "aws_cloudfront_distribution" "this" {
 
   logging_config {
     include_cookies = false
-    bucket = "${aws_s3_bucket.cloudfront_log_bucket.bucket}.s3.amazonaws.com"
-    # bucket          = "${var.cloudfront_bucket_name}.s3.amazonaws.com"
+    # S3 버킷 생성 시에 사용하는 구문
+    # bucket        = "${aws_s3_bucket.cloudfront_log_bucket.bucket}.s3.amazonaws.com"
+    # 존재하는 S3 버킷 참조 시에 사용하는 구문
+    bucket          = "${data.aws_s3_bucket.cloudfront_log_bucket.bucket}.s3.amazonaws.com"
     prefix          = "cloudfront-logs/"
   }
 

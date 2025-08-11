@@ -19,9 +19,9 @@ output "cloudfront_status" {
 }
 
 # Logging Bucket
-output "cloudfront_log_bucket_name" {
-  value = aws_s3_bucket.cloudfront_log_bucket.bucket
-}
+# output "cloudfront_log_bucket_name" {
+#   value = aws_s3_bucket.cloudfront_log_bucket.bucket
+# }
 
 # ALB
 output "backend_alb_dns" {

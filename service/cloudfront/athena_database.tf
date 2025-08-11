@@ -18,7 +18,11 @@ resource "aws_glue_catalog_table" "cloudfront_logs_table" {
   }
 
   storage_descriptor {
-    location      = "s3://${aws_s3_bucket.cloudfront_log_bucket.bucket}/cloudfront-logs/"  # 실제 로그 경로
+    # S3 버킷 생성 시에 사용하는 구문
+    # location      = "s3://${aws_s3_bucket.cloudfront_log_bucket.bucket}/cloudfront-logs/"  # 실제 로그 경로
+    # 존재하는 S3 버킷 참조 시에 사용하는 구문
+    location = "s3://${data.aws_s3_bucket.cloudfront_log_bucket.bucket}/cloudfront-logs/"
+    
     input_format  = "org.apache.hadoop.mapred.TextInputFormat"
     output_format = "org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat"
 

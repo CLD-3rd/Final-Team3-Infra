@@ -38,8 +38,12 @@ resource "aws_iam_policy" "grafana_athena_policy" {
           "s3:GetBucketLocation"
         ],
         Resource = [
-          "arn:aws:s3:::${aws_s3_bucket.cloudfront_log_bucket.bucket}/athena-query-results/*",
-          "arn:aws:s3:::${aws_s3_bucket.cloudfront_log_bucket.bucket}/cloudfront-logs/*"
+          # S3 버킷 생성 시에 사용하는 구문
+          # "arn:aws:s3:::${aws_s3_bucket.cloudfront_log_bucket.bucket}/athena-query-results/*",
+          # "arn:aws:s3:::${aws_s3_bucket.cloudfront_log_bucket.bucket}/cloudfront-logs/*"
+          # 존재하는 S3 버킷 참조 시에 사용하는 구문
+          "arn:aws:s3:::${data.aws_s3_bucket.cloudfront_log_bucket.bucket}/athena-query-results/*",
+          "arn:aws:s3:::${data.aws_s3_bucket.cloudfront_log_bucket.bucket}/cloudfront-logs/*"
         ]
       }
     ]
