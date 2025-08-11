@@ -4,6 +4,12 @@ resource "aws_s3_bucket" "cloudfront_log_bucket" {
   force_destroy = true
   tags = var.tags
 }
+# Athena 관련 로그 저장 디렉토리
+resource "aws_s3_object" "athena_folder" {
+  bucket = aws_s3_bucket.cloudfront_log_bucket.id
+  key    = "athena-query-results/"  # 디렉토리처럼 동작
+  acl    = "private"
+}
 # 객체 소유권 설정 - ACL 활성화를 위해 버킷 정책과 별도로 설정해야 하는 경우 사용
 # 참고: Terraform AWS Provider 최신 버전에서는 aws_s3_bucket_ownership_controls 리소스로 설정 가능
 resource "aws_s3_bucket_ownership_controls" "ownership" {
