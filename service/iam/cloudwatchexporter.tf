@@ -36,7 +36,7 @@ resource "aws_iam_role" "cloudwatchexporter_irsa" {
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "${replace(var.eks_oidc_url, "https://", "")}:sub" = "system:serviceaccount:monitoring:cloudwatchexporter-sa"
+            "${replace(var.eks_oidc_url, "https://", "")}:sub" = "system:serviceaccount:${var.monitoring_namespace}:${var.cloudwatchexporter_service_account}"
             "${replace(var.eks_oidc_url, "https://", "")}:aud" = "sts.amazonaws.com"
           }
         }

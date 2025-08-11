@@ -45,9 +45,7 @@ module "route53_argocd" {
   source          = "./route53"
   domain_name     = var.domain_name
   argocd_alb_dns  = module.argocd.argocd_alb_dns
-  cloudfront_dns  = module.cloudfront.cloudfront_dns
   depends_on      = [
     module.argocd
-    , module.cloudfront
   ]
 }

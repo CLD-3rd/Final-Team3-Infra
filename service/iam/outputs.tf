@@ -5,6 +5,9 @@ output "alb_irsa_role_arn" {
 }
 
 # Grafana
+output "grafana_irsa_role_name" {
+  value = aws_iam_role.grafana_irsa.name
+}
 output "grafana_irsa_role_arn" {
   value       = aws_iam_role.grafana_irsa.arn
   description = "IAM role ARN used by Grafana"
