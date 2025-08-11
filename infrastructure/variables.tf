@@ -1,0 +1,250 @@
+# AWS 리전 (예: 서울 리전)
+variable "aws_region" {
+  description = "배포할 AWS 리전"
+  default     = "ap-northeast-2"
+}
+# 네이밍 접두어 (예: team1 → team1-vpc 등)
+variable "name_prefix" {
+  description = "리소스 이름 접두어"
+  default     = "matchfit-test"
+}
+# 공통 태그 (선택 사항)
+variable "default_tags" {
+  description = "모든 리소스에 공통으로 적용할 태그"
+  type        = map(string)
+  default = {
+    Environment = "dev"
+    Owner       = "matchfit-test"
+  }
+}
+#####################
+# VPC의 CIDR 블록
+variable "vpc_cidr" {
+  description = "VPC CIDR"
+  default     = "10.0.0.0/16"
+}
+# 퍼블릭 서브넷 CIDR
+variable "public_subnet_cidr" {
+  description = "퍼블릭 서브넷 CIDR"
+  default     = "10.0.10.0/24"
+}
+# 프라이빗 서브넷 CIDR
+variable "private_subnet_cidr" {
+  description = "프라이빗 서브넷 CIDR"
+  default     = "10.0.1.0/24"
+}
+# 가용 영역 (AZ)
+variable "az" {
+  description = "가용 영역"
+  default     = "ap-northeast-2a"
+}
+# 라우팅 테이블 정의 리스트
+variable "route_tables" {
+  description = "라우팅 테이블 설정 (이름, 라우트, 서브넷 연결 등)"
+  type = list(object({
+    name       = string
+    tags       = map(string)
+    routes     = list(object({
+      cidr_block     = string
+      gateway_id     = optional(string)
+      nat_gateway_id = optional(string)
+    }))
+    subnet_ids = list(string)
+  }))
+
+  default = []  # 테스트용으로는 비워 둘 수도 있음
+}
+#####################
+# IAM 관련 루트 variables
+variable "admin_user_arn" {
+  description = "관리자 IAM 사용자의 ARN (예: arn:aws:iam::123456789012:user/your-username)"
+  type        = string
+}
+#####################
+# EKS 관련 루트 variables
+variable "kubernetes_version" {
+  default = "1.33"
+}
+variable "cluster_name" {
+  default = "basic-eks"
+}
+variable "service_ipv4_cidr" {
+  description = "Kubernetes 서비스 네트워크 CIDR"
+  type        = string
+  default     = "172.20.0.0/16"
+}
+variable "worker_access_cidr" {
+  description = "EKS API 접근 허용 CIDR"
+  type        = list(string)
+  default     = ["10.0.2.0/24"]
+}
+variable "ssh_key_name" {
+  description = "EC2 인스턴스에 사용할 SSH 키 이름"
+  type        = string
+}
+variable "create_instance_profile" {
+  type        = bool
+  default     = true
+  description = "EC2 IAM 역할 연결 관련 Profile을 생성할지 여부"
+}
+#####################
+# VPN 관련 루트 변수
+variable "server_certificate_arn" {
+  description = "ACM 서버 인증서 ARN"
+  type        = string
+}
+variable "client_ca_certificate_arn" {
+  description = "클라이언트 CA 인증서 ARN"
+  type        = string
+}
+#####################
+# RDS 관련 루트 변수
+variable "db_name" {
+  description = "RDS 데이터베이스 이름"
+  type        = string
+}
+variable "db_username" {
+  description = "데이터베이스 관리자 사용자 이름"
+  type        = string
+}
+variable "db_password" {
+  description = "데이터베이스 비밀번호 (보안상 민감 정보)"
+  type        = string
+  sensitive   = true
+}
+variable "rds_security_group_ids" {
+  description = "RDS에 적용할 보안 그룹 ID 목록"
+  type        = list(string)
+  default     = []
+}
+variable "create_subnet_group" {
+  description = "서브넷 그룹 생성 여부"
+  type        = bool
+  default     = true
+}
+variable "db_subnet_group_name" {
+  description = "기존에 생성된 서브넷 그룹 이름 (사용 시 지정)"
+  type        = string
+  default     = null
+}
+variable "multi_az" {
+  description = "멀티 AZ 배포 여부"
+  type        = bool
+  default     = true
+}
+variable "backup_retention_period" {
+  description = "자동 백업 보존 기간(일 단위)"
+  type        = number
+  default     = 7
+}
+variable "backup_window" {
+  description = "자동 백업 수행 시간 (예: 03:00-04:00)"
+  type        = string
+  default     = "03:00-04:00"
+}
+variable "skip_final_snapshot" {
+  description = "RDS 삭제 시 최종 스냅샷 생성 여부 (true 시 생략)"
+  type        = bool
+  default     = true
+}
+variable "deletion_protection" {
+  description = "RDS 삭제 보호 기능 활성화 여부"
+  type        = bool
+  default     = false
+}
+#####################
+# ElastiCache Redis 관련 루트 변수
+variable "auth_token" {
+  description = "ElastiCache Redis 인증 토큰"
+  type        = string
+  sensitive   = true   # Terraform 출력에서 숨겨짐
+}
+variable "maintenance_window" {
+  description = "유지보수 작업 허용 시간대 (예: sun:04:00-sun:05:00)"
+  type        = string
+  default     = "sun:00:00-sun:02:00"
+}
+variable "snapshot_window" {
+  description = "스냅샷이 수행되는 시간대"
+  type        = string
+  default     = "11:30-13:00"
+}
+#####################
+# ECR 관련 루트 변수
+variable "ecr_image_tag_mutability" {
+  description = "이미지 태그 변경 가능 여부 (MUTABLE 또는 IMMUTABLE)"
+  type        = string
+  default     = "MUTABLE"
+}
+variable "ecr_force_delete" {
+  description = "리포지토리에 이미지가 있어도 삭제할 수 있는지 여부"
+  type        = bool
+  default     = true
+}
+variable "ecr_scan_on_push" {
+  description = "이미지 푸시 시 자동으로 취약점 검사를 수행할지 여부"
+  type        = bool
+  default     = true
+}
+variable "ecr_encryption_type" {
+  description = "ECR 리포지토리 암호화 방식 (AES256 또는 KMS)"
+  type        = string
+  default     = "AES256"
+}
+#####################
+# S3 관련 루트 변수
+variable "bucket_name" {
+  description = "Name of the S3 bucket (globally unique)"
+  type        = string
+  default     = "basic-bucket"
+}
+variable "enable_versioning" {
+  type        = bool
+  default     = false
+}
+variable "enable_website" {
+  type        = bool
+  default     = false
+}
+variable "index_document" {
+  type        = string
+  default     = "index.html"
+}
+variable "error_document" {
+  type        = string
+  default     = "error.html"
+}
+variable "block_public_acls" {
+  type        = bool
+  default     = true
+}
+variable "block_public_policy" {
+  type        = bool
+  default     = true
+}
+variable "ignore_public_acls" {
+  type        = bool
+  default     = true
+}
+variable "restrict_public_buckets" {
+  type        = bool
+  default     = true
+}
+variable "bucket_policy" {
+  description = "Optional S3 Bucket policy as JSON object"
+  type        = any
+  default     = null
+}
+variable "force_destroy" {
+  description = "S3 버킷 삭제 시 객체까지 함께 삭제할지 여부"
+  type        = bool
+  default     = false
+}
+variable "app_bucket_name" {
+  description = "프론트엔드 전용 S3 버킷 이름"
+  type        = string
+}
+variable "image_bucket_name" {
+  description = "이미지 전용 S3 버킷 이름"
+  type        = string
+}

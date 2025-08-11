@@ -22,3 +22,27 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+
+# Terraform state
+*.tfstate
+*.tfstate.*
+
+# Crash log
+crash.log
+
+# .terraform provider cache
+.terraform/
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Sensitive variable files
+*.tfvars
+# *.tfvars.json
+
+# .terraform.lock.hcl (선택 사항 - 팀 내부에서는 공유할 수도 있음)
+.terraform.lock.hcl
