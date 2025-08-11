@@ -73,14 +73,14 @@ variable "externaldns_service_account" {
 }
 
 # CloudWatch Exporter-specific
-variable "cloudwatch_exporter_policy_name" {
+variable "cloudwatchexporter_policy_name" {
   type        = string
   default     = "CloudWatchExporterReadOnly"
   description = "IAM policy name for CloudWatch Exporter"
 }
 
-variable "cloudwatch_exporter_service_account" {
+variable "cloudwatchexporter_service_account" {
   type        = string
-  default     = "cloudwatch-exporter-sa"
+  default     = "cloudwatchexporter-sa"
   description = "Service account name for CloudWatch Exporter"
 }
