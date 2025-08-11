@@ -248,3 +248,10 @@ variable "image_bucket_name" {
   description = "이미지 전용 S3 버킷 이름"
   type        = string
 }
+#####################
+# CloudWatch Alarms e-mail
+variable "subscriptions" {
+  description = "List of email addresses to subscribe to SNS topic"
+  type        = list(string)
+  default     = []
+}
