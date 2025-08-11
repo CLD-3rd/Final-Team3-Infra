@@ -33,3 +33,14 @@ output "externaldns_irsa_role_arn" {
   value       = aws_iam_role.externaldns_irsa.arn
   description = "IAM role ARN used by ExternalDNS"
 }
+
+#
+output "cloudwatchexporter_irsa_role_arn" {
+  value       = aws_iam_role.cloudwatchexporter_irsa.arn
+  description = "IAM role ARN used by CloudWatch Exporter"
+}
+
+output "cloudwatchexporter_service_account" {
+  value       = kubernetes_service_account.cloudwatchexporter_sa.metadata[0].name
+  description = "Service account for CloudWatch Exporter"
+}
