@@ -33,7 +33,6 @@ resource "aws_iam_role_policy" "s3_policy" {
           "s3:DeleteObject"
         ]
         Resource = "arn:aws:s3:::${var.image_bucket_name}/*"
-        # Resource = "arn:aws:s3:::matchfit-front-image/*"
       }
     ]
   })
