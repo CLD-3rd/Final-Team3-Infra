@@ -5,7 +5,7 @@
 # }
 
 # 이미 존재하는 로그 그룹과 매핑
-resource "aws_cloudwatch_log_group" "rds_general_log" {
+data "aws_cloudwatch_log_group" "rds_general_log" {
   count = var.log_group_exists ? 0 : 1
   name = "/aws/rds/instance/${aws_db_instance.this.identifier}/general"
 }
