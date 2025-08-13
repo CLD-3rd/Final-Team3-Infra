@@ -173,8 +173,7 @@ module "public_bucket" {
 module "sns_topic" {
   source             = "./modules/alarms/sns_topic"
   name_prefix        = var.name_prefix
-  # subscriptions      = var.subscriptions
-  tags               = var.default_tags
+  # tags               = var.default_tags
 }
 # AWS 리소스 별 CloudWatch Alarms
 module "alarms" {
