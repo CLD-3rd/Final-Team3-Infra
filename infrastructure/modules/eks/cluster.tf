@@ -190,7 +190,12 @@ resource "aws_eks_node_group" "default" {
     ec2_ssh_key = var.ssh_key_name
     source_security_group_ids = [var.vpn_security_group_id]   # 노드 보안그룹 ID
   }
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      "eks.amazonaws.com/nodegroup"               = "${var.cluster_name}-node-group"
+    }
+  )
 
   # # custom launch template 사용
   # launch_template {
