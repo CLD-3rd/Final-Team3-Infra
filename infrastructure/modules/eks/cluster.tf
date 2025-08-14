@@ -194,6 +194,9 @@ resource "aws_eks_node_group" "default" {
     var.tags,
     {
       "eks.amazonaws.com/nodegroup"               = "${var.cluster_name}-node-group"
+      "k8s.io/cluster-autoscaler/enabled"          = "true"
+      "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
+      "kubernetes.io/cluster/${var.cluster_name}"  = "owned"
     }
   )
 
