@@ -44,13 +44,15 @@ resource "helm_release" "ca" {  # CA 설치
   repository = "https://kubernetes.github.io/autoscaler"
   version    = "9.49.0"
 
+  force_update   = true
+  recreate_pods  = true
+
   values = [  # Helm Chart의 values.yaml에 전달할 값
     yamlencode({
       cloudProvider = "aws"
       awsRegion     = var.region
       autoDiscovery = {
         enabled = true
-        clusterName = var.cluster_name
         tags = [
             "kubernetes.io/cluster/${var.cluster_name}=owned",
             "eks.amazonaws.com/nodegroup=${var.node_group_name}"
