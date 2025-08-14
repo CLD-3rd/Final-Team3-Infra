@@ -243,3 +243,34 @@ resource "aws_iam_openid_connect_provider" "this" {
   thumbprint_list = [var.oidc_thumbprint]
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
+
+# 변수: 적용할 ASG 이름(들)
+variable "asg_names" {
+  description = "List of ASG names to tag for Cluster Autoscaler"
+  type        = list(string)
+  default     = []   # terraform apply 시 -var="asg_names=[\"name1\"]" 로 넘기거나 tfvars 설정
+}
+
+# CA enabled 태그 (여러 ASG에 적용 가능)
+resource "aws_autoscaling_group_tag" "ca_enabled" {
+  for_each               = toset(var.asg_names)
+  autoscaling_group_name = each.value
+
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/enabled"
+    value               = "true"
+    propagate_at_launch = true
+  }
+}
+
+# CA cluster-name 태그
+resource "aws_autoscaling_group_tag" "ca_cluster" {
+  for_each               = toset(var.asg_names)
+  autoscaling_group_name = each.value
+
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/${var.cluster_name}"
+    value               = "owned"
+    propagate_at_launch = true
+  }
+}
