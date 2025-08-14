@@ -37,7 +37,7 @@ module "alb_controller" {
 module "argocd" {
   source = "./argocd"
   domain_name     = var.domain_name
-  depends_on = [module.alb_controller]
+  depends_on = [module.iam, module.alb_controller]
 }
 #################################
 # Route53 DNS 설정 모듈 호출
@@ -45,7 +45,5 @@ module "route53_argocd" {
   source          = "./route53"
   domain_name     = var.domain_name
   argocd_alb_dns  = module.argocd.argocd_alb_dns
-  depends_on      = [
-    module.argocd
-  ]
+  depends_on      = [module.argocd]
 }

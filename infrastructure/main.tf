@@ -108,20 +108,17 @@ module "rds" {
 #####################
 # ElastiCache 설정 모듈 호출
 module "elasticache" {
-  source             = "./modules/elasticache"
-  name_prefix        = var.name_prefix                      # 리소스 네이밍 접두어(필수값)
-  vpc_id             = module.network.vpc_id
-  vpc_cidr               = module.network.vpc_cidr
-  private_subnet_ids = module.network.private_subnet_id
-  eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
-
+  source                      = "./modules/elasticache"
+  name_prefix                 = var.name_prefix             # 리소스 네이밍 접두어(필수값)
+  vpc_id                      = module.network.vpc_id
+  vpc_cidr                    = module.network.vpc_cidr
+  private_subnet_ids          = module.network.private_subnet_id
+  eks_node_sg_id              = module.eks.eks_node_sg_id   # EKS 노드의 Security Group ID (접근 허용 목적)
   auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
-
   # 설정 안할 시 AWS가 임의 시간대로 설정
-  maintenance_window          = var.maintenance_window       # 정기 점검 시간
-  snapshot_window             = var.snapshot_window          # 스냅샷 수행 시간대
-  snapshot_retention_limit    = 1                            # 스냅샷 보관 일수
-
+  maintenance_window          = var.maintenance_window      # 정기 점검 시간
+  snapshot_window             = var.snapshot_window         # 스냅샷 수행 시간대
+  snapshot_retention_limit    = 1                           # 스냅샷 보관 일수
   tags = var.default_tags
 }
 ###########################
@@ -129,7 +126,7 @@ module "elasticache" {
 module "ecr" {
   source = "./modules/ecr"
 
-  name_prefix        = var.name_prefix                  # 리포지토리 이름
+  name_prefix          = var.name_prefix                  # 리포지토리 이름
   image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
   force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
   scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
@@ -157,7 +154,7 @@ module "s3_bucket" {
 module "public_bucket" {
   source            = "./modules/s3"
   bucket_name       = var.image_bucket_name
-  is_public         = true    #퍼블릭 읽기 정책 자동 생성
+  # is_public         = true    #퍼블릭 읽기 정책 자동 생성
   force_destroy     = true
   enable_versioning = false
   enable_website    = true
@@ -171,3 +168,23 @@ module "public_bucket" {
   restrict_public_buckets = false
 }
 #################################
+# CloudWatch 관련 알람
+# SNS Topic
+module "sns_topic" {
+  source             = "./modules/alarms/sns_topic"
+  name_prefix        = var.name_prefix
+  # tags               = var.default_tags
+}
+# AWS 리소스 별 CloudWatch Alarms
+module "alarms" {
+  source                    = "./modules/alarms"
+  name_prefix               = var.name_prefix
+  redis_replica_group_id    = module.elasticache.redis_replica_group_id
+  rds_instance_id           = module.rds.db_instance_id
+  nat_gateway_id            = module.network.nat_gateway_id
+  sns_topic_arn             = module.sns_topic.sns_topic_arn
+  tags                      = var.default_tags
+  depends_on      = [
+    module.sns_topic, module.network, module.rds, module.elasticache
+  ]
+}

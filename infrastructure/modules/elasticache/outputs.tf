@@ -12,3 +12,8 @@ output "redis_port" {
   description = "Redis 서비스 포트 번호"
   value       = aws_elasticache_replication_group.this.port
 }
+
+output "redis_replica_group_id" {
+  description = "ID of the Redis replication group"
+  value       = aws_elasticache_replication_group.this.id
+}
