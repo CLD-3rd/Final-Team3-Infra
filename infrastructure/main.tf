@@ -154,7 +154,7 @@ module "s3_bucket" {
 module "public_bucket" {
   source            = "./modules/s3"
   bucket_name       = var.image_bucket_name
-  is_public         = true    #퍼블릭 읽기 정책 자동 생성
+  # is_public         = true    #퍼블릭 읽기 정책 자동 생성
   force_destroy     = true
   enable_versioning = false
   enable_website    = true

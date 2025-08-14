@@ -179,11 +179,12 @@ resource "aws_eks_node_group" "default" {
   subnet_ids      = var.subnet_ids                               # 노드를 배치할 서브넷 ID들
   
   scaling_config {
-    desired_size = 3     # 기본 노드 수
+    desired_size = 2     # 기본 노드 수
     max_size     = 5     # 최대 확장 수
-    min_size     = 2     # 최소 유지 수
+    min_size     = 1     # 최소 유지 수
   }
-  instance_types = ["m5.large"]         # 노드 인스턴스 타입
+  instance_types = ["t3.medium"]
+  # instance_types = ["m5.large"]         # 노드 인스턴스 타입
   ami_type       = "AL2023_x86_64_STANDARD"          # Amazon Linux 2 AMI
 
   remote_access {
@@ -194,6 +195,9 @@ resource "aws_eks_node_group" "default" {
     var.tags,
     {
       "eks.amazonaws.com/nodegroup"               = "${var.cluster_name}-node-group"
+      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+      "k8s.io/cluster-autoscaler/enabled"         = "true"
+      "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
     }
   )
 
