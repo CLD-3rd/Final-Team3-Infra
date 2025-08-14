@@ -42,19 +42,20 @@ resource "helm_release" "ca" {  # CA 설치
   namespace  = "kube-system"
   chart      = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"
-  version    = "9.47.0"
+  version    = "9.49.0"
 
   values = [  # Helm Chart의 values.yaml에 전달할 값
     yamlencode({
       cloudProvider = "aws"
       awsRegion     = var.region
-      # autoDiscovery = {
-      #   clusterName = var.cluster_name
-      #   tags = {
-      #       "kubernetes.io/cluster/${var.cluster_name}" = "owned"
-      #       "eks.amazonaws.com/nodegroup" = var.node_group_name
-      #   }
-      # }
+      autoDiscovery = {
+        enabled = true
+        clusterName = var.cluster_name
+        tags = [
+            "kubernetes.io/cluster/${var.cluster_name}=owned",
+            "eks.amazonaws.com/nodegroup=${var.node_group_name}"
+        ]
+      }
       rbac = {
         serviceAccount = {
           create = false  # 자체적인 SA 생성 방지
@@ -62,7 +63,6 @@ resource "helm_release" "ca" {  # CA 설치
         }
       }
       extraArgs = {  # CA Pod에 전달될 추가 인자
-        "node-group-auto-discovery" = "asg:tag=kubernetes.io/cluster/${var.cluster_name},asg:tag=eks.amazonaws.com/nodegroup=${var.node_group_name}"
         skip-nodes-with-local-storage = "false"
         scan-interval                 = "10s"
         expander                      = "least-waste"  # 스케일 아웃 시 가장 적은 리소스를 낭비하는 노드를 우선 선택
