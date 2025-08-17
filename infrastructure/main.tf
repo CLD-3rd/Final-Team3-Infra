@@ -188,3 +188,16 @@ module "alarms" {
     module.sns_topic, module.network, module.rds, module.elasticache
   ]
 }
+###########################
+# Karpenter 모듈 호출
+module "karpenter" {
+  source = "./modules/karpenter"
+  cluster_name     = module.eks.cluster_name
+  region           = var.aws_region
+  subnet_ids       = module.network.private_subnet_id   # 프로젝트에 맞는 서브넷 outputs 사용
+  node_sg_id       = module.eks.eks_node_sg_id
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.cluster_oidc_issuer_url
+
+  depends_on = [module.eks]
+}

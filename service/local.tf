@@ -16,4 +16,7 @@ locals {
   s3_bucket_id           = data.terraform_remote_state.infra.outputs.s3_bucket_id
   s3_bucket_arn          = data.terraform_remote_state.infra.outputs.s3_bucket_arn
   s3_origin_domain       = data.terraform_remote_state.infra.outputs.bucket_regional_domain_name
+
+  karpenter_node_role_arn         = data.terraform_remote_state.infra.outputs.karpenter_node_role_arn
+  karpenter_controller_policy_arn = data.terraform_remote_state.infra.outputs.karpenter_controller_policy_arn
 }
