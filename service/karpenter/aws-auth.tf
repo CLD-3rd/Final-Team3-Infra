@@ -1,11 +1,11 @@
-data "terraform_remote_state" "infra" {
-  backend = "s3"   # 이미 사용중인 backend 설정에 맞춰 수정 (여기선 예시)
-  config = {
-    bucket = "..." # 기존 설정을 참고
-    key    = "..." 
-    region = "ap-northeast-2"
-  }
-}
+# data "terraform_remote_state" "infra" {
+#   backend = "s3"   # 이미 사용중인 backend 설정에 맞춰 수정 (여기선 예시)
+#   config = {
+#     bucket = "..." # 기존 설정을 참고
+#     key    = "..." 
+#     region = "ap-northeast-2"
+#   }
+# }
 
 data "aws_caller_identity" "current" {}
 

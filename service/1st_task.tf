@@ -47,3 +47,8 @@ module "route53_argocd" {
   argocd_alb_dns  = module.argocd.argocd_alb_dns
   depends_on      = [module.argocd]
 }
+#################################
+# Karpenter 모듈 호출
+# module "karpenter" {
+#   source = "./karpenter"
+# }
