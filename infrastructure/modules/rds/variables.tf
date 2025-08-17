@@ -124,6 +124,13 @@ variable "deletion_protection" {
   description = "RDS 삭제 보호 여부"
 }
 
+variable "log_group_exists" {
+  description = "이미 로그 그룹이 존재하는지 여부"
+  type        = bool
+  default     = false
+}
+
+
 # RDS 보안 그룹 생성 관련 변수
 variable "create_security_group" {
   description = "RDS 용 보안 그룹을 생성할지 여부"

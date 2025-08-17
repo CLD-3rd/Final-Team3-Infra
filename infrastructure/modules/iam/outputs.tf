@@ -13,4 +13,3 @@ output "admin_role_arn" {
   description = "EKS 관리자 role ARN"
   value       = aws_iam_role.eks_admin_role.arn
 }
-#########################################################

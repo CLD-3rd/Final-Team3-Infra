@@ -24,19 +24,20 @@ resource "aws_iam_policy" "externaldns_policy" {
 }
 
 resource "aws_iam_role" "externaldns_irsa" {
-  name = "${var.name_prefix}-externaldns-irsa-role"
+  name = "${var.name_prefix}-argocd-externaldns-irsa-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
         Effect = "Allow",
         Principal = {
-          Federated = var.oidc_provider_arn
+          Federated = var.eks_oidc_arn
         },
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
           StringEquals = {
-            "${replace(var.oidc_provider_url, "https://", "")}:sub" = "system:serviceaccount/${var.externaldns_namespace}/${var.externaldns_service_account}"
+            "${replace(var.eks_oidc_url, "https://", "")}:sub" = "system:serviceaccount:${var.externaldns_namespace}:${var.externaldns_service_account}"
+            "${replace(var.eks_oidc_url, "https://", "")}:aud" = "sts.amazonaws.com"
           }
         }
       }

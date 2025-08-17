@@ -15,3 +15,9 @@ variable "remote_state_region" {
   description = "infrastructure의 tfstate가 저장된 AWS 리전"
   default     = "ap-northeast-2"
 }
+#####################
+# Route53 관련 루트 변수
+variable "domain_name" {
+  description = "Route53 도메인 이름"
+  type        = string
+}

@@ -33,17 +33,12 @@ module "network" {
 }
 #####################
 # EKS Admin Role 생성 및 연결 모듈 호출
-# module "iam" {
-module "eks_admin_role" {
-  source                  = "./modules/iam"
-  name_prefix             = var.name_prefix
-  cluster_name            = var.cluster_name
-  admin_user_arn          = var.admin_user_arn
-  eks_cluster_resource    = module.eks.cluster_resource
-  # S3 Object
-  cloudfront_log_bucket_name = module.logging.cloudfront_log_bucket_name
-  nlb_log_bucket_name        = module.logging.nlb_log_bucket_name
-  image_bucket_name          = var.image_bucket_name
+module "iam" {
+  source                     = "./modules/iam"
+  name_prefix                = var.name_prefix
+  cluster_name               = var.cluster_name
+  admin_user_arn             = var.admin_user_arn
+  eks_cluster_resource       = module.eks.cluster_resource
   tags                       = var.default_tags
 }
 #####################
@@ -54,7 +49,7 @@ module "eks" {
   cluster_name               = var.cluster_name
   kubernetes_version         = var.kubernetes_version
   vpc_id                     = module.network.vpc_id
-  vpc_cidr                    = module.network.vpc_cidr
+  vpc_cidr                   = module.network.vpc_cidr
   subnet_ids                 = module.network.private_subnet_id
   service_ipv4_cidr          = var.service_ipv4_cidr
   tags                       = var.default_tags
@@ -113,20 +108,17 @@ module "rds" {
 #####################
 # ElastiCache 설정 모듈 호출
 module "elasticache" {
-  source             = "./modules/elasticache"
-  name_prefix        = var.name_prefix                      # 리소스 네이밍 접두어(필수값)
-  vpc_id             = module.network.vpc_id
-  vpc_cidr               = module.network.vpc_cidr
-  private_subnet_ids = module.network.private_subnet_id
-  eks_node_sg_id     = module.eks.eks_node_sg_id            # EKS 노드의 Security Group ID (접근 허용 목적)
-
+  source                      = "./modules/elasticache"
+  name_prefix                 = var.name_prefix             # 리소스 네이밍 접두어(필수값)
+  vpc_id                      = module.network.vpc_id
+  vpc_cidr                    = module.network.vpc_cidr
+  private_subnet_ids          = module.network.private_subnet_id
+  eks_node_sg_id              = module.eks.eks_node_sg_id   # EKS 노드의 Security Group ID (접근 허용 목적)
   auth_token                  = var.auth_token              # Redis 접속 시 필요한 인증 비밀번호
-
   # 설정 안할 시 AWS가 임의 시간대로 설정
-  maintenance_window          = var.maintenance_window       # 정기 점검 시간
-  snapshot_window             = var.snapshot_window          # 스냅샷 수행 시간대
-  snapshot_retention_limit    = 1                            # 스냅샷 보관 일수
-
+  maintenance_window          = var.maintenance_window      # 정기 점검 시간
+  snapshot_window             = var.snapshot_window         # 스냅샷 수행 시간대
+  snapshot_retention_limit    = 1                           # 스냅샷 보관 일수
   tags = var.default_tags
 }
 ###########################
@@ -134,7 +126,7 @@ module "elasticache" {
 module "ecr" {
   source = "./modules/ecr"
 
-  name_prefix        = var.name_prefix                  # 리포지토리 이름
+  name_prefix          = var.name_prefix                  # 리포지토리 이름
   image_tag_mutability = var.ecr_image_tag_mutability  # 이미지 태그 수정 가능 여부
   force_delete         = var.ecr_force_delete          # 이미지가 남아있더라도 삭제 가능 여부
   scan_on_push         = var.ecr_scan_on_push          # 이미지 푸시 시 자동으로 취약점 검사 여부
@@ -151,6 +143,7 @@ module "s3_bucket" {
   force_destroy           = true
   enable_versioning       = true
   enable_website          = false
+  # 퍼블릭 접근 권한 비활성화
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -161,56 +154,50 @@ module "s3_bucket" {
 module "public_bucket" {
   source            = "./modules/s3"
   bucket_name       = var.image_bucket_name
-  is_public         = true    #퍼블릭 읽기 정책 자동 생성
+  # is_public         = true    #퍼블릭 읽기 정책 자동 생성
   force_destroy     = true
   enable_versioning = false
   enable_website    = true
   index_document    = "index.html"
   error_document    = "error.html"
   tags              = merge(var.default_tags, { Purpose = "Public" })
-  # 퍼블릭 접근 권한
+  # 퍼블릭 접근 권한 활성화
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
   restrict_public_buckets = false
 }
 #################################
-# CloudFront (OAC + HTTPS)
-#################################
-module "cloudfront" {
-  source                         = "./modules/cloudfront"
-  name_prefix                   = var.name_prefix
-  domain_name                    = var.domain_name
-  cloudfront_certificate_arn     = var.cloudfront_certificate_arn
-  s3_origin_domain               = module.s3_bucket.bucket_regional_domain_name  # 기존 S3 모듈의 도메인
-  s3_bucket_id                   = module.s3_bucket.bucket_id                     # 기존 S3 모듈의 ID
-  s3_bucket_arn                  = module.s3_bucket.bucket_arn                    # 기존 S3 모듈의 ARN
-  price_class                    = var.price_class
-  custom_error_responses         = var.custom_error_responses
-  cloudfront_log_bucket_name     = module.logging.cloudfront_log_bucket_name
-  # NLB 생성 시 필요 변수
-  vpc_id                        = module.network.vpc_id
-  cluster_name                  = module.eks.cluster_name
-  public_subnet_id              = module.network.public_subnet_id
+# CloudWatch 관련 알람
+# SNS Topic
+module "sns_topic" {
+  source             = "./modules/alarms/sns_topic"
+  name_prefix        = var.name_prefix
+  # tags               = var.default_tags
+}
+# AWS 리소스 별 CloudWatch Alarms
+module "alarms" {
+  source                    = "./modules/alarms"
+  name_prefix               = var.name_prefix
+  redis_replica_group_id    = module.elasticache.redis_replica_group_id
+  rds_instance_id           = module.rds.db_instance_id
+  nat_gateway_id            = module.network.nat_gateway_id
+  sns_topic_arn             = module.sns_topic.sns_topic_arn
+  tags                      = var.default_tags
+  depends_on      = [
+    module.sns_topic, module.network, module.rds, module.elasticache
+  ]
+}
+###########################
+# Karpenter 모듈 호출
+module "karpenter" {
+  source = "./modules/karpenter"
+  cluster_name     = module.eks.cluster_name
+  region           = var.aws_region
+  subnet_ids       = module.network.private_subnet_id   # 프로젝트에 맞는 서브넷 outputs 사용
+  node_sg_id       = module.eks.eks_node_sg_id
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_issuer_url   = module.eks.cluster_oidc_issuer_url
 
-  tags                           = var.default_tags
-}
-### 개선사항 : 캐시무효화 자동화에 대한 부분은 CI에서 처리, 배포 후 캐시 갱신은 CD 파이프라인에서 처리
-#################################
-# CloudFront & NLB Logging
-module "logging" {
-  source                      = "./modules/logging"
-  name_prefix                 = var.name_prefix
-  nlb_name                    = module.cloudfront.nlb_name
-  public_subnet_ids           = module.network.public_subnet_id
-  vpc_id                      = module.network.vpc_id
-  tags                        = var.default_tags
-}
-#################################
-# 외부 ALB
-module "internal_alb" {
-  source                  = "./modules/app-alb"
-  name_prefix             = var.name_prefix
-  vpc_id                  = module.network.vpc_id
-  public_subnet_id        = module.network.public_subnet_id
+  depends_on = [module.eks]
 }
