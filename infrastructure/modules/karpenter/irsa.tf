@@ -23,4 +23,6 @@ resource "aws_iam_role" "karpenter_irsa" {
 resource "aws_iam_role_policy_attachment" "karpenter_attach" {
   role       = aws_iam_role.karpenter_irsa.name
   policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/KarpenterControllerPolicy-${var.cluster_name}"
+
+  depends_on = [ aws_cloudformation_stack.karpenter ]
 }
