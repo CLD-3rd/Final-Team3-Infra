@@ -1,5 +1,5 @@
 data "http" "karpenter_cfn" {
-  url = "https://raw.githubusercontent.com/aws/karpenter/main/website/content/en/preview/getting-started/getting-started-with-karpenter/cloudformation.yaml"
+  url = "https://raw.githubusercontent.com/aws/karpenter-provider-aws/v1.6.1/website/content/en/docs/getting-started/getting-started-with-karpenter/cloudformation.yaml"
 }
 
 resource "aws_cloudformation_stack" "karpenter" {
