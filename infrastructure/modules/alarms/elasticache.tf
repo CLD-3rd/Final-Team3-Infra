@@ -7,7 +7,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   namespace           = "AWS/ElastiCache"
   period              = 300
   statistic           = "Average"
-  threshold           = 80
+  threshold           = 60
   alarm_description   = "Redis CPU usage > 80%"
   dimensions = {
     CacheClusterId = var.redis_replica_group_id
