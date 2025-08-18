@@ -27,7 +27,7 @@ variable "engine_version" {
 
 variable "instance_class" {
   type        = string
-  default     = "db.t3.micro"
+  default     = "db.t3.medium"
   description = "RDS 인스턴스 타입"
 }
 
