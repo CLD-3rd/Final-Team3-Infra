@@ -1,28 +1,43 @@
 data "aws_caller_identity" "current" {}
 
-# OIDC provider arn/url는 parent (module.eks)에서 전달받음
-resource "aws_iam_role" "karpenter_irsa" {
-  name = "${var.cluster_name}-karpenter"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = { Federated = var.oidc_provider_arn },
-      Action = "sts:AssumeRoleWithWebIdentity",
-      Condition = {
-        StringEquals = {
-          "${replace(var.oidc_issuer_url, "https://", "")}:sub" = "system:serviceaccount:karpenter:karpenter"
-        }
-      }
-    }]
-  })
+data "kubernetes_config_map_v1" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
 }
 
-# CFN이 만든 정책 이름은 일반적으로 "KarpenterControllerPolicy-<cluster>" 이므로 ARN을 구성
-resource "aws_iam_role_policy_attachment" "karpenter_attach" {
-  role       = aws_iam_role.karpenter_irsa.name
-  policy_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/KarpenterControllerPolicy-${var.cluster_name}"
+locals {
+  # 1) 기존 mapRoles 파싱
+  existing_maproles = try(yamldecode(data.kubernetes_config_map_v1.aws_auth.data["mapRoles"]), [])
 
-  depends_on = [ aws_cloudformation_stack.karpenter ]
+  # 2) 정확한 Karpenter Node Role ARN (infra remote state 사용이 제일 안전)
+  karpenter_node_role_arn = data.terraform_remote_state.infra.outputs.karpenter_node_role_arn
+
+  karpenter_entry = {
+    rolearn  = local.karpenter_node_role_arn
+    username = "system:node:{{EC2PrivateDNSName}}"
+    groups   = ["system:bootstrappers","system:nodes"]
+  }
+
+  # 3) 같은 rolearn을 가진 기존 엔트리를 제거(중복 방지)
+  existing_without_karpenter = [
+    for r in local.existing_maproles :
+    r if try(r.rolearn, "") != local.karpenter_node_role_arn
+  ]
+
+  merged_maproles = concat(existing_without_karpenter, [local.karpenter_entry])
+
+  merged_data = merge(
+    data.kubernetes_config_map_v1.aws_auth.data,
+    { mapRoles = yamlencode(local.merged_maproles) }
+  )
+}
+
+resource "kubernetes_config_map_v1" "aws_auth_patch" {
+  metadata {
+    name      = data.kubernetes_config_map_v1.aws_auth.metadata[0].name
+    namespace = data.kubernetes_config_map_v1.aws_auth.metadata[0].namespace
+  }
+  data = local.merged_data
 }

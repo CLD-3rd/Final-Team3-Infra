@@ -45,6 +45,9 @@ module "iam" {
 # EKS 클러스터 모듈 호출
 module "eks" {
   source                     = "./modules/eks"
+  # karpenter 생성 전 준비 작업
+  # create_managed_node_group = false
+
   create_instance_profile    = var.create_instance_profile
   cluster_name               = var.cluster_name
   kubernetes_version         = var.kubernetes_version
@@ -57,9 +60,6 @@ module "eks" {
   vpn_security_group_id      = module.vpn.vpn_security_group_id
 
   ssh_key_name               = var.ssh_key_name       # SSH 접근용 키
-
-  # karpenter 생성 전 준비 작업
-  # create_managed_node_group = false
 }
 ############################
 # VPN 모듈 호출

@@ -5,6 +5,9 @@
 # CA 모듈 호출
 module "cluster_autoscaler" {
   source               = "./ca"
+  # karpenter 생성 전 준비 작업
+  count  = var.create_cluster_autoscaler ? 1 : 0
+
   cluster_name         = local.cluster_name                    # CA가 관리할 클러스터 식별
   node_group_name      = local.node_group_name          # 특정 노드 그룹 식별
   eks_oidc_arn         = local.eks_oidc_arn      # 해당 ARN을 이용해 IAM 역할을 생성할 때 필요

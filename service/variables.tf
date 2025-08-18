@@ -21,3 +21,10 @@ variable "domain_name" {
   description = "Route53 도메인 이름"
   type        = string
 }
+
+# CA 조건부 생성 변수
+variable "create_cluster_autoscaler" {
+  description = "false 시 CA 비활성화"
+  type        = bool
+  default     = false
+}
