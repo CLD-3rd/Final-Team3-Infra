@@ -12,7 +12,10 @@ resource "aws_iam_policy" "grafana_policy" {
           "cloudwatch:ListMetrics",
           "logs:GetLogEvents",
           "logs:DescribeLogGroups",
-          "logs:DescribeLogStreams"
+          "logs:DescribeLogStreams",
+          "logs:StartQuery",
+          "logs:StopQuery",
+          "logs:GetQueryResults"
         ],
         Resource = "*"
       }
