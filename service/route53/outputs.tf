@@ -13,3 +13,6 @@ output "hosting_zone_id" {
 output "alb_dns_name" {
   value = var.argocd_alb_dns
 }
+output "domain_identity_arn" {
+  value = aws_ses_domain_identity.this.arn
+}
