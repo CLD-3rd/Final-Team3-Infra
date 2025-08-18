@@ -27,3 +27,10 @@ variable "tags" {
   description = "리소스에 적용할 공통 태그 맵"
   type        = map(string)
 }
+
+# Cluster Autoscaler 비활성화용
+variable "create_cluster_autoscaler" {
+  description = "Cluster Autoscaler 비활성화용 토글(사용 시 true)"
+  type    = bool
+  default = false
+}
