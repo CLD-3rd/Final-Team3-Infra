@@ -26,10 +26,15 @@ locals {
   merged_data = merge(data.kubernetes_config_map_v1.aws_auth.data, { mapRoles = yamlencode(local.merged_maproles) })
 }
 
-resource "kubernetes_config_map_v1" "aws_auth_patch" {
+resource "kubernetes_config_map_v1_data" "aws_auth_patch" {
   metadata {
-    name      = data.kubernetes_config_map_v1.aws_auth.metadata[0].name
-    namespace = data.kubernetes_config_map_v1.aws_auth.metadata[0].namespace
+    name      = "aws-auth"
+    namespace = "kube-system"
   }
+
   data = local.merged_data
+
+  # SSA 필드 소유권을 강제로 가져옴
+  field_manager = "Terraform"
+  force         = true
 }
