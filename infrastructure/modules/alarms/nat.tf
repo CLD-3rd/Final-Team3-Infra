@@ -7,7 +7,7 @@ resource "aws_cloudwatch_metric_alarm" "nat_high_data_processed" {
   namespace           = "AWS/NATGateway"
   period              = 300
   statistic           = "Sum"
-  threshold           = 10737418240  # 10GB in 5분 단위
+  threshold           = 1073741824  # 1GB in 5분 단위
 
   alarm_description = "NAT Gateway outbound traffic > 10GB in 5 minutes"
 
@@ -27,7 +27,7 @@ resource "aws_cloudwatch_metric_alarm" "nat_high_connections" {
   namespace           = "AWS/NATGateway"
   period              = 300
   statistic           = "Average"
-  threshold           = 1000  # 예시 기준, 상황에 맞게 조정
+  threshold           = 50  # 예시 기준, 상황에 맞게 조정
   alarm_description   = "NAT Gateway active connections exceed 1000"
 
   dimensions = {

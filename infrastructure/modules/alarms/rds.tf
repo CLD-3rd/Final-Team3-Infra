@@ -7,7 +7,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_cpu_high" {
   namespace           = "AWS/RDS"
   period              = 300
   statistic           = "Average"
-  threshold           = 80
+  threshold           = 60
   alarm_description   = "RDS CPU usage exceeds 80%"
 
   dimensions = {
@@ -26,7 +26,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_low_storage" {
   namespace           = "AWS/RDS"
   period              = 300
   statistic           = "Average"
-  threshold           = 10737418240  # 10GB (in Bytes)
+  threshold           = 5368709120  # 5GB (in Bytes)
 
   alarm_description = "RDS storage space less than 10GB"
 
@@ -46,7 +46,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_high_connections" {
   namespace           = "AWS/RDS"
   period              = 300
   statistic           = "Average"
-  threshold           = 100  # 연결 수 기준, 필요에 따라 조절
+  threshold           = 50  # 연결 수 기준, 필요에 따라 조절
   alarm_description   = "RDS DB connections exceed 100"
 
   dimensions = {
