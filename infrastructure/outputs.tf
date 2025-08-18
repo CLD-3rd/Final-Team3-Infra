@@ -164,3 +164,6 @@ output "karpenter_node_role_arn" {
 output "karpenter_controller_policy_arn" {
   value = module.karpenter.karpenter_controller_policy_arn
 }
+output "karpenter_controller_role_arn" {
+  value = module.karpenter.karpenter_controller_role_arn
+}

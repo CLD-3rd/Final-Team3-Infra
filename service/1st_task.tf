@@ -52,6 +52,7 @@ module "route53_argocd" {
 }
 #################################
 # Karpenter 모듈 호출
-# module "karpenter" {
-#   source = "./karpenter"
-# }
+module "karpenter" {
+  source = "./karpenter"
+  karpenter_controller_role_arn = local.karpenter_controller_role_arn
+}
