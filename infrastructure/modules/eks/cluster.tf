@@ -173,6 +173,10 @@ resource "aws_eks_cluster" "this" {
 
 # EKS 노드 그룹 생성
 resource "aws_eks_node_group" "default" {
+
+  # managed node group 조건부 생성(false 시 새로운 node group 생성 X)
+  count = var.create_managed_node_group ? 1 : 0
+
   cluster_name    = aws_eks_cluster.this.name                    # 연결할 EKS 클러스터 이름
   node_group_name = "${var.cluster_name}-node-group"             # 노드 그룹 이름
   node_role_arn   = aws_iam_role.eks_node_role.arn               # 노드 그룹에 할당할 IAM 역할

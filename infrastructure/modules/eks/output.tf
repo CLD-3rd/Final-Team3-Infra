@@ -40,3 +40,8 @@ output "oidc_provider_arn" {
 output "cluster_oidc_issuer_url" {
   value = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
+
+
+output "node_group_name" {
+  value = length(aws_eks_node_group.default) > 0 ? aws_eks_node_group.default[0].node_group_name : ""
+}

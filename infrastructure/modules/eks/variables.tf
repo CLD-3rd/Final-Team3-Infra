@@ -49,3 +49,9 @@ variable "vpn_security_group_id" {
   type        = string
   description = "VPN Security Group ID to allow SSH from"
 }
+
+# managed node group 조건부 생성 변수
+variable "create_managed_node_group" {
+  type    = bool
+  default = true
+}

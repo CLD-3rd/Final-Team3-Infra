@@ -57,6 +57,9 @@ module "eks" {
   vpn_security_group_id      = module.vpn.vpn_security_group_id
 
   ssh_key_name               = var.ssh_key_name       # SSH 접근용 키
+
+  # karpenter 생성 전 준비 작업
+  # create_managed_node_group = false
 }
 ############################
 # VPN 모듈 호출
