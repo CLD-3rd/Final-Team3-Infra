@@ -6,7 +6,7 @@
 module "cluster_autoscaler" {
   source               = "./ca"
   # karpenter 생성 전 준비 작업
-  count  = var.create_cluster_autoscaler ? 1 : 0
+  # count  = var.create_cluster_autoscaler ? 1 : 0
 
   cluster_name         = local.cluster_name                    # CA가 관리할 클러스터 식별
   node_group_name      = local.node_group_name          # 특정 노드 그룹 식별
@@ -43,11 +43,19 @@ module "argocd" {
   depends_on = [module.iam, module.alb_controller]
 }
 #################################
+# # 
+# module "ses" {
+#   source       = "./ses"
+#   domain_name  = var.domain_name
+# }
+#################################
 # Route53 DNS 설정 모듈 호출
 module "route53_argocd" {
   source          = "./route53"
   domain_name     = var.domain_name
   argocd_alb_dns  = module.argocd.argocd_alb_dns
+  # ses_dkim_tokens = module.ses.ses_dkim_tokens
+  # ses_domain_arn  = module.ses.ses_domain_arn
   depends_on      = [module.argocd]
 }
 #################################
