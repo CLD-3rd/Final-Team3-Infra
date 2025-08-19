@@ -27,6 +27,8 @@ locals {
 }
 
 resource "kubernetes_config_map_v1_data" "aws_auth_patch" {
+  count = var.manage_aws_auth_with_terraform ? 1 : 0
+
   metadata {
     name      = "aws-auth"
     namespace = "kube-system"
