@@ -13,15 +13,15 @@ resource "aws_cloudformation_stack" "karpenter" {
   }
 }
 # 태그 셀렉터를 위해 서브넷/SG에 태그 추가
-resource "aws_ec2_tag" "subnet_discovery" {
-  for_each    = toset(var.subnet_ids)
-  resource_id = each.value
-  key         = "karpenter.sh/discovery"
-  value       = var.cluster_name
-}
+# resource "aws_ec2_tag" "subnet_discovery" {
+#   for_each    = toset(var.subnet_ids)
+#   resource_id = each.value
+#   key         = "karpenter.sh/discovery"
+#   value       = var.cluster_name
+# }
 
-resource "aws_ec2_tag" "node_sg_discovery" {
-  resource_id = var.node_sg_id
-  key         = "karpenter.sh/discovery"
-  value       = var.cluster_name
-}
+# resource "aws_ec2_tag" "node_sg_discovery" {
+#   resource_id = var.node_sg_id
+#   key         = "karpenter.sh/discovery"
+#   value       = var.cluster_name
+# }

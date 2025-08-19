@@ -42,6 +42,8 @@ resource "aws_subnet" "private" {
     # ALB 컨트롤러 인식용 서브넷 태그 - Public.ver
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
     "kubernetes.io/role/internal-elb" = "1"
+    # Karpenter 컨트롤러 인식용 서브넷 태그
+    "karpenter.sh/discovery" = var.cluster_name
   }
 }
 

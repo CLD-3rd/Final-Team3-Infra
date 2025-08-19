@@ -248,3 +248,11 @@ resource "aws_iam_openid_connect_provider" "this" {
   thumbprint_list = [var.oidc_thumbprint]
   url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
+
+resource "aws_ec2_tag" "csg_discovery" {
+  resource_id = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
+  key         = "karpenter.sh/discovery"
+  value       = var.cluster_name
+
+  depends_on = [aws_eks_cluster.this]
+}
