@@ -43,19 +43,21 @@ module "argocd" {
   depends_on = [module.iam, module.alb_controller]
 }
 #################################
-# # 
-# module "ses" {
-#   source       = "./ses"
-#   domain_name  = var.domain_name
-# }
+# SES 이메일 관련 모듈 호출
+# 먼저 생성이 되어야 함 의존성을 생성해줘도 에러가 나기 때문에 별도로 target 지정해서 apply
+# terraform apply -target="module.ses"
+module "ses" {
+  source       = "./ses"
+  domain_name  = var.domain_name
+}
 #################################
 # Route53 DNS 설정 모듈 호출
 module "route53_argocd" {
   source          = "./route53"
   domain_name     = var.domain_name
   argocd_alb_dns  = module.argocd.argocd_alb_dns
-  # ses_dkim_tokens = module.ses.ses_dkim_tokens
-  # ses_domain_arn  = module.ses.ses_domain_arn
+  ses_dkim_tokens = module.ses.ses_dkim_tokens
+  ses_domain_arn  = module.ses.ses_domain_arn
   depends_on      = [module.argocd]
 }
 #################################
