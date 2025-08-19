@@ -19,7 +19,15 @@ resource "aws_iam_user_policy" "ses_smtp_user_policy" {
     Statement = [{
       Effect = "Allow"
       Action = [
-        "ses:SendRawEmail"
+        "ses:SendEmail",
+        "ses:GetAccount",
+        "ses:VerifyDomainIdentity",
+        "ses:VerifyEmailIdentity",
+        "ses:ListIdentities",
+        "ses:GetSendQuota",
+        "ses:GetIdentityVerificationAttributes",
+        "ses:ListEmailIdentities",
+        "ses:ListDomains"
       ]
       Resource = "*"
     }]
