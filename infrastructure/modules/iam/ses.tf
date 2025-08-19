@@ -11,7 +11,7 @@ locals {
 resource "aws_iam_user_policy" "ses_smtp_user_policy" {
   count = local.user_name != null ? 1 : 0
 
-  name = "${local.user_name}-ses-smtp-policy"
+  name = "${var.name_prefix}-ses-smtp-policy"
   user = local.user_name
 
   policy = jsonencode({
@@ -20,14 +20,47 @@ resource "aws_iam_user_policy" "ses_smtp_user_policy" {
       Effect = "Allow"
       Action = [
         "ses:SendEmail",
-        "ses:GetAccount",
+        "ses:SendRawEmail",
+        "ses:GetSendQuota",
+        "ses:GetSendStatistics",
+        "ses:GetIdentityVerificationAttributes",
         "ses:VerifyDomainIdentity",
         "ses:VerifyEmailIdentity",
         "ses:ListIdentities",
-        "ses:GetSendQuota",
-        "ses:GetIdentityVerificationAttributes",
         "ses:ListEmailIdentities",
-        "ses:ListDomains"
+        "ses:DeleteIdentity",
+        "ses:GetIdentityPolicies",
+        "ses:PutIdentityPolicy",
+        "ses:DeleteIdentityPolicy",
+        "ses:SetIdentityDkimEnabled",
+        "ses:GetIdentityDkimAttributes",
+        "ses:VerifyDomainDkim",
+        "ses:ListVerifiedEmailAddresses",
+        "ses:GetAccount",
+        "ses:ListDomains",
+        "ses:ListRecommendations",
+        "ses:UpdateAccountSendingEnabled",
+        "ses:PutAccountDedicatedIpWarmupAttributes",
+        "ses:PutAccountSendingAttributes",
+        "ses:GetEmailIdentity",
+        "ses:CreateEmailIdentity",
+        "ses:DeleteEmailIdentity",
+        "ses:UpdateEmailIdentityPolicy",
+        "ses:ListConfigurationSets",
+        "ses:CreateConfigurationSet",
+        "ses:DeleteConfigurationSet",
+        "ses:UpdateConfigurationSetEventDestination",
+        "ses:SendBulkTemplatedEmail",
+        "ses:SendTemplatedEmail",
+        "ses:CreateReceiptRuleSet",
+        "ses:DeleteReceiptRuleSet",
+        "ses:SetReceiptRuleSet",
+        "ses:CreateReceiptRule",
+        "ses:DeleteReceiptRule",
+        "ses:UpdateReceiptRule",
+        "ses:DescribeReceiptRule",
+        "ses:DescribeReceiptRuleSet",
+        "ses:PutAccountDetails"
       ]
       Resource = "*"
     }]
