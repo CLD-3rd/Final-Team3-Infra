@@ -92,3 +92,8 @@ variable "cloudwatchexporter_service_account" {
   default     = "cloudwatchexporter-sa"
   description = "Service account name for CloudWatch Exporter"
 }
+
+variable "kubecost_service_account" {
+  type        = string
+  default     = "kubecost-cost-analyzer"
+}

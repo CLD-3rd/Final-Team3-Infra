@@ -25,6 +25,31 @@ resource "aws_cloudfront_origin_access_control" "s3_oac" {
 }
 
 ########################################
+# CloudFront Function for URL Rewrite
+########################################
+resource "aws_cloudfront_function" "url_rewrite" {
+  name    = "${var.name_prefix}-url-rewrite"
+  runtime = "cloudfront-js-2.0"
+  comment = "Maps directory paths to index.html files to prevent 403 errors"
+  publish = true
+  code    = <<EOF
+function handler(event) {
+    var request = event.request;
+    var uri = request.uri;
+    
+    if (uri.endsWith('/') && uri !== '/') {
+        request.uri = uri + 'index.html';
+    }
+    else if (!uri.includes('.') && uri !== '/') {
+        request.uri = uri + '/index.html';
+    }
+    
+    return request;
+}
+EOF
+}
+
+########################################
 # CloudFront Distribution (두 오리진)
 ########################################
 resource "aws_cloudfront_distribution" "this" {
@@ -66,6 +91,11 @@ resource "aws_cloudfront_distribution" "this" {
     cache_policy_id            = data.aws_cloudfront_cache_policy.caching_optimized.id
     origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.cors_s3_origin.id
     response_headers_policy_id = data.aws_cloudfront_response_headers_policy.security_headers.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.url_rewrite.arn
+    }
   }
 
   ########################################
@@ -149,4 +179,3 @@ resource "aws_s3_bucket_policy" "oac_policy" {
   bucket = var.s3_bucket_id
   policy = data.aws_iam_policy_document.s3_policy.json
 }
-
