@@ -6,7 +6,7 @@
 module "cluster_autoscaler" {
   source               = "./ca"
   # karpenter 생성 전 준비 작업
-  # count  = var.create_cluster_autoscaler ? 1 : 0
+  count  = var.create_cluster_autoscaler ? 1 : 0
 
   cluster_name         = local.cluster_name                    # CA가 관리할 클러스터 식별
   node_group_name      = local.node_group_name          # 특정 노드 그룹 식별
